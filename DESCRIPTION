@@ -1,0 +1,13 @@
+Package: quanteda.seededlda
+Type: Package
+Title: Fit seeded-LDA using quanteda
+Version: 0.1.0
+Authors@R: person("Kohei", "Watanabe", email = "watanabe.kohei@gmail.com", role = c("aut", "cre", "cph"))
+Description: Fit seeded-LDA (Lu, Ott, Cardie, & Tsou 2010) <doi:10.1080/21670811.2017.1293487> using the topicmodel package 
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Imports:
+    topicmodels,
+    quanteda (> 1.3),
+RoxygenNote: 6.1.1

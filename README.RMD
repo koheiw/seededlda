@@ -1,0 +1,52 @@
+---
+output: github_document
+---
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "##",
+  fig.path = "man/images/"
+)
+```
+
+# Fit seeded LDA using quanteda
+
+A function to fit seeded LDA model for semi-supervised topic classification using **topicmodels** and **quanteda**. The code is from [*Making a topic dictionary for semi-supervised classification of the UN speeches*](https://koheiw.net/wp-content/uploads/2019/06/Speech-classification-06-QTA-Dub.pdf).
+
+```{r message=FALSE}
+require(quanteda)
+require(topicmodels)
+require(quanteda.seededlda)
+```
+
+The corpus and seed words in this example are from [*Conspiracist propaganda: How Russia promotes anti-establishment sentimentonline?*](https://koheiw.net/wp-content/uploads/2019/06/Sputnik-05-ECPR.pdf)
+
+```{r}
+corp <- readRDS("data/data_corpus_sputnik.RDS")
+toks <- tokens(corp, remove_punct = TRUE)
+dfmt <- dfm(toks) %>% 
+    dfm_select("^[A-Za-z]+$", valuetype = "regex") %>% 
+    dfm_remove(stopwords('en')) %>% 
+    dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile", 
+             max_docfreq = 0.1, docfreq_type = "prop")
+```
+
+```{r}
+dict <- dictionary(file = "data/topics.yml")
+print(dict)
+```
+
+```{r}
+slda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
+term <- terms(slda, 20)
+colnames(term) <- c(names(dict), "else")
+print(term)
+```
+
+```{r}
+topic <- table(topics(slda))
+names(topic) <- c(names(dict), "else")
+print(topic)
+```
+
