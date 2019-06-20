@@ -14,16 +14,25 @@ knitr::opts_chunk$set(
 
 A function to fit seeded LDA model for semi-supervised topic classification using **topicmodels** and **quanteda**. The code is from [*Making a topic dictionary for semi-supervised classification of the UN speeches*](https://koheiw.net/wp-content/uploads/2019/06/Speech-classification-06-QTA-Dub.pdf).
 
+## Install
+
+```{r eval=FALSE}
+install.packages("devtools")
+devtools::install_github("koheiw/quanteda.seededlda")
+```
+
+## Example
+
+The corpus and seed words in this example are from [*Conspiracist propaganda: How Russia promotes anti-establishment sentimentonline?*](https://koheiw.net/wp-content/uploads/2019/06/Sputnik-05-ECPR.pdf)
+
 ```{r message=FALSE}
 require(quanteda)
 require(topicmodels)
 require(quanteda.seededlda)
 ```
 
-The corpus and seed words in this example are from [*Conspiracist propaganda: How Russia promotes anti-establishment sentimentonline?*](https://koheiw.net/wp-content/uploads/2019/06/Sputnik-05-ECPR.pdf)
-
 ```{r}
-corp <- readRDS("data/data_corpus_sputnik.RDS")
+corp <- readRDS("inst/extdata/data_corpus_sputnik.RDS")
 toks <- tokens(corp, remove_punct = TRUE)
 dfmt <- dfm(toks) %>% 
     dfm_select("^[A-Za-z]+$", valuetype = "regex") %>% 
@@ -33,7 +42,7 @@ dfmt <- dfm(toks) %>%
 ```
 
 ```{r}
-dict <- dictionary(file = "data/topics.yml")
+dict <- dictionary(file = "inst/extdata/topics.yml")
 print(dict)
 ```
 
