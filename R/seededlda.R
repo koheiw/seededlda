@@ -9,7 +9,7 @@
 #' @import topicmodels
 #' @export
 textmodel_seededlda <- function(x, dictionary, weight = 500, residual = FALSE, ...) {
-    dtm <- quanteda::convert(x, "topicmodels")
+    dtm <- convert(x, "topicmodels")
     y <- tfm(x, dictionary, weight = weight, residual = residual, ...)
     dtm_seed <- quanteda:::dfm2dtm(y, omit_empty = FALSE)
     #ctr <- list(alpha = 0.1, best = TRUE,
@@ -19,6 +19,8 @@ textmodel_seededlda <- function(x, dictionary, weight = 500, residual = FALSE, .
 }
 
 #' Internal function to construct topic-feature matrix
+#' @import Matrix quanteda
+#' @noRd
 tfm <- function(x, dictionary, levels = 1:5,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
@@ -45,5 +47,5 @@ tfm <- function(x, dictionary, levels = 1:5,
             dims = c(length(key), nfeat(x)),
             dimnames = list(key, featnames(x))
         )
-    quanteda::as.dfm(result)
+    as.dfm(result)
 }

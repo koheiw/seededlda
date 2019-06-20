@@ -7,6 +7,8 @@ Description: Fit seeded-LDA (Lu, Ott, Cardie, & Tsou 2010) <doi:10.1080/21670811
 License: MIT
 Encoding: UTF-8
 LazyData: true
+Depends:
+    quanteda
 Imports:
     topicmodels,
     quanteda (> 1.3),
