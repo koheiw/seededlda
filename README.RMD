@@ -32,7 +32,7 @@ require(quanteda.seededlda)
 ```
 
 ```{r}
-corp <- readRDS("inst/extdata/data_corpus_sputnik.RDS")
+corp <- readRDS("tests/data/data_corpus_sputnik.RDS")
 toks <- tokens(corp, remove_punct = TRUE)
 dfmt <- dfm(toks) %>% 
     dfm_select("^[A-Za-z]+$", valuetype = "regex") %>% 
@@ -42,7 +42,7 @@ dfmt <- dfm(toks) %>%
 ```
 
 ```{r}
-dict <- dictionary(file = "inst/extdata/topics.yml")
+dict <- dictionary(file = "tests/data/topics.yml")
 print(dict)
 ```
 

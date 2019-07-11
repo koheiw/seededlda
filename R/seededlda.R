@@ -21,7 +21,7 @@ textmodel_seededlda <- function(x, dictionary, weight = 500, residual = FALSE, .
 #' Internal function to construct topic-feature matrix
 #' @import Matrix quanteda
 #' @noRd
-tfm <- function(x, dictionary, levels = 1:5,
+tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
                 weight = 500, scheme = c("absolute", "relative"),
@@ -29,20 +29,22 @@ tfm <- function(x, dictionary, levels = 1:5,
 
     valuetype <- match.arg(valuetype)
     scheme <- match.arg(scheme)
-    ids <- quanteda:::pattern2list(dictionary, featnames(x),
-                                   valuetype, case_insensitive,
-                                   attr(x, "concatenator"), levels)
-    key <- attr(ids, "key")
-    ids <- ids[lengths(ids) == 1]
-    id_key <- match(names(ids), key)
-    id <- unlist(ids, use.names = FALSE)
+
+    id_key <- id_feat <- integer()
+    for (i in seq_along(dictionary)) {
+        f <- featnames(dfm_select(x, dictionary[i]))
+        id_key <- c(id_key, rep(i, length(f)))
+        id_feat <- c(id_feat, match(f, featnames(x)))
+    }
+    weight <- rep(weight, length(id_feat))
+    key <- names(dictionary)
     if (residual)
         key <- c(key, "")
     if (scheme == "relative")
-        weight <- weight * colSums(x)[id]
+        weight <- weight * colSums(x)[id_feat]
     result <- Matrix::sparseMatrix(
             i = id_key,
-            j = id,
+            j = id_feat,
             x = weight,
             dims = c(length(key), nfeat(x)),
             dimnames = list(key, featnames(x))
