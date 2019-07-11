@@ -55,57 +55,55 @@ print(dict)
 
 ``` r
 slda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
-term <- terms(slda, 20)
-colnames(term) <- c(names(dict), "else")
-print(term)
-##       economy     politics        society         diplomacy    
-##  [1,] "company"   "parliament"    "police"        "diplomatic" 
-##  [2,] "money"     "congress"      "school"        "embassy"    
-##  [3,] "market"    "politicians"   "hospital"      "ambassador" 
-##  [4,] "bank"      "parliamentary" "prison"        "treaty"     
-##  [5,] "industry"  "lawmakers"     "department"    "diplomat"   
-##  [6,] "banks"     "voters"        "court"         "diplomats"  
-##  [7,] "markets"   "lawmaker"      "service"       "sanctions"  
-##  [8,] "banking"   "politician"    "women"         "iran"       
-##  [9,] "economic"  "video"         "rights"        "eu"         
-## [10,] "trade"     "june"          "found"         "deal"       
-## [11,] "oil"       "team"          "authorities"   "agreement"  
-## [12,] "billion"   "details"       "man"           "meeting"    
-## [13,] "global"    "monday"        "investigation" "union"      
-## [14,] "financial" "cup"           "office"        "israel"     
-## [15,] "business"  "twitter"       "west"          "secretary"  
-## [16,] "companies" "follow"        "left"          "putin"      
-## [17,] "gas"       "embed"         "children"      "council"    
-## [18,] "economy"   "american"      "claimed"       "relations"  
-## [19,] "energy"    "referendum"    "january"       "cooperation"
-## [20,] "interest"  "march"         "members"       "peace"      
-##       military       nature        else          
-##  [1,] "army"         "human"       "uk"          
-##  [2,] "navy"         "sand"        "going"       
-##  [3,] "soldiers"     "water"       "much"        
-##  [4,] "marine"       "china"       "election"    
-##  [5,] "syria"        "nuclear"     "british"     
-##  [6,] "syrian"       "korea"       "really"      
-##  [7,] "weapons"      "chinese"     "campaign"    
-##  [8,] "nato"         "korean"      "false"       
-##  [9,] "attack"       "missile"     "come"        
-## [10,] "german"       "program"     "show"        
-## [11,] "terrorist"    "system"      "see"         
-## [12,] "daesh"        "india"       "whether"     
-## [13,] "turkish"      "air"         "know"        
-## [14,] "turkey"       "development" "right"       
-## [15,] "organization" "indian"      "elections"   
-## [16,] "saudi"        "research"    "good"        
-## [17,] "iraq"         "recently"    "facebook"    
-## [18,] "groups"       "kim"         "problem"     
-## [19,] "middle"       "japan"       "presidential"
-## [20,] "french"       "technology"  "today"
+print(terms(slda, 20))
+##       economy     politics        society         diplomacy    military   
+##  [1,] "company"   "parliament"    "police"        "diplomatic" "army"     
+##  [2,] "money"     "congress"      "school"        "embassy"    "navy"     
+##  [3,] "market"    "politicians"   "hospital"      "ambassador" "soldiers" 
+##  [4,] "bank"      "parliamentary" "prison"        "treaty"     "marine"   
+##  [5,] "industry"  "voters"        "department"    "diplomat"   "missile"  
+##  [6,] "banks"     "lawmakers"     "video"         "diplomats"  "air"      
+##  [7,] "markets"   "lawmaker"      "court"         "nuclear"    "system"   
+##  [8,] "banking"   "politician"    "service"       "korea"      "team"     
+##  [9,] "china"     "uk"            "women"         "sanctions"  "june"     
+## [10,] "chinese"   "eu"            "found"         "iran"       "research" 
+## [11,] "economic"  "germany"       "twitter"       "deal"       "force"    
+## [12,] "project"   "british"       "investigation" "korean"     "aircraft" 
+## [13,] "trade"     "german"        "man"           "meeting"    "power"    
+## [14,] "india"     "europe"        "authorities"   "agreement"  "cup"      
+## [15,] "oil"       "march"         "members"       "program"    "sea"      
+## [16,] "global"    "union"         "children"      "putin"      "using"    
+## [17,] "billion"   "elections"     "newspaper"     "secretary"  "high"     
+## [18,] "business"  "brexit"        "left"          "director"   "systems"  
+## [19,] "companies" "law"           "justice"       "japan"      "based"    
+## [20,] "indian"    "vote"          "claimed"       "visit"      "potential"
+##       nature      other         
+##  [1,] "human"     "syria"       
+##  [2,] "sand"      "syrian"      
+##  [3,] "water"     "nato"        
+##  [4,] "going"     "city"        
+##  [5,] "much"      "east"        
+##  [6,] "really"    "ministry"    
+##  [7,] "see"       "israel"      
+##  [8,] "false"     "terrorist"   
+##  [9,] "show"      "relations"   
+## [10,] "come"      "daesh"       
+## [11,] "know"      "un"          
+## [12,] "go"        "weapons"     
+## [13,] "good"      "turkish"     
+## [14,] "facebook"  "turkey"      
+## [15,] "change"    "attack"      
+## [16,] "american"  "move"        
+## [17,] "put"       "border"      
+## [18,] "might"     "organization"
+## [19,] "something" "council"     
+## [20,] "means"     "nations"
 ```
 
 ``` r
 topic <- table(topics(slda))
-names(topic) <- c(names(dict), "else")
 print(topic)
-##   economy  politics   society diplomacy  military    nature      else 
-##        57       105       192       113       135       159       239
+## 
+## diplomacy   economy  military    nature     other  politics   society 
+##       100        88       130       167       221        86       208
 ```
