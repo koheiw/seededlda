@@ -12,10 +12,19 @@ textmodel_seededlda <- function(x, dictionary, weight = 500, residual = FALSE, .
     dtm <- convert(x, "topicmodels")
     y <- tfm(x, dictionary, weight = weight, residual = residual, ...)
     dtm_seed <- quanteda:::dfm2dtm(y, omit_empty = FALSE)
-    #ctr <- list(alpha = 0.1, best = TRUE,
-    #            verbose = 500, burnin = 500, iter = 100, thin = 100, prefix = character())
-    #slda <- LDA(dtm, k = dtm_seed$nrow, method = "Gibbs", seedwords = dtm_seed, control = ctr)
-    LDA(dtm, k = dtm_seed$nrow, method = "Gibbs", seedwords = dtm_seed)
+    result <- list(
+        lda = LDA(
+            dtm,
+            k = dtm_seed$nrow,
+            method = "Gibbs",
+            seedwords = dtm_seed
+        ),
+        dictionary = dictionary,
+        topics = rownames(dtm_seed),
+        documents = docnames(x)
+    )
+    class(result) <- "textmodel_seededlda"
+    return(result)
 }
 
 #' Internal function to construct topic-feature matrix
@@ -39,7 +48,7 @@ tfm <- function(x, dictionary,
     weight <- rep(weight, length(id_feat))
     key <- names(dictionary)
     if (residual)
-        key <- c(key, "")
+        key <- c(key, "other")
     if (scheme == "relative")
         weight <- weight * colSums(x)[id_feat]
     result <- Matrix::sparseMatrix(
@@ -52,10 +61,38 @@ tfm <- function(x, dictionary,
     as.dfm(result)
 }
 
-#' @importFrom topicmodels topics
+#' Extract most likely topics
 #' @export
-topicmodels::topics
+#' @param x a fitted seeded LDA model
+topics <- function(x) {
+    UseMethod("topics")
+}
 
+#' @export
+topics.textmodel_seededlda <- function(x) {
+    i <- topicmodels::topics(x$lda)
+    i <- i[x$documents]
+    topic <- x$topics[i]
+    return(topic)
+}
+
+#' Extract most likely terms
+#' @param x a fitted seeded LDA model
+#' @param k number of terms to be extracted
 #' @importFrom topicmodels terms
 #' @export
-topicmodels::terms
+terms <- function(x, k = 10) {
+    UseMethod("terms")
+}
+
+#' @export
+terms.textmodel_seededlda <- function(x, k = 10) {
+    term <- topicmodels::terms(x$lda, k)
+    if (k == 1) {
+        names(term) <- x$topics
+    } else {
+        colnames(term) <- x$topics
+    }
+    return(term)
+}
+

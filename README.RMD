@@ -48,14 +48,11 @@ print(dict)
 
 ```{r}
 slda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
-term <- terms(slda, 20)
-colnames(term) <- c(names(dict), "else")
-print(term)
+print(terms(slda, 20))
 ```
 
 ```{r}
 topic <- table(topics(slda))
-names(topic) <- c(names(dict), "else")
 print(topic)
 ```
 
