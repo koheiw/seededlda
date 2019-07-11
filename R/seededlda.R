@@ -49,3 +49,11 @@ tfm <- function(x, dictionary, levels = 1:5,
         )
     as.dfm(result)
 }
+
+#' @importFrom topicmodels topics
+#' @export
+topicmodels::topics
+
+#' @importFrom topicmodels terms
+#' @export
+topicmodels::terms

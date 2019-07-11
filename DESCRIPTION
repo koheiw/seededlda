@@ -1,7 +1,7 @@
 Package: quanteda.seededlda
 Type: Package
 Title: Fit seeded-LDA using quanteda
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: person("Kohei", "Watanabe", email = "watanabe.kohei@gmail.com", role = c("aut", "cre", "cph"))
 Description: Fit seeded-LDA (Lu, Ott, Cardie, & Tsou 2010) <https://dl.acm.org/citation.cfm?id=2119585> using the topicmodel package 
 License: MIT
