@@ -1,8 +1,9 @@
 context("test")
 
 require(quanteda)
+require(quanteda.textmodels)
 toks <- tokens(data_corpus_irishbudget2010)
-dfmat <- dfm(toks, remove = stopwords())
+dfmat <- dfm(toks, remove = stopwords("en"))
 dict <- dictionary(file = "../data/topics.yml")
 
 test_that("test tfm", {
@@ -19,15 +20,15 @@ test_that("test tfm", {
 test_that("test tfm with extreme cases", {
     dict1 <- dictionary(list(economy = "market*", politics = "parliament*", something = "xyz"))
     expect_equal(dim(quanteda.seededlda:::tfm(dfmat, dict1, residual = FALSE)),
-                 c(3, 5021))
+                 c(3, 5022))
 
     dict2 <- dictionary(list(economy = "market*", politics = "parliament*", something = ""))
     expect_equal(dim(quanteda.seededlda:::tfm(dfmat, dict2, residual = FALSE)),
-                 c(3, 5021))
+                 c(3, 5022))
 
     dict3 <- dictionary(list(economy = "", politics = "", something = ""))
     expect_equal(dim(quanteda.seededlda:::tfm(dfmat, dict3, residual = FALSE)),
-                 c(3, 5021))
+                 c(3, 5022))
 })
 
 test_that("topics and terms methods are working", {
