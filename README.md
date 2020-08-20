@@ -1,5 +1,5 @@
 
-# Semisupervided LDA for theory-driven text analysis
+# Semisupervised LDA for theory-driven text analysis
 
 **NOTICE:** This R package is renamed from **quanteda.seededlda** to
 **seededlda** for CRAN submission.
