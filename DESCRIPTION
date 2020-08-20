@@ -1,6 +1,6 @@
 Package: seededlda
 Type: Package
-Title: Implements semisupervised and unsupervided LDA for topic classification
+Title: Seeded-LDA for Topic Modeling
 Version: 0.5
 Authors@R: c(person("Kohei", "Watanabe", email = "watanabe.kohei@gmail.com", role = c("aut", "cre")),
              person("Phan", "Xuan-Hieu", email = "pxhieu@gmail.com", role = c("aut")))
