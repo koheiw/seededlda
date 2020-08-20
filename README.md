@@ -1,18 +1,18 @@
 
 # Semisupervided LDA for theory-driven text analysis
 
-**NOTICE** This R package is renamed from **quanteda.seededlda** to
+**NOTICE:** This R package is renamed from **quanteda.seededlda** to
 **seededlda** for CRAN submission.
 
-A package implements seeded-LDA for semisupervised topic modeling using
-**quanteda** and GibbsLDA++. This seeded-LDA model was proposed by [Lu
-et al. (2010)](https://dl.acm.org/citation.cfm?id=2119585). Before this
-package was submitted to CRAN on August 2020 (until version 0.3), it was
-wrapper around the **topicmodels** package, but the LDA estimator is
-newly implemented in C++ using the
-[GibbsLDA++](http://gibbslda.sourceforge.net/) library by the author.
-The author believes this package implements the seeded-LDA model more
-closely to the original proposal.
+**seededlda** is an R package that implements the seeded-LDA for
+semisupervised topic modeling using **quanteda**. The seeded-LDA model
+was proposed by [Lu et
+al. (2010)](https://dl.acm.org/citation.cfm?id=2119585). Until version
+0.3, that packages has been a simple wrapper around the **topicmodels**
+package, but the LDA estimator is newly implemented in C++ using the
+[GibbsLDA++](http://gibbslda.sourceforge.net/) library to be submitted
+to CRAN in August 202. The author believes this package implements the
+seeded-LDA model more closely to the original proposal.
 
 Please see [*Theory-Driven Analysis of Large Corpora: Semisupervised
 Topic Classification of the UN
@@ -73,6 +73,9 @@ print(dict)
 ##   - water, wind, sand, forest, mountain, desert, animal, human
 ```
 
+Many of the top terms of seeded-LDA models are seed words but other
+topic words are also identified.
+
 ``` r
 set.seed(1234)
 slda <- textmodel_seededlda(dfmt, dict, residual = FALSE)
@@ -120,9 +123,6 @@ print(terms(slda, 20))
 ## [19,] "seen"     
 ## [20,] "far"
 ```
-
-Many of the top terms of seeded-LDA models are seed words but other
-topic words are also identified.
 
 ``` r
 topic <- table(topics(slda))
