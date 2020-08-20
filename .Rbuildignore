@@ -1,3 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^.\Rhistory
 ^README\.Rmd$
+^README\.md$
+^\.github
+^cran-comments.md

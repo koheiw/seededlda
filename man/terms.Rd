@@ -4,12 +4,12 @@
 \alias{terms}
 \title{Extract most likely terms}
 \usage{
-terms(x, k = 10)
+terms(x, n = 10)
 }
 \arguments{
-\item{x}{a fitted seeded LDA model}
+\item{x}{a fitted LDA model}
 
-\item{k}{number of terms to be extracted}
+\item{n}{number of terms to be extracted}
 }
 \description{
 Extract most likely terms

@@ -12,23 +12,24 @@ knitr::opts_chunk$set(
 
 # Fit seeded-LDA in R
 
-A package to fit seeded-LDA model for semi-supervised topic classification using **topicmodels** and **quanteda**. The code is from [*Making a topic dictionary for semi-supervised classification of the UN speeches*](https://koheiw.net/wp-content/uploads/2019/06/Speech-classification-06-QTA-Dub.pdf).
+A package implements seeded-LDA for semisupervised topic classification using **quanteda** and GibbsLDA++. This seeded-LDA model was proposed by [Lu et al. (2010)](https://dl.acm.org/citation.cfm?id=2119585). Before this package was submitted to CRAN on August 2020 (until version 0.3), it was wrapper around the **topicmodel** package, but the LDA estimator is newly implemented in C++ using the GibbsLDA++ library by the author. The author believes this package implements the seeded-LDA model more closely to the original proposal.
+
+Please see [*Theory-Driven Analysis of Large Corpora: Semisupervised Topic Classification of the UN Speeches *](https://journals.sagepub.com/doi/full/10.1177/0894439320907027) for the overview of semisupervised topic classification techniques and their advantages in social science research.
 
 ## Install
 
 ```{r eval=FALSE}
 install.packages("devtools")
-devtools::install_github("koheiw/quanteda.seededlda")
+devtools::install_github("koheiw/seededlda")
 ```
 
 ## Example
 
-The corpus and seed words in this example are from [*Conspiracist propaganda: How Russia promotes anti-establishment sentimentonline?*](https://koheiw.net/wp-content/uploads/2019/06/Sputnik-05-ECPR.pdf)
+The corpus and seed words in this example are from [*Conspiracist propaganda: How Russia promotes anti-establishment sentiment online?*](https://koheiw.net/wp-content/uploads/2019/06/Sputnik-05-ECPR.pdf).
 
 ```{r message=FALSE}
 require(quanteda)
-require(topicmodels)
-require(quanteda.seededlda)
+require(seededlda)
 ```
 
 ```{r}
@@ -47,7 +48,8 @@ print(dict)
 ```
 
 ```{r}
-slda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
+set.seed(1234)
+slda <- textmodel_seededlda(dfmt, dict, residual = FALSE)
 print(terms(slda, 20))
 ```
 

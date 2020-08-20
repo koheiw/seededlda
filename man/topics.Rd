@@ -7,7 +7,7 @@
 topics(x)
 }
 \arguments{
-\item{x}{a fitted seeded LDA model}
+\item{x}{a fitted LDA model}
 }
 \description{
 Extract most likely topics

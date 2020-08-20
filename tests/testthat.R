@@ -1,3 +1,3 @@
-require(quanteda.seededlda)
+require(seededlda)
 require(testthat)
-test_check("quanteda.seededlda")
+test_check("seededlda")
