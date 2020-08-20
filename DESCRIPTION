@@ -1,17 +1,24 @@
-Package: quanteda.seededlda
+Package: seededlda
 Type: Package
-Title: Fit seeded-LDA using quanteda
-Version: 0.2
-Authors@R: person("Kohei", "Watanabe", email = "watanabe.kohei@gmail.com", role = c("aut", "cre", "cph"))
-Description: Fit seeded-LDA (Lu, Ott, Cardie, & Tsou 2010) <https://dl.acm.org/citation.cfm?id=2119585> using the topicmodel package 
-License: MIT
+Title: Implements semisupervised and unsupervided LDA for topic classification
+Version: 0.5
+Authors@R: c(person("Kohei", "Watanabe", email = "watanabe.kohei@gmail.com", role = c("aut", "cre")),
+             person("Phan", "Xuan-Hieu", email = "pxhieu@gmail.com", role = c("aut")))
+Description: This package implements the seeded-LDA model (Lu, Ott, Cardie & Tsou 2010) 
+    <https://dl.acm.org/citation.cfm?id=2119585> using the quanteda package and the GibbsLDA++ library. 
+    Semisupervised LDA model allows users to pre-define topics with keywords to perform theory-driven analysis of textual data
+    (Watanabe & Zhou 2020)<https://journals.sagepub.com/doi/full/10.1177/0894439320907027>.
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Imports:
-    topicmodels,
+Depends:
+    R (>= 3.5.0),
     quanteda (> 2.0),
-    quanteda.textmodels,
+    methods
+Imports:
     Matrix
+LinkingTo: Rcpp, RcppParallel, RcppArmadillo (>= 0.7.600.1.0), quanteda
 Suggests:
-    testthat
-RoxygenNote: 7.1.0
+    testthat,
+    quanteda.textmodels
+RoxygenNote: 7.1.1
