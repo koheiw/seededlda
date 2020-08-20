@@ -1,26 +1,34 @@
 
-# Fit seeded-LDA in R
+# Semisupervided LDA for theory-driven text analysis
 
-A package implements seeded-LDA for semisupervised topic classification
-using **quanteda** and GibbsLDA++. This seeded-LDA model was proposed by
-[Lu et al. (2010)](https://dl.acm.org/citation.cfm?id=2119585). Before
-this package was submitted to CRAN on August 2020 (until version 0.3),
-it was wrapper around the **topicmodel** package, but the LDA estimator
-is newly implemented in C++ using the GibbsLDA++ library by the author.
+**NOTICE** This R package is renamed from **quanteda.seededlda** to
+**seededlda** for CRAN submission.
+
+A package implements seeded-LDA for semisupervised topic modeling using
+**quanteda** and GibbsLDA++. This seeded-LDA model was proposed by [Lu
+et al. (2010)](https://dl.acm.org/citation.cfm?id=2119585). Before this
+package was submitted to CRAN on August 2020 (until version 0.3), it was
+wrapper around the **topicmodels** package, but the LDA estimator is
+newly implemented in C++ using the
+[GibbsLDA++](http://gibbslda.sourceforge.net/) library by the author.
 The author believes this package implements the seeded-LDA model more
 closely to the original proposal.
 
 Please see [*Theory-Driven Analysis of Large Corpora: Semisupervised
-Topic Classification of the UN Speeches
-*](https://journals.sagepub.com/doi/full/10.1177/0894439320907027) for
-the overview of semisupervised topic classification techniques and their
-advantages in social science research.
+Topic Classification of the UN
+Speeches*](https://journals.sagepub.com/doi/full/10.1177/0894439320907027)
+for the overview of semisupervised topic classification techniques and
+their advantages in social science research.
+
+[**keyATM**](https://github.com/keyATM/keyATM) is the latest addition to
+the semisupervised topic models. The users of seeded-LDA are also
+encouraged to use that package.
 
 ## Install
 
 ``` r
 install.packages("devtools")
-devtools::install_github("koheiw/seededlda")
+devtools::install_github("koheiw/seededlda") 
 ```
 
 ## Example
@@ -31,7 +39,7 @@ online?*](https://koheiw.net/wp-content/uploads/2019/06/Sputnik-05-ECPR.pdf).
 
 ``` r
 require(quanteda)
-require(seededlda)
+require(seededlda) # changed from quanteda.seededlda to seededlda
 ```
 
 ``` r
@@ -43,6 +51,9 @@ dfmt <- dfm(toks) %>%
     dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile", 
              max_docfreq = 0.1, docfreq_type = "prop")
 ```
+
+Users of seeded-LDA has to construct a small dictionary of keywords
+(seed words) to define the desired topics.
 
 ``` r
 dict <- dictionary(file = "tests/data/topics.yml")
@@ -109,6 +120,9 @@ print(terms(slda, 20))
 ## [19,] "seen"     
 ## [20,] "far"
 ```
+
+Many of the top terms of seeded-LDA models are seed words but other
+topic words are also identified.
 
 ``` r
 topic <- table(topics(slda))
