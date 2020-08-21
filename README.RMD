@@ -36,16 +36,6 @@ require(quanteda)
 require(seededlda) # changed from quanteda.seededlda to seededlda
 ```
 
-```{r}
-corp <- readRDS("tests/data/data_corpus_sputnik.RDS")
-toks <- tokens(corp, remove_punct = TRUE)
-dfmt <- dfm(toks) %>% 
-    dfm_select("^[A-Za-z]+$", valuetype = "regex") %>% 
-    dfm_remove(stopwords('en')) %>% 
-    dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile", 
-             max_docfreq = 0.1, docfreq_type = "prop")
-```
-
 Users of seeded-LDA has to construct a small dictionary of keywords (seed words) to define the desired topics.
 
 ```{r}
@@ -53,11 +43,22 @@ dict <- dictionary(file = "tests/data/topics.yml")
 print(dict)
 ```
 
+```{r}
+corp <- readRDS("tests/data/data_corpus_sputnik.RDS")
+toks <- tokens(corp, remove_punct = TRUE) %>% 
+    tokens_compound(dict) # for "air force"
+dfmt <- dfm(toks) %>% 
+    dfm_select("^[A-Za-z]+$", valuetype = "regex") %>% 
+    dfm_remove(stopwords('en')) %>% 
+    dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile", 
+             max_docfreq = 0.2, docfreq_type = "prop")
+```
+
 Many of the top terms of the seeded-LDA are seed words but other topic words are also identified.
 
 ```{r}
 set.seed(1234)
-slda <- textmodel_seededlda(dfmt, dict, residual = FALSE)
+slda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
 print(terms(slda, 20))
 ```
 

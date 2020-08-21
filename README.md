@@ -42,16 +42,6 @@ require(quanteda)
 require(seededlda) # changed from quanteda.seededlda to seededlda
 ```
 
-``` r
-corp <- readRDS("tests/data/data_corpus_sputnik.RDS")
-toks <- tokens(corp, remove_punct = TRUE)
-dfmt <- dfm(toks) %>% 
-    dfm_select("^[A-Za-z]+$", valuetype = "regex") %>% 
-    dfm_remove(stopwords('en')) %>% 
-    dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile", 
-             max_docfreq = 0.1, docfreq_type = "prop")
-```
-
 Users of seeded-LDA has to construct a small dictionary of keywords
 (seed words) to define the desired topics.
 
@@ -73,61 +63,72 @@ print(dict)
 ##   - water, wind, sand, forest, mountain, desert, animal, human
 ```
 
-Many of the top terms of seeded-LDA models are seed words but other
-topic words are also identified.
+``` r
+corp <- readRDS("tests/data/data_corpus_sputnik.RDS")
+toks <- tokens(corp, remove_punct = TRUE) %>% 
+    tokens_compound(dict) # for "air force"
+dfmt <- dfm(toks) %>% 
+    dfm_select("^[A-Za-z]+$", valuetype = "regex") %>% 
+    dfm_remove(stopwords('en')) %>% 
+    dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile", 
+             max_docfreq = 0.2, docfreq_type = "prop")
+```
+
+Many of the top terms of the seeded-LDA are seed words but other topic
+words are also identified.
 
 ``` r
 set.seed(1234)
-slda <- textmodel_seededlda(dfmt, dict, residual = FALSE)
+slda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
 print(terms(slda, 20))
-##       economy     politics        society         diplomacy    military  
-##  [1,] "company"   "parliament"    "police"        "diplomatic" "army"    
-##  [2,] "money"     "congress"      "school"        "embassy"    "navy"    
-##  [3,] "market"    "politicians"   "hospital"      "ambassador" "soldiers"
-##  [4,] "bank"      "parliamentary" "prison"        "treaty"     "marine"  
-##  [5,] "industry"  "lawmakers"     "court"         "diplomat"   "korea"   
-##  [6,] "banks"     "voters"        "women"         "diplomats"  "nuclear" 
-##  [7,] "markets"   "lawmaker"      "man"           "syria"      "korean"  
-##  [8,] "banking"   "politician"    "found"         "syrian"     "missile" 
-##  [9,] "china"     "eu"            "investigation" "iran"       "air"     
-## [10,] "chinese"   "uk"            "children"      "israel"     "nato"    
-## [11,] "economic"  "british"       "video"         "daesh"      "japan"   
-## [12,] "project"   "election"      "service"       "turkish"    "force"   
-## [13,] "trade"     "germany"       "department"    "terrorist"  "kim"     
-## [14,] "india"     "german"        "swedish"       "turkey"     "program" 
-## [15,] "billion"   "elections"     "newspaper"     "weapons"    "aircraft"
-## [16,] "oil"       "union"         "claimed"       "saudi"      "weapons" 
-## [17,] "global"    "french"        "letter"        "relations"  "ministry"
-## [18,] "indian"    "brexit"        "incident"      "conflict"   "missiles"
-## [19,] "financial" "presidential"  "sweden"        "deal"       "system"  
-## [20,] "business"  "leader"        "law"           "iraq"       "systems" 
-##       nature     
-##  [1,] "human"    
-##  [2,] "sand"     
-##  [3,] "water"    
-##  [4,] "going"    
-##  [5,] "really"   
-##  [6,] "see"      
-##  [7,] "much"     
-##  [8,] "know"     
-##  [9,] "come"     
-## [10,] "facebook" 
-## [11,] "something"
-## [12,] "good"     
-## [13,] "whether"  
-## [14,] "help"     
-## [15,] "change"   
-## [16,] "go"       
-## [17,] "right"    
-## [18,] "important"
-## [19,] "seen"     
-## [20,] "far"
+##       economy     politics        society    diplomacy       military  
+##  [1,] "company"   "parliament"    "police"   "diplomatic"    "army"    
+##  [2,] "money"     "congress"      "school"   "embassy"       "navy"    
+##  [3,] "market"    "politicians"   "hospital" "ambassador"    "soldiers"
+##  [4,] "bank"      "parliamentary" "prison"   "treaty"        "marine"  
+##  [5,] "industry"  "lawmakers"     "reported" "diplomat"      "north"   
+##  [6,] "banks"     "voters"        "local"    "diplomats"     "defense" 
+##  [7,] "markets"   "lawmaker"      "video"    "syria"         "korea"   
+##  [8,] "banking"   "politician"    "media"    "syrian"        "south"   
+##  [9,] "china"     "european"      "women"    "iran"          "nuclear" 
+## [10,] "chinese"   "minister"      "court"    "israel"        "korean"  
+## [11,] "percent"   "eu"            "found"    "security"      "missile" 
+## [12,] "economic"  "party"         "man"      "weapons"       "nato"    
+## [13,] "countries" "uk"            "service"  "daesh"         "air"     
+## [14,] "year"      "prime"         "several"  "terrorist"     "forces"  
+## [15,] "india"     "british"       "children" "turkish"       "japan"   
+## [16,] "project"   "german"        "another"  "turkey"        "security"
+## [17,] "oil"       "political"     "swedish"  "group"         "kim"     
+## [18,] "billion"   "union"         "public"   "forces"        "aircraft"
+## [19,] "trade"     "world"         "years"    "international" "missiles"
+## [20,] "million"   "germany"       "million"  "un"            "meeting" 
+##       nature         other   
+##  [1,] "human"        "now"   
+##  [2,] "sand"         "like"  
+##  [3,] "water"        "even"  
+##  [4,] "trump"        "think" 
+##  [5,] "donald"       "just"  
+##  [6,] "house"        "going" 
+##  [7,] "information"  "many"  
+##  [8,] "report"       "say"   
+##  [9,] "department"   "way"   
+## [10,] "program"      "want"  
+## [11,] "washington"   "world" 
+## [12,] "former"       "really"
+## [13,] "media"        "years" 
+## [14,] "white"        "see"   
+## [15,] "show"         "get"   
+## [16,] "intelligence" "know"  
+## [17,] "details"      "need"  
+## [18,] "news"         "come"  
+## [19,] "foreign"      "well"  
+## [20,] "campaign"     "back"
 ```
 
 ``` r
 topic <- table(topics(slda))
 print(topic)
 ## 
-## diplomacy   economy  military    nature  politics   society 
-##       163       127       140       174       169       227
+## diplomacy   economy  military    nature     other  politics   society 
+##       150       125       121       132       147       126       199
 ```
