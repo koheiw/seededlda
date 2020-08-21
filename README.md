@@ -48,27 +48,25 @@ Users of seeded-LDA has to construct a small dictionary of keywords
 ``` r
 dict <- dictionary(file = "tests/data/topics.yml")
 print(dict)
-## Dictionary object with 6 key entries.
+## Dictionary object with 5 key entries.
 ## - [economy]:
 ##   - market*, money, bank*, stock*, bond*, industry, company, shop*
 ## - [politics]:
-##   - parliament*, congress*, party leader*, party member*, voter*, lawmaker*, politician*
+##   - parliament*, congress*, white house, party leader*, party member*, voter*, lawmaker*, politician*
 ## - [society]:
 ##   - police, prison*, school*, hospital*
 ## - [diplomacy]:
 ##   - ambassador*, diplomat*, embassy, treaty
 ## - [military]:
-##   - military, soldier*, air force, marine, navy, army
-## - [nature]:
-##   - water, wind, sand, forest, mountain, desert, animal, human
+##   - military, soldier*, terrorist*, air force, marine, navy, army
 ```
 
 ``` r
 corp <- readRDS("tests/data/data_corpus_sputnik.RDS")
-toks <- tokens(corp, remove_punct = TRUE) %>% 
-    tokens_compound(dict) # for "air force"
+toks <- tokens(corp) %>%
+        tokens_select("^[A-Za-z]+$", valuetype = "regex", min_nchar = 2) %>% 
+        tokens_compound(dict) # multi-word expressions
 dfmt <- dfm(toks) %>% 
-    dfm_select("^[A-Za-z]+$", valuetype = "regex") %>% 
     dfm_remove(stopwords('en')) %>% 
     dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile", 
              max_docfreq = 0.2, docfreq_type = "prop")
@@ -81,54 +79,54 @@ words are also identified.
 set.seed(1234)
 slda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
 print(terms(slda, 20))
-##       economy     politics        society    diplomacy       military  
-##  [1,] "company"   "parliament"    "police"   "diplomatic"    "army"    
-##  [2,] "money"     "congress"      "school"   "embassy"       "navy"    
-##  [3,] "market"    "politicians"   "hospital" "ambassador"    "soldiers"
-##  [4,] "bank"      "parliamentary" "prison"   "treaty"        "marine"  
-##  [5,] "industry"  "lawmakers"     "reported" "diplomat"      "north"   
-##  [6,] "banks"     "voters"        "local"    "diplomats"     "defense" 
-##  [7,] "markets"   "lawmaker"      "video"    "syria"         "korea"   
-##  [8,] "banking"   "politician"    "media"    "syrian"        "south"   
-##  [9,] "china"     "european"      "women"    "iran"          "nuclear" 
-## [10,] "chinese"   "minister"      "court"    "israel"        "korean"  
-## [11,] "percent"   "eu"            "found"    "security"      "missile" 
-## [12,] "economic"  "party"         "man"      "weapons"       "nato"    
-## [13,] "countries" "uk"            "service"  "daesh"         "air"     
-## [14,] "year"      "prime"         "several"  "terrorist"     "forces"  
-## [15,] "india"     "british"       "children" "turkish"       "japan"   
-## [16,] "project"   "german"        "another"  "turkey"        "security"
-## [17,] "oil"       "political"     "swedish"  "group"         "kim"     
-## [18,] "billion"   "union"         "public"   "forces"        "aircraft"
-## [19,] "trade"     "world"         "years"    "international" "missiles"
-## [20,] "million"   "germany"       "million"  "un"            "meeting" 
-##       nature         other   
-##  [1,] "human"        "now"   
-##  [2,] "sand"         "like"  
-##  [3,] "water"        "even"  
-##  [4,] "trump"        "think" 
-##  [5,] "donald"       "just"  
-##  [6,] "house"        "going" 
-##  [7,] "information"  "many"  
-##  [8,] "report"       "say"   
-##  [9,] "department"   "way"   
-## [10,] "program"      "want"  
-## [11,] "washington"   "world" 
-## [12,] "former"       "really"
-## [13,] "media"        "years" 
-## [14,] "white"        "see"   
-## [15,] "show"         "get"   
-## [16,] "intelligence" "know"  
-## [17,] "details"      "need"  
-## [18,] "news"         "come"  
-## [19,] "foreign"      "well"  
-## [20,] "campaign"     "back"
+##       economy    politics        society         diplomacy    military    
+##  [1,] "company"  "parliament"    "police"        "embassy"    "army"      
+##  [2,] "money"    "congress"      "school"        "diplomatic" "terrorist" 
+##  [3,] "market"   "white_house"   "hospital"      "ambassador" "navy"      
+##  [4,] "bank"     "politicians"   "prison"        "treaty"     "terrorists"
+##  [5,] "industry" "parliamentary" "media"         "diplomat"   "air_force" 
+##  [6,] "banks"    "lawmakers"     "reported"      "diplomats"  "soldiers"  
+##  [7,] "markets"  "voters"        "information"   "north"      "marine"    
+##  [8,] "banking"  "lawmaker"      "local"         "trump"      "syria"     
+##  [9,] "china"    "politician"    "video"         "nuclear"    "defense"   
+## [10,] "chinese"  "uk"            "women"         "korea"      "syrian"    
+## [11,] "percent"  "european"      "found"         "south"      "forces"    
+## [12,] "year"     "minister"      "public"        "sanctions"  "weapons"   
+## [13,] "economic" "eu"            "investigation" "iran"       "nato"      
+## [14,] "trade"    "party"         "news"          "korean"     "israel"    
+## [15,] "oil"      "political"     "court"         "foreign"    "daesh"     
+## [16,] "project"  "prime"         "report"        "security"   "turkish"   
+## [17,] "billion"  "german"        "group"         "meeting"    "turkey"    
+## [18,] "india"    "germany"       "department"    "relations"  "air"       
+## [19,] "million"  "british"       "children"      "donald"     "iraq"      
+## [20,] "system"   "world"         "man"           "moscow"     "saudi"     
+##       other   
+##  [1,] "like"  
+##  [2,] "now"   
+##  [3,] "just"  
+##  [4,] "even"  
+##  [5,] "think" 
+##  [6,] "trump" 
+##  [7,] "way"   
+##  [8,] "going" 
+##  [9,] "many"  
+## [10,] "years" 
+## [11,] "say"   
+## [12,] "want"  
+## [13,] "really"
+## [14,] "back"  
+## [15,] "made"  
+## [16,] "get"   
+## [17,] "world" 
+## [18,] "come"  
+## [19,] "need"  
+## [20,] "much"
 ```
 
 ``` r
 topic <- table(topics(slda))
 print(topic)
 ## 
-## diplomacy   economy  military    nature     other  politics   society 
-##       150       125       121       132       147       126       199
+## diplomacy   economy  military     other  politics   society 
+##       140       137       145       164       166       248
 ```

@@ -1,6 +1,5 @@
 economy: [market*, money, bank*, stock*, bond*, industry, company, shop*]
-politics: [parliament*, congress*, party leader*, party member*, voter*, lawmaker*, politician*]
+politics: [parliament*, congress*, white house, party leader*, party member*, voter*, lawmaker*, politician*]
 society: [police, prison*, school*, hospital*]
 diplomacy: [ambassador*, diplomat*, embassy, treaty]
-military: [military, soldier*, air force, marine, navy, army]
-nature: [water, wind, sand, forest, mountain, desert, animal, human]
+military: [military, soldier*, terrorist*, air force, marine, navy, army]

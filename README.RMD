@@ -45,10 +45,10 @@ print(dict)
 
 ```{r}
 corp <- readRDS("tests/data/data_corpus_sputnik.RDS")
-toks <- tokens(corp, remove_punct = TRUE) %>% 
-    tokens_compound(dict) # for "air force"
+toks <- tokens(corp) %>%
+        tokens_select("^[A-Za-z]+$", valuetype = "regex", min_nchar = 2) %>% 
+        tokens_compound(dict) # multi-word expressions
 dfmt <- dfm(toks) %>% 
-    dfm_select("^[A-Za-z]+$", valuetype = "regex") %>% 
     dfm_remove(stopwords('en')) %>% 
     dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile", 
              max_docfreq = 0.2, docfreq_type = "prop")
