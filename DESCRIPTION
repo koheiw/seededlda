@@ -2,12 +2,12 @@ Package: seededlda
 Type: Package
 Title: Seeded-LDA for Topic Modeling
 Version: 0.5
-Authors@R: c(person("Kohei", "Watanabe", email = "watanabe.kohei@gmail.com", role = c("aut", "cre")),
-             person("Phan", "Xuan-Hieu", email = "pxhieu@gmail.com", role = c("aut")))
+Authors@R: c(person("Kohei", "Watanabe", email = "watanabe.kohei@gmail.com", role = c("aut", "cre", "cph")),
+             person("Phan", "Xuan-Hieu", email = "pxhieu@gmail.com", role = c("aut", "cph")))
 Description: This package implements the seeded-LDA model (Lu, Ott, Cardie & Tsou 2010) 
-    <https://dl.acm.org/citation.cfm?id=2119585> using the quanteda package and the GibbsLDA++ library. 
+    <doi:10.5555/2117693.2119585> using the quanteda package and the GibbsLDA++ library. 
     Semisupervised LDA model allows users to pre-define topics with keywords to perform theory-driven analysis of textual data
-    (Watanabe & Zhou 2020)<https://journals.sagepub.com/doi/full/10.1177/0894439320907027>.
+    (Watanabe & Zhou 2020)<doi:10.1177/0894439320907027>.
 License: GPL-3
 URL: https://github.com/koheiw/seededlda
 BugReports: https://github.com/koheiw/seededlda/issues
@@ -24,3 +24,4 @@ Suggests:
     testthat,
     quanteda.textmodels
 RoxygenNote: 7.1.1
+Roxygen: list(markdown = TRUE)
