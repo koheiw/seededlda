@@ -4,14 +4,14 @@
 #' The estimator's code adopted from the GibbsLDA++ library (Xuan-Hieu Phan,
 #' 2007). `textmodel_seededlda()` allows identification of pre-defined topics by
 #' semisupervised learning with a seed word dictionary.
-#' @param dictionary a [dictionary][quanteda::dictionary] with seed words as
+#' @param dictionary a [quanteda::dictionary()] with seed words as
 #'  examples of topics.
 #' @param residual if \code{TRUE} a residual topic (or "garbage topic") will be
 #'   added to user-defined topics.
 #' @param weight pseudo count given to seed words as a proportion of total
 #'   number of words in `x`.
-#' @param valuetype see [valuetype][quanteda::valuetype]
-#' @param case_insensitive see [valuetype][quanteda::valuetype]
+#' @param valuetype see [quanteda::valuetype]
+#' @param case_insensitive see [quanteda::valuetype]
 #' @references
 #'   Lu, Bin et al. (2011).
 #'   [Multi-aspect Sentiment Analysis with Topic Models](https://dl.acm.org/doi/10.5555/2117693.2119585).
@@ -20,6 +20,30 @@
 #'   Watanabe, Kohei & Zhou, Yuan (2020).
 #'   [Theory-Driven Analysis of Large Corpora: Semisupervised Topic Classification of the UN Speeches](https://doi.org/10.1177/0894439320907027).
 #'   *Social Science Computer Review*.
+#'
+#' @examples
+#' require(quanteda)
+#'
+#' data("data_corpus_moviereviews", package = "quanteda.textmodels")
+#' corp <- head(data_corpus_moviereviews, 500)
+#' dfmt <- dfm(corp, remove_number = TRUE) %>%
+#'     dfm_remove(stopwords('en'), min_nchar = 2) %>%
+#'     dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile",
+#'              max_docfreq = 0.1, docfreq_type = "prop")
+#'
+#' # unsupervised LDA
+#' lda <- textmodel_lda(dfmt, 6)
+#' terms(lda)
+#'
+#' # semisupervised LDA
+#' dict <- dictionary(list(people = c("family", "couple", "kids"),
+#'                         space = c("areans", "planet", "space"),
+#'                         moster = c("monster*", "ghost*", "zombie*"),
+#'                         war = c("war", "soldier*", "tanks"),
+#'                         crime = c("crime*", "murder", "killer")))
+#' slda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
+#' terms(slda)
+#'
 #' @export
 textmodel_seededlda <- function(
     x, dictionary,
