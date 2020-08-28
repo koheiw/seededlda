@@ -22,6 +22,7 @@
 #'   *Social Science Computer Review*.
 #'
 #' @examples
+#' \dontrun{
 #' require(quanteda)
 #'
 #' data("data_corpus_moviereviews", package = "quanteda.textmodels")
@@ -43,7 +44,7 @@
 #'                         crime = c("crime*", "murder", "killer")))
 #' slda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
 #' terms(slda)
-#'
+#' }
 #' @export
 textmodel_seededlda <- function(
     x, dictionary,
