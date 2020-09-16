@@ -11,7 +11,7 @@ al. (2010)](https://dl.acm.org/citation.cfm?id=2119585). Until version
 0.3, that packages has been a simple wrapper around the **topicmodels**
 package, but the LDA estimator is newly implemented in C++ using the
 [GibbsLDA++](http://gibbslda.sourceforge.net/) library to be submitted
-to CRAN in August 202. The author believes this package implements the
+to CRAN in August 2020. The author believes this package implements the
 seeded-LDA model more closely to the original proposal.
 
 Please see [*Theory-Driven Analysis of Large Corpora: Semisupervised
