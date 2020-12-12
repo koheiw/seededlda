@@ -61,6 +61,7 @@ The estimator's code adopted from the GibbsLDA++ library (Xuan-Hieu Phan,
 semisupervised learning with a seed word dictionary.
 }
 \examples{
+\dontrun{
 require(quanteda)
 
 data("data_corpus_moviereviews", package = "quanteda.textmodels")
@@ -82,7 +83,7 @@ dict <- dictionary(list(people = c("family", "couple", "kids"),
                         crime = c("crime*", "murder", "killer")))
 slda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
 terms(slda)
-
+}
 }
 \references{
 Lu, Bin et al. (2011).
@@ -94,7 +95,7 @@ Watanabe, Kohei & Zhou, Yuan (2020).
 \emph{Social Science Computer Review}.
 }
 \seealso{
-\link[topicmodels:lda]{topicmodels}
+\link[topicmodels:LDA]{topicmodels}
 }
 \keyword{experimental}
 \keyword{textmodel}
