@@ -26,7 +26,7 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
             // set pseudo count as weak supervision
             arma::umat s = arma::conv_to<arma::umat>::from(arma::mat(seeds));
             lda.nw = lda.nw + s;
-            //lda.nwsum = lda.nwsum + arma::sum(s, 0);
+            lda.nwsum = lda.nwsum + arma::sum(s, 0);
         }
         lda.estimate();
     }

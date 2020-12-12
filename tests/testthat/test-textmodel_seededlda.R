@@ -82,11 +82,10 @@ test_that("seeded LDA is working", {
         topics(lda),
         c("romance", "sifi", "other")
     )
-    # fails because of pseudo count
-    # expect_equal(
-    #     rowSums(lda$phi),
-    #     c("romance" = 1, "sifi" = 1, "other" = 1)
-    # )
+    expect_equal(
+        rowSums(lda$phi),
+        c("romance" = 1, "sifi" = 1, "other" = 1)
+    )
     expect_equal(
         rowSums(lda$theta),
         structure(rep(1, ndoc(dfmt)), names = docnames(dfmt))
