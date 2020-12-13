@@ -49,7 +49,7 @@ lda <- function(x, k, label, max_iter, alpha, beta, seeds, verbose) {
         stop("k must be larger than zero")
 
     if (is.null(seeds))
-        seeds <- as(Matrix::sparseMatrix(nfeat(x), k), "dgCMatrix") # empty seed word matrix
+        seeds <- as(Matrix::Matrix(0, nrow = nfeat(x), ncol = k), "dgCMatrix") # empty seed word matrix
 
     seed <- sample.int(.Machine$integer.max, 1) # seed for random number generation
     result <- cpp_lda(x, k, max_iter, alpha, beta, seeds, seed, verbose)

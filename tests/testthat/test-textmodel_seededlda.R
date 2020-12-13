@@ -31,6 +31,14 @@ test_that("LDA is working", {
        c("topic1", "topic2", "topic3", "topic4", "topic5")
     )
     expect_equal(
+        rowSums(lda$phi),
+        c("topic1" = 1, "topic2" = 1, "topic3" = 1, "topic4" = 1, "topic5" = 1)
+    )
+    expect_equal(
+        rowSums(lda$theta),
+        structure(rep(1, ndoc(dfmt)), names = docnames(dfmt))
+    )
+    expect_equal(
         ncol(terms(textmodel_lda(dfmt, k = 1))), 1
     )
     expect_equal(
@@ -44,6 +52,7 @@ test_that("LDA is working", {
         print(lda),
         "Topics: 5; 500 documents; 22605 features."
     )
+
 })
 
 test_that("seeded LDA is working", {
@@ -72,6 +81,15 @@ test_that("seeded LDA is working", {
     expect_setequal(
         topics(lda),
         c("romance", "sifi", "other")
+    )
+    # fails because of pseudo count
+    # expect_equal(
+    #     rowSums(lda$phi),
+    #     c("romance" = 1, "sifi" = 1, "other" = 1)
+    # )
+    expect_equal(
+        rowSums(lda$theta),
+        structure(rep(1, ndoc(dfmt)), names = docnames(dfmt))
     )
     expect_equal(
         ncol(terms(textmodel_seededlda(dfmt, dict, residual = FALSE))), 2
