@@ -196,8 +196,8 @@ void LDA::estimate() {
 
     if (verbose)
         Rprintf("   ...computing theta and phi\n");
-    compute_theta();
-    compute_phi();
+    //compute_theta();
+    //compute_phi();
     liter--;
     if (verbose)
         Rprintf("   ...complete\n");
