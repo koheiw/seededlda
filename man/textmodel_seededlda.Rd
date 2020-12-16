@@ -95,7 +95,7 @@ Watanabe, Kohei & Zhou, Yuan (2020).
 \emph{Social Science Computer Review}.
 }
 \seealso{
-\link[topicmodels:LDA]{topicmodels}
+\link[topicmodels:lda]{topicmodels}
 }
 \keyword{experimental}
 \keyword{textmodel}
