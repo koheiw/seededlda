@@ -1,4 +1,4 @@
-context("test textmodel_seededlda")
+context("textmodel_seededlda")
 
 require(quanteda)
 data(data_corpus_moviereviews, package = "quanteda.textmodels")
@@ -31,6 +31,10 @@ test_that("LDA is working", {
        c("topic1", "topic2", "topic3", "topic4", "topic5")
     )
     expect_equal(
+        levels(topics(lda)),
+        c("topic1", "topic2", "topic3", "topic4", "topic5")
+    )
+    expect_equal(
         rowSums(lda$phi),
         c("topic1" = 1, "topic2" = 1, "topic3" = 1, "topic4" = 1, "topic5" = 1)
     )
@@ -54,6 +58,22 @@ test_that("LDA is working", {
     )
 
 })
+
+
+test_that("LDA works with empty documents", {
+
+    dfmt_empty <- dfmt
+    dfmt_empty[c(100, 200, 300),] <- 0
+    dfmt_empty <- as.dfm(dfmt_empty)
+
+    set.seed(1234)
+    lda_empty <- textmodel_lda(dfmt_empty, k = 5)
+    expect_true(
+        all(is.na(topics(lda_empty)[c(100, 200, 300)]))
+    )
+
+})
+
 
 test_that("seeded LDA is working", {
 
@@ -80,6 +100,10 @@ test_that("seeded LDA is working", {
     )
     expect_setequal(
         topics(lda),
+        c("romance", "sifi", "other")
+    )
+    expect_equal(
+        levels(topics(lda)),
         c("romance", "sifi", "other")
     )
     expect_equal(

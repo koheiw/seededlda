@@ -86,8 +86,8 @@ print.textmodel_lda <- function(x, ...) {
     print(x$call)
     cat("\n",
         "Topics: ", x$k, "; ",
-        ndoc(x$x), " documents; ",
-        nfeat(x$x), " features.",
+        ndoc(x$data), " documents; ",
+        nfeat(x$data), " features.",
         "\n",
         sep = "")
 }
@@ -116,7 +116,10 @@ topics <- function(x) {
 #' @export
 #' @method topics textmodel_lda
 topics.textmodel_lda <- function(x) {
-    colnames(x$theta)[max.col(x$theta)]
+    result <- colnames(x$theta)[max.col(x$theta)]
+    result <- factor(result, levels = colnames(x$theta))
+    result[rowSums(x$data) == 0] <- NA
+    return(result)
 }
 
 #' Internal function to construct topic-feature matrix

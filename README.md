@@ -72,8 +72,9 @@ dfmt <- dfm(toks) %>%
              max_docfreq = 0.2, docfreq_type = "prop")
 ```
 
-Many of the top terms of the seeded-LDA are seed words but other topic
-words are also identified.
+Many of the top terms of the seeded-LDA are seed words but related topic
+words are also identified. The result included “other” as a junk topic
+because of `residual = TRUE` .
 
 ``` r
 set.seed(1234)
@@ -127,6 +128,6 @@ print(terms(slda, 20))
 topic <- table(topics(slda))
 print(topic)
 ## 
-## diplomacy   economy  military     other  politics   society 
-##       140       137       145       164       166       248
+##   economy  politics   society diplomacy  military     other 
+##       137       166       248       140       145       164
 ```

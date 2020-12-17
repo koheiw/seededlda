@@ -138,6 +138,7 @@ int LDA::init_est() {
     for (int m = 0; m < M; m++) {
 
         z[m] = Text(ndsum[m]);
+        if (z[m].size() == 0) continue;
         int n = 0;
 
         arma::sp_mat::const_col_iterator it = data.begin_col(m);
@@ -179,7 +180,9 @@ void LDA::estimate() {
 
         // for all z_i
         for (int m = 0; m < M; m++) {
+            if (z[m].size() == 0) continue;
             int n = 0;
+
             arma::sp_mat::const_col_iterator it = data.begin_col(m);
             arma::sp_mat::const_col_iterator it_end = data.end_col(m);
             for(; it != it_end; ++it) {

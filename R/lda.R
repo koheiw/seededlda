@@ -56,7 +56,7 @@ lda <- function(x, k, label, max_iter, alpha, beta, seeds, verbose) {
 
     dimnames(result$phi) <- list(label, colnames(x))
     dimnames(result$theta) <- list(rownames(x), label)
-    result$x <- x
+    result$data <- x
     result$max_iter <- max_iter
     result$call <- match.call()
     class(result) <- c("textmodel_lda", "textmodel", "list")

@@ -2,12 +2,12 @@
 
 ## Purpose
 
-* The first submission of the package
+* Fix several bugs
 
 ## Test environments
 
-* local KDE neon User Edition 5.13, R 4.0.2
-* local Windows 10, R 4.0.2
+* local KDE neon User Edition 5.20, R 4.0.3
+* local Windows 10, R 4.0.3
 * Github Actions Windows latest (release)
 * Github Actions MacOS latest (release)
 * Github Actions Linux 18.04 (release)
