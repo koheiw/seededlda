@@ -73,8 +73,8 @@ dfmt <- dfm(toks) %>%
 ```
 
 Many of the top terms of the seeded-LDA are seed words but related topic
-words are also identified. The result included “other” as a junk topic
-because of `residual = TRUE` .
+words are also identified. The result includes “other” as a junk topic
+because `residual = TRUE` .
 
 ``` r
 set.seed(1234)
