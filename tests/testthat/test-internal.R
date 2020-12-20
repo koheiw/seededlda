@@ -1,4 +1,4 @@
-context("tfm")
+context("internal functions")
 
 require(quanteda)
 dict <- dictionary(list(A = c("a", "aa*", "abc"),
