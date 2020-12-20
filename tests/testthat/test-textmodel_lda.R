@@ -10,6 +10,7 @@ toks <- tokens(data_corpus_moviereviews[1:500],
 dfmt <- dfm(toks) %>%
     dfm_remove(stopwords(), min_nchar = 2) %>%
     dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
+sifi <- c("space", "mars", "alien", "earth")
 
 test_that("LDA is working", {
 
