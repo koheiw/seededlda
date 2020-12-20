@@ -1,3 +1,7 @@
+# Changes in v0.5.2
+
+* Allow selecting seed words based on their frequencies using dfm_trim() in textmodel_seededlda() via ... (#8)
+
 # Changes in v0.5.1
 
 * topics() now returns factor with NA for empty documents
