@@ -130,3 +130,18 @@ test_that("seeded LDA is working", {
         "Topics: 3; 500 documents; 22605 features."
     )
 })
+
+test_that("seeded LDA is working", {
+
+    dict <- dictionary(list(romance = c("love*", "couple*", "couples"),
+                            sifi = c("arean*", "star", "space", "dragon")))
+
+    set.seed(1234)
+    lda1 <- textmodel_seededlda(dfmt, dict, residual = TRUE)
+    expect_true("couples" %in% terms(lda1)[,1])
+    expect_true("dragon" %in% terms(lda1)[,2])
+
+    lda2 <- textmodel_seededlda(dfmt, dict, residual = TRUE, min_termfreq = 10)
+    expect_false("couples" %in% terms(lda2)[,1])
+    expect_false("dragon" %in% terms(lda2)[,2])
+})

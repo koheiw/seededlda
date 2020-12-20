@@ -12,6 +12,7 @@
 #'   number of words in `x`.
 #' @param valuetype see [quanteda::valuetype]
 #' @param case_insensitive see [quanteda::valuetype]
+#' @param ... passed to [quanteda::dfm_trim] to select seed words based on their term or document frequency.
 #' @references
 #'   Lu, Bin et al. (2011).
 #'   [Multi-aspect Sentiment Analysis with Topic Models](https://dl.acm.org/doi/10.5555/2117693.2119585).
@@ -35,6 +36,7 @@
 #' # unsupervised LDA
 #' lda <- textmodel_lda(dfmt, 6)
 #' terms(lda)
+#' topics(lda)
 #'
 #' # semisupervised LDA
 #' dict <- dictionary(list(people = c("family", "couple", "kids"),
@@ -44,6 +46,7 @@
 #'                         crime = c("crime*", "murder", "killer")))
 #' slda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
 #' terms(slda)
+#' topics(slda)
 #' }
 #' @export
 textmodel_seededlda <- function(
@@ -52,7 +55,7 @@ textmodel_seededlda <- function(
     case_insensitive = TRUE,
     residual = FALSE, weight = 0.01,
     max_iter = 2000, alpha = NULL, beta = NULL,
-    verbose = quanteda_options("verbose")
+    ..., verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_seededlda")
 }
@@ -64,10 +67,10 @@ textmodel_seededlda.dfm <- function(
     case_insensitive = TRUE,
     residual = FALSE, weight = 0.01,
     max_iter = 2000, alpha = NULL, beta = NULL,
-    verbose = quanteda_options("verbose")
+    ..., verbose = quanteda_options("verbose")
 ) {
 
-    seeds <- tfm(x, dictionary, weight = weight, residual = residual)
+    seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, ..., verbose = verbose))
     if (!identical(colnames(x), rownames(seeds)))
         stop("seeds must have the same features")
     k <- ncol(seeds)
@@ -116,8 +119,8 @@ topics <- function(x) {
 #' @export
 #' @method topics textmodel_lda
 topics.textmodel_lda <- function(x) {
-    result <- colnames(x$theta)[max.col(x$theta)]
-    result <- factor(result, levels = colnames(x$theta))
+    result <- factor(max.col(x$theta), labels = colnames(x$theta),
+                     levels = seq_len(ncol(x$theta)))
     result[rowSums(x$data) == 0] <- NA
     return(result)
 }
@@ -127,7 +130,9 @@ topics.textmodel_lda <- function(x) {
 tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
-                weight = 0.01, residual = TRUE) {
+                weight = 0.01, residual = TRUE,
+                ...,
+                verbose = quanteda_options("verbose")) {
 
     valuetype <- match.arg(valuetype)
 
@@ -136,22 +141,22 @@ tfm <- function(x, dictionary,
     if (weight < 0)
         stop("weight must be pisitive a value")
 
-    id_key <- id_feat <- integer()
-    for (i in seq_along(dictionary)) {
-        f <- colnames(quanteda::dfm_select(x, dictionary[i]))
-        id_key <- c(id_key, rep(i, length(f)))
-        id_feat <- c(id_feat, match(f, colnames(x)))
-    }
-    count <- rep(floor(sum(x) * weight), length(id_feat))
     key <- names(dictionary)
-    if (residual)
+    feat <- featnames(x)
+    count <- floor(sum(x)) * weight
+    x <- dfm_trim(x, ..., verbose = verbose)
+    x <- as.dfm(rbind(colSums(x)))
+    result <- Matrix::Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
+    for (i in seq_along(dictionary)) {
+        temp <- dfm_select(x, pattern = dictionary[i])
+        temp <- dfm_match(temp, features = feat) > 0
+        result <- rbind(result, temp)
+    }
+    if (residual) {
         key <- c(key, "other")
-    result <- Matrix::sparseMatrix(
-        i = id_feat,
-        j = id_key,
-        x = count,
-        dims = c(nfeat(x), length(key)),
-        dimnames = list(colnames(x), key)
-    )
+        result <- rbind(result, Matrix::Matrix(0, nrow = 1, ncol = length(feat), sparse = TRUE))
+    }
+    result <- result * count
+    dimnames(result) <- list(key, feat)
     return(result)
 }
