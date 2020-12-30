@@ -92,11 +92,19 @@ test_that("predict works with seeded LDA", {
     dfmt_test <- tail(dfmt, 50)
 
     lda <- textmodel_seededlda(dfmt_train, dict, residual = TRUE)
-    pred <- predict(lda, dfmt_test)
 
-    expect_equal(names(pred), docnames(dfmt_test))
+    pred_train <- predict(lda)
+    expect_equal(names(pred_train), docnames(dfmt_train))
     expect_equal(
-        levels(pred),
+        levels(pred_train),
+        c("romance", "sifi", "other")
+    )
+    expect_true(sum(topics(lda) == pred_train) / length(pred_train) > 0.9)
+
+    pred_test <- predict(lda, mewdata = dfmt_test)
+    expect_equal(names(pred_test), docnames(dfmt_test))
+    expect_equal(
+        levels(pred_test),
         c("romance", "sifi", "other")
     )
 })
