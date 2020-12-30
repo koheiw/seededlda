@@ -51,7 +51,7 @@ class LDA {
         double alpha, beta; // LDA hyperparameters
         int niters; // number of Gibbs sampling iterations
         int liter; // the iteration at which the model was saved
-        int seed; // seed for random number generation
+        int random; // seed for random number generation
         bool verbose; // print progress messages
 
         arma::sp_mat data; // transposed document-feature matrix
@@ -63,6 +63,10 @@ class LDA {
         arma::ucolvec ndsum; // nasum[i]: total number of words in document i, size M
         arma::mat theta; // theta: document-topic distributions, size M x K
         arma::mat phi; // phi: topic-word distributions, size K x V
+
+        // prediction with fitted model
+        arma::umat nw_ft;
+        arma::urowvec nwsum_ft;
 
         // random number generators
         std::default_random_engine generator;
@@ -77,8 +81,8 @@ class LDA {
 
         // set default values for variables
         void set_default_values();
-        void set_random_seed(int seed);
         void set_data(arma::sp_mat mt);
+        void set_fitted(arma::umat mt);
 
         // init for estimation
         int init_est();
@@ -101,14 +105,24 @@ void LDA::set_default_values() {
     niters = 2000;
     liter = 0;
     verbose = false;
-    seed = 1234;
+    random = 1234;
 }
 
 void LDA::set_data(arma::sp_mat mt) {
+
     data = mt.t();
     M = data.n_cols;
     V = data.n_rows;
     //printf("M = %d, V = %d\n", M, V);
+}
+
+void LDA::set_fitted(arma::umat words) {
+
+    if ((int)words.n_rows != V || (int)words.n_cols != K)
+        throw std::invalid_argument("Invalid word matrix");
+    nw_ft = words;
+    nwsum_ft = arma::sum(words, 0);
+
 }
 
 int LDA::init_est() {
@@ -118,7 +132,7 @@ int LDA::init_est() {
         Rprintf("   ...initializing\n");
     }
 
-    std::default_random_engine generator(seed);
+    std::default_random_engine generator(random);
     std::uniform_real_distribution< double > random_prob(0, 1);
     std::uniform_int_distribution< int > random_topic(0, K - 1);
 
@@ -219,7 +233,7 @@ int LDA::sampling(int m, int n, int w) {
     double Kalpha = K * alpha;
     // do multinomial sampling via cumulative method
     for (int k = 0; k < K; k++) {
-        p[k] = (nw.at(w, k) + beta) / (nwsum[k] + Vbeta) *
+        p[k] = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + Vbeta) *
                (nd.at(m, k) + alpha) / (ndsum[m] + Kalpha);
     }
     // cumulate multinomial parameters
@@ -257,7 +271,7 @@ void LDA::compute_theta() {
 void LDA::compute_phi() {
     for (int k = 0; k < K; k++) {
         for (int w = 0; w < V; w++) {
-            phi.at(k, w) = (nw.at(w, k) + beta) / (nwsum[k] + V * beta);
+            phi.at(k, w) = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + V * beta);
         }
     }
 }

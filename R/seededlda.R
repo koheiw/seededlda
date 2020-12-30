@@ -34,9 +34,10 @@
 #'              max_docfreq = 0.1, docfreq_type = "prop")
 #'
 #' # unsupervised LDA
-#' lda <- textmodel_lda(dfmt, 6)
+#' lda <- textmodel_lda(head(dfmt, 450), 6)
 #' terms(lda)
 #' topics(lda)
+#' predict(lda, newdata = tail(dfmt, 50))
 #'
 #' # semisupervised LDA
 #' dict <- dictionary(list(people = c("family", "couple", "kids"),
@@ -75,7 +76,7 @@ textmodel_seededlda.dfm <- function(
         stop("seeds must have the same features")
     k <- ncol(seeds)
     label <- colnames(seeds)
-    lda(x, k, label, max_iter, alpha, beta, seeds, verbose)
+    lda(x, k, label, max_iter, alpha, beta, seeds, NULL, verbose)
 }
 
 #' Print method for a LDA model

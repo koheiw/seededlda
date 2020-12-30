@@ -23,13 +23,13 @@ textmodel_lda.dfm <- function(
 ) {
 
     label <- paste0("topic", seq_len(k))
-    lda(x, k, label, max_iter, alpha, beta, NULL, verbose)
+    lda(x, k, label, max_iter, alpha, beta, NULL, NULL, verbose)
 }
 
 #' @importFrom methods as
 #' @import quanteda
 #' @useDynLib seededlda, .registration = TRUE
-lda <- function(x, k, label, max_iter, alpha, beta, seeds, verbose) {
+lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose) {
 
     k <- as.integer(k)
     max_iter <- as.integer(max_iter)
@@ -49,10 +49,12 @@ lda <- function(x, k, label, max_iter, alpha, beta, seeds, verbose) {
         stop("k must be larger than zero")
 
     if (is.null(seeds))
-        seeds <- as(Matrix::Matrix(0, nrow = nfeat(x), ncol = k), "dgCMatrix") # empty seed word matrix
+        seeds <- as(Matrix::Matrix(0, nrow = nfeat(x), ncol = k), "dgCMatrix")
+    if (is.null(words))
+        words <- matrix(0, nrow = nfeat(x), ncol = k)
 
-    seed <- sample.int(.Machine$integer.max, 1) # seed for random number generation
-    result <- cpp_lda(x, k, max_iter, alpha, beta, seeds, seed, verbose)
+    random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
+    result <- cpp_lda(x, k, max_iter, alpha, beta, seeds, words, random, verbose)
 
     dimnames(result$phi) <- list(label, colnames(x))
     dimnames(result$theta) <- list(rownames(x), label)

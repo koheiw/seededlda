@@ -7,8 +7,8 @@
 using namespace Rcpp;
 
 // cpp_lda
-List cpp_lda(arma::sp_mat& mt, int k, int max_iter, double alpha, double beta, arma::sp_mat& seeds, int seed, bool verbose);
-RcppExport SEXP _seededlda_cpp_lda(SEXP mtSEXP, SEXP kSEXP, SEXP max_iterSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP seedsSEXP, SEXP seedSEXP, SEXP verboseSEXP) {
+List cpp_lda(arma::sp_mat& mt, int k, int max_iter, double alpha, double beta, arma::sp_mat& seeds, arma::umat& words, int random, bool verbose);
+RcppExport SEXP _seededlda_cpp_lda(SEXP mtSEXP, SEXP kSEXP, SEXP max_iterSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP seedsSEXP, SEXP wordsSEXP, SEXP randomSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -18,15 +18,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< arma::sp_mat& >::type seeds(seedsSEXP);
-    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< arma::umat& >::type words(wordsSEXP);
+    Rcpp::traits::input_parameter< int >::type random(randomSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_lda(mt, k, max_iter, alpha, beta, seeds, seed, verbose));
+    rcpp_result_gen = Rcpp::wrap(cpp_lda(mt, k, max_iter, alpha, beta, seeds, words, random, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_seededlda_cpp_lda", (DL_FUNC) &_seededlda_cpp_lda, 8},
+    {"_seededlda_cpp_lda", (DL_FUNC) &_seededlda_cpp_lda, 9},
     {NULL, NULL, 0}
 };
 
