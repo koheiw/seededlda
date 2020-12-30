@@ -8,11 +8,12 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
-                  arma::sp_mat &seeds, int seed, bool verbose) {
+                  arma::sp_mat &seeds, arma::umat &words, int random, bool verbose) {
     LDA lda;
-    lda.set_data(mt);
-    lda.seed = seed;
     lda.K = k;
+    lda.set_data(mt);
+    lda.set_fitted(words);
+    lda.random = random;
     if (max_iter > 0)
         lda.niters = max_iter;
     if (alpha > 0)
@@ -26,7 +27,7 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
         arma::umat s;
         if (seeded) {
             if (arma::size(seeds) != arma::size(lda.nw))
-                std::invalid_argument("Invalid seed matrix");
+                throw std::invalid_argument("Invalid seed matrix");
             s = arma::conv_to<arma::umat>::from(arma::mat(seeds));
             lda.nw = lda.nw + s; // set pseudo count
             //lda.nwsum = lda.nwsum + arma::sum(s, 0);
@@ -43,5 +44,6 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
                         Rcpp::Named("alpha") = lda.alpha,
                         Rcpp::Named("beta") = lda.beta,
                         Rcpp::Named("phi") = wrap(lda.phi),
-                        Rcpp::Named("theta") = wrap(lda.theta));
+                        Rcpp::Named("theta") = wrap(lda.theta),
+                        Rcpp::Named("words") = wrap(lda.nw));
 }
