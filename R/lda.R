@@ -51,7 +51,7 @@ lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose) {
     if (is.null(seeds))
         seeds <- as(Matrix::Matrix(0, nrow = nfeat(x), ncol = k), "dgCMatrix")
     if (is.null(words))
-        words <- matrix(0, nrow = nfeat(x), ncol = k)
+        words <- as(Matrix::Matrix(0, nrow = nfeat(x), ncol = k), "dgCMatrix")
 
     random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
     result <- cpp_lda(x, k, max_iter, alpha, beta, seeds, words, random, verbose)
@@ -59,7 +59,7 @@ lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose) {
     dimnames(result$phi) <- list(label, colnames(x))
     dimnames(result$theta) <- list(rownames(x), label)
     result$data <- x
-    result$max_iter <- max_iter
+    result$words <- as(result$words, "dgCMatrix")
     result$call <- match.call()
     class(result) <- c("textmodel_lda", "textmodel", "list")
     return(result)
