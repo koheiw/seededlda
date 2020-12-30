@@ -66,6 +66,12 @@ test_that("seeded LDA is working", {
         print(lda),
         "Topics: 3; 500 documents; 22605 features."
     )
+    expect_equal(
+        names(lda),
+        c("k", "max_iter", "alpha", "beta", "phi", "theta",
+          "words", "data", "call")
+    )
+    expect_equivalent(class(lda$words), "dgCMatrix")
 })
 
 test_that("seeded LDA is working", {
