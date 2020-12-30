@@ -109,6 +109,7 @@ void LDA::set_default_values() {
 }
 
 void LDA::set_data(arma::sp_mat mt) {
+
     data = mt.t();
     M = data.n_cols;
     V = data.n_rows;
@@ -116,10 +117,12 @@ void LDA::set_data(arma::sp_mat mt) {
 }
 
 void LDA::set_fitted(arma::umat words) {
-    if (words.n_rows != V || words.n_cols != K)
+
+    if ((int)words.n_rows != V || (int)words.n_cols != K)
         throw std::invalid_argument("Invalid word matrix");
     nw_ft = words;
     nwsum_ft = arma::sum(words, 0);
+
 }
 
 int LDA::init_est() {
