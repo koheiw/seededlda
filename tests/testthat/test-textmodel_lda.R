@@ -79,7 +79,6 @@ test_that("predict works with LDA", {
     dfmt_test <- tail(dfmt, 50)
 
     lda <- textmodel_lda(dfmt_train, k = 5)
-    pred <- predict(lda, dfmt_test)
 
     pred_train <- predict(lda)
     expect_equal(names(pred_train), docnames(dfmt_train))
