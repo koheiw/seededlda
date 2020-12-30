@@ -68,7 +68,7 @@ test_that("seeded LDA is working", {
     )
     expect_equal(
         names(lda),
-        c("k", "max_iter", "alpha", "beta", "phi", "theta",
+        c("k", "max_iter", "last_iter", "alpha", "beta", "phi", "theta",
           "words", "data", "call")
     )
     expect_equivalent(class(lda$words), "dgCMatrix")
