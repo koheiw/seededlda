@@ -82,7 +82,7 @@ class LDA {
         // set default values for variables
         void set_default_values();
         void set_data(arma::sp_mat mt);
-        void set_fitted(arma::umat mt);
+        void set_fitted(arma::sp_mat mt);
 
         // init for estimation
         int init_est();
@@ -116,12 +116,12 @@ void LDA::set_data(arma::sp_mat mt) {
     //printf("M = %d, V = %d\n", M, V);
 }
 
-void LDA::set_fitted(arma::umat words) {
+void LDA::set_fitted(arma::sp_mat words) {
 
     if ((int)words.n_rows != V || (int)words.n_cols != K)
         throw std::invalid_argument("Invalid word matrix");
-    nw_ft = words;
-    nwsum_ft = arma::sum(words, 0);
+    nw_ft = arma::conv_to<arma::umat>::from(arma::mat(words));
+    nwsum_ft = arma::sum(nw_ft, 0);
 
 }
 
