@@ -82,3 +82,21 @@ test_that("seeded LDA is working", {
     expect_false("couples" %in% terms(lda2)[,1])
     expect_false("dragon" %in% terms(lda2)[,2])
 })
+
+test_that("predict works with seeded LDA", {
+
+    dict <- dictionary(list(romance = c("love*", "couple*"),
+                            sifi = c("arean*", "star", "space")))
+
+    dfmt_train <- head(dfmt, 450)
+    dfmt_test <- tail(dfmt, 50)
+
+    lda <- textmodel_seededlda(dfmt_train, dict, residual = TRUE)
+    pred <- predict(lda, dfmt_test)
+
+    expect_equal(names(pred), docnames(dfmt_test))
+    expect_equal(
+        levels(pred),
+        c("romance", "sifi", "other")
+    )
+})

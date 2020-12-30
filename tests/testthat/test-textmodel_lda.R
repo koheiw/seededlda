@@ -56,7 +56,6 @@ test_that("LDA is working", {
         print(lda),
         "Topics: 5; 500 documents; 22605 features."
     )
-
 })
 
 
@@ -74,3 +73,17 @@ test_that("LDA works with empty documents", {
 
 })
 
+test_that("predict works with LDA", {
+
+    dfmt_train <- head(dfmt, 450)
+    dfmt_test <- tail(dfmt, 50)
+
+    lda <- textmodel_lda(dfmt_train, k = 5)
+    pred <- predict(lda, dfmt_test)
+
+    expect_equal(names(pred), docnames(dfmt_test))
+    expect_equal(
+        levels(pred),
+        c("topic1", "topic2", "topic3", "topic4", "topic5")
+    )
+})
