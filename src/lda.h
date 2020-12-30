@@ -268,7 +268,7 @@ void LDA::compute_theta() {
 void LDA::compute_phi() {
     for (int k = 0; k < K; k++) {
         for (int w = 0; w < V; w++) {
-            phi.at(k, w) = (nw.at(w, k) + beta) / (nwsum[k] + V * beta);
+            phi.at(k, w) = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + V * beta);
         }
     }
 }
