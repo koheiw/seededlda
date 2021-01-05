@@ -56,7 +56,8 @@ class LDA {
 
         arma::sp_mat data; // transposed document-feature matrix
         arma::vec p; // temp variable for sampling
-        Texts z; // topic assignments for words, size M x doc.size()
+        Texts topics; // topic assignments for words, size M x doc.size()
+        Texts texts;
         arma::umat nw; // cwt[i][j]: number of instances of word/term i assigned to topic j, size V x K
         arma::umat nd; // na[i][j]: number of words in document i assigned to topic j, size M x K
         arma::urowvec nwsum; // nwsum[j]: total number of words assigned to topic j, size K
@@ -136,7 +137,8 @@ int LDA::init_est() {
     std::uniform_real_distribution< double > random_prob(0, 1);
     std::uniform_int_distribution< int > random_topic(0, K - 1);
 
-    z = Texts(M);
+    topics = Texts(M);
+    texts = Texts(M);
 
     p = arma::vec(K);
     theta = arma::mat(M, K, arma::fill::zeros);
@@ -151,8 +153,10 @@ int LDA::init_est() {
     //dev::start_timer("Set z", timer);
     for (int m = 0; m < M; m++) {
 
-        z[m] = Text(ndsum[m]);
-        if (z[m].size() == 0) continue;
+        topics[m] = Text(ndsum[m]);
+        texts[m] = Text(ndsum[m]);
+
+        if (texts[m].size() == 0) continue;
         int n = 0;
 
         arma::sp_mat::const_col_iterator it = data.begin_col(m);
@@ -162,7 +166,8 @@ int LDA::init_est() {
             int F = *it;
             for (int f = 0; f < F; f++) {
                 int topic = random_topic(generator);
-                z[m][n] = topic;
+                topics[m][n] = topic;
+                texts[m][n] = w;
                 // number of instances of word i assigned to topic j
                 nw.at(w, topic) += 1;
                 // number of words in document i assigned to topic j
@@ -194,19 +199,10 @@ void LDA::estimate() {
 
         // for all z_i
         for (int m = 0; m < M; m++) {
-            if (z[m].size() == 0) continue;
+            if (texts[m].size() == 0) continue;
             int n = 0;
-
-            arma::sp_mat::const_col_iterator it = data.begin_col(m);
-            arma::sp_mat::const_col_iterator it_end = data.end_col(m);
-            for(; it != it_end; ++it) {
-                int w = it.row();
-                int F = *it;
-                //printf("Sampling %d %d %d %d\n", liter, m, w, F);
-                for (int f = 0; f < F; f++) {
-                    z[m][n] = sampling(m, n, w);
-                    n++;
-                }
+            for (int n = 0; n < texts[m].size(); n++) {
+                topics[m][n] = sampling(m, n, texts[m][n]);
             }
         }
     }
@@ -223,7 +219,7 @@ void LDA::estimate() {
 int LDA::sampling(int m, int n, int w) {
 
     // remove z_i from the count variables
-    int topic = z[m][n];
+    int topic = topics[m][n];
     nw.at(w, topic) -= 1;
     nd.at(m, topic) -= 1;
     nwsum[topic] -= 1;
