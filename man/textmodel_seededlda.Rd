@@ -11,7 +11,8 @@ textmodel_lda(
   max_iter = 2000,
   alpha = NULL,
   beta = NULL,
-  verbose = quanteda_options("verbose")
+  verbose = quanteda_options("verbose"),
+  ...
 )
 
 textmodel_seededlda(
@@ -42,6 +43,8 @@ textmodel_seededlda(
 \item{verbose}{logical; if \code{TRUE} print diagnostic information during
 fitting.}
 
+\item{...}{passed to \link[quanteda:dfm_trim]{quanteda::dfm_trim} to select seed words based on their term or document frequency.}
+
 \item{dictionary}{a \code{\link[quanteda:dictionary]{quanteda::dictionary()}} with seed words as
 examples of topics.}
 
@@ -54,8 +57,6 @@ added to user-defined topics.}
 
 \item{weight}{pseudo count given to seed words as a proportion of total
 number of words in \code{x}.}
-
-\item{...}{passed to \link[quanteda:dfm_trim]{quanteda::dfm_trim} to select seed words based on their term or document frequency.}
 }
 \description{
 \code{textmodel_seededlda()} implements semisupervised Latent Dirichlet allocation (seeded-LDA).

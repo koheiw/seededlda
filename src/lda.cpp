@@ -26,15 +26,14 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
         bool seeded = arma::accu(seeds) > 0;
         arma::umat s;
         if (seeded) {
-            if (arma::size(seeds) != arma::size(lda.nw))
+            if (arma::size(seeds) != arma::size(lda.n_word_topic))
                 throw std::invalid_argument("Invalid seed matrix");
             s = arma::conv_to<arma::umat>::from(arma::mat(seeds));
-            lda.nw = lda.nw + s; // set pseudo count
-            //lda.nwsum = lda.nwsum + arma::sum(s, 0);
+            lda.n_word_topic = lda.n_word_topic + s; // set pseudo count
         }
-        lda.estimate();
+        lda.fit();
         if (seeded)
-            lda.nwsum = lda.nwsum + arma::sum(s, 0);
+            lda.sum_word_topic = lda.sum_word_topic + arma::sum(s, 0);
     }
     lda.compute_theta();
     lda.compute_phi();
@@ -46,5 +45,5 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
                         Rcpp::Named("beta") = lda.beta,
                         Rcpp::Named("phi") = wrap(lda.phi),
                         Rcpp::Named("theta") = wrap(lda.theta),
-                        Rcpp::Named("words") = wrap(lda.nw));
+                        Rcpp::Named("words") = wrap(lda.n_word_topic));
 }
