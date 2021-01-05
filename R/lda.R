@@ -11,7 +11,7 @@
 #' @export
 textmodel_lda <- function(
     x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL,
-    verbose = quanteda_options("verbose")
+    verbose = quanteda_options("verbose"), ...
 ) {
     UseMethod("textmodel_lda")
 }
@@ -19,17 +19,17 @@ textmodel_lda <- function(
 #' @export
 textmodel_lda.dfm <- function(
     x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL,
-    verbose = quanteda_options("verbose")
+    verbose = quanteda_options("verbose"), ...
 ) {
 
     label <- paste0("topic", seq_len(k))
-    lda(x, k, label, max_iter, alpha, beta, NULL, NULL, verbose)
+    lda(x, k, label, max_iter, alpha, beta, NULL, NULL, verbose, ...)
 }
 
 #' @importFrom methods as
 #' @import quanteda
 #' @useDynLib seededlda, .registration = TRUE
-lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose) {
+lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose, old = FALSE) {
 
     k <- as.integer(k)
     max_iter <- as.integer(max_iter)
@@ -54,7 +54,11 @@ lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose) {
         words <- as(Matrix::Matrix(0, nrow = nfeat(x), ncol = k), "dgCMatrix")
 
     random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
-    result <- cpp_lda(x, k, max_iter, alpha, beta, seeds, words, random, verbose)
+    if (old) {
+        result <- cpp_lda0(x, k, max_iter, alpha, beta, seeds, words, random, verbose)
+    } else {
+        result <- cpp_lda(x, k, max_iter, alpha, beta, seeds, words, random, verbose)
+    }
 
     dimnames(result$phi) <- list(label, colnames(x))
     dimnames(result$theta) <- list(rownames(x), label)

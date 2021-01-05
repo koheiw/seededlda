@@ -76,7 +76,7 @@ textmodel_seededlda.dfm <- function(
         stop("seeds must have the same features")
     k <- ncol(seeds)
     label <- colnames(seeds)
-    lda(x, k, label, max_iter, alpha, beta, seeds, NULL, verbose)
+    lda(x, k, label, max_iter, alpha, beta, seeds, NULL, verbose, ...)
 }
 
 #' Print method for a LDA model
