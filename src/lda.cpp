@@ -33,7 +33,7 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
         }
         lda.fit();
         if (seeded)
-            lda.sum_word_topic = lda.sum_word_topic + arma::sum(s, 0);
+            lda.s_word_topic = lda.s_word_topic + arma::sum(s, 0);
     }
     lda.compute_theta();
     lda.compute_phi();
