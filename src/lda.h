@@ -59,14 +59,14 @@ class LDA {
         Texts texts;
         arma::mat n_word_topic; // word_topic[i][j]: number of instances of word/term i assigned to topic j, size V x K
         arma::mat n_doc_topic; // doc_topic[i][j]: number of words in document i assigned to topic j, size M x K
-        arma::rowvec s_word_topic; // s_word_topic[j]: total number of words assigned to topic j, size K
-        arma::rowvec s_doc_topic; // s_doc_topic[i]: total number of words in document i, size M
+        arma::colvec s_word_topic; // s_word_topic[j]: total number of words assigned to topic j, size K
+        arma::colvec s_doc_topic; // s_doc_topic[i]: total number of words in document i, size M
         arma::mat theta; // theta: document-topic distributions, size M x K
         arma::mat phi; // phi: topic-word distributions, size K x V
 
         // prediction with fitted model
-        arma::umat nw_ft;
-        arma::urowvec nwsum_ft;
+        arma::mat n_word_topic_fit;
+        arma::colvec s_word_topic_fit;
 
         // random number generators
         std::default_random_engine generator;
@@ -92,7 +92,7 @@ class LDA {
         void estimate(int m);
         int sample(int m, int n,
                    arma::mat& n_wt, arma::mat& n_dt,
-                   arma::rowvec& s_wt, arma::rowvec& s_dt);
+                   arma::colvec& s_wt, arma::colvec& s_dt);
         void compute_theta();
         void compute_phi();
 
@@ -113,6 +113,7 @@ void LDA::set_default_values() {
 
 void LDA::set_data(arma::sp_mat mt) {
 
+    //Rprintf("Set data\n");
     data = mt.t();
     M = data.n_cols;
     V = data.n_rows;
@@ -121,10 +122,11 @@ void LDA::set_data(arma::sp_mat mt) {
 
 void LDA::set_fitted(arma::sp_mat words) {
 
+    //Rprintf("Set fitted LDA\n");
     if ((int)words.n_rows != V || (int)words.n_cols != K)
         throw std::invalid_argument("Invalid word matrix");
-    nw_ft = arma::conv_to<arma::umat>::from(arma::mat(words));
-    nwsum_ft = arma::sum(nw_ft, 0);
+    n_word_topic_fit = arma::mat(words.t());
+    s_word_topic_fit = arma::sum(words, 0).t();
 
 }
 
@@ -134,7 +136,6 @@ int LDA::init_est() {
         Rprintf("Fitting LDA with %d topics\n", K);
         Rprintf("   ...initializing\n");
     }
-
     std::default_random_engine generator(random);
     std::uniform_real_distribution< double > random_prob(0, 1);
     std::uniform_int_distribution< int > random_topic(0, K - 1);
@@ -144,12 +145,11 @@ int LDA::init_est() {
 
     theta = arma::mat(M, K, arma::fill::zeros);
     phi = arma::mat(K, V, arma::fill::zeros);
-
-    n_word_topic = arma::mat(V, K, arma::fill::zeros);
-    n_doc_topic = arma::mat(M, K, arma::fill::zeros);
-    s_word_topic = arma::rowvec(K, arma::fill::zeros);
-    s_doc_topic = arma::conv_to<arma::rowvec>::from(arma::mat(arma::sum(data, 0)));
-
+    n_word_topic = arma::mat(K, V, arma::fill::zeros);
+    n_doc_topic = arma::mat(K, M, arma::fill::zeros);
+    s_word_topic = arma::colvec(K, arma::fill::zeros);
+    s_doc_topic = arma::mat(arma::sum(data, 0)).t();
+    //s_doc_topic = arma::mat(arma::sum(data, 1));
     //dev::Timer timer;
     //dev::start_timer("Set z", timer);
     for (int m = 0; m < M; m++) {
@@ -170,9 +170,9 @@ int LDA::init_est() {
                 topics[m][n] = topic;
                 texts[m][n] = w;
                 // number of instances of word i assigned to topic j
-                n_word_topic.at(w, topic) += 1;
+                n_word_topic.at(topic, w) += 1;
                 // number of words in document i assigned to topic j
-                n_doc_topic.at(m, topic) += 1;
+                n_doc_topic.at(topic, m) += 1;
                 // total number of words assigned to topic j
                 s_word_topic[topic] += 1;
                 n++;
@@ -180,7 +180,6 @@ int LDA::init_est() {
         }
     }
     //dev::stop_timer("Set z", timer);
-
     return 0;
 }
 
@@ -216,10 +215,10 @@ void LDA::fit() {
 void LDA::estimate(int m) {
 
     // object for the local distribution
-    arma::mat n_wt = arma::mat(V, K, arma::fill::zeros);
-    arma::mat n_dt = arma::mat(M, K, arma::fill::zeros);
-    arma::rowvec s_wt = arma::rowvec(K, arma::fill::zeros);
-    arma::rowvec s_dt = arma::rowvec(M, arma::fill::zeros);
+    arma::mat n_wt = arma::mat(K, V, arma::fill::zeros);
+    arma::mat n_dt = arma::mat(K, M, arma::fill::zeros);
+    arma::colvec s_wt = arma::colvec(K, arma::fill::zeros);
+    arma::colvec s_dt = arma::colvec(M, arma::fill::zeros);
 
     if (texts[m].size() == 0) return;
     for (int n = 0; n < texts[m].size(); n++) {
@@ -229,9 +228,10 @@ void LDA::estimate(int m) {
     // updated the global distribution
     for (int n = 0; n < texts[m].size(); n++) {
         if (n == 0 || texts[m][n - 1] != texts[m][n])
-            n_word_topic.row(texts[m][n]) += n_wt.row(texts[m][n]);
+            n_word_topic.col(texts[m][n]) += n_wt.col(texts[m][n]);
     }
-    n_doc_topic.row(m) += n_dt.row(m);
+
+    n_doc_topic.col(m) += n_dt.col(m);
     s_word_topic += s_wt;
     s_doc_topic += s_dt;
 }
@@ -239,32 +239,34 @@ void LDA::estimate(int m) {
 
 int LDA::sample(int m, int n,
                 arma::mat& n_wt, arma::mat& n_dt,
-                arma::rowvec& s_wt, arma::rowvec& s_dt) {
+                arma::colvec& s_wt, arma::colvec& s_dt) {
 
     // remove z_i from the count variables
     int w = texts[m][n];
     int topic = topics[m][n];
-    n_wt.at(w, topic) -= 1;
-    n_dt.at(m, topic) -= 1;
+    n_wt.at(topic, w) -= 1;
+    n_dt.at(topic, m) -= 1;
     s_wt[topic] -= 1;
     s_dt[m] -= 1;
 
     // do multinomial sampling via cumulative method
 
-    arma::rowvec n_wt_all = n_word_topic.row(w) + n_wt.row(w) + nw_ft.row(w);
-    arma::rowvec s_wt_all = s_word_topic + s_wt + nwsum_ft;
-    arma::rowvec n_dt_all = n_doc_topic.row(m) + n_dt.row(m);
-    double s_dt_all = s_doc_topic[m] + s_dt[m];
-    arma::rowvec p = ((n_wt_all + beta) / (s_wt_all + V * beta)) % ((n_dt_all + alpha) / (s_dt_all + K * alpha));
-    //arma::rowvec p = (n_wt_all / s_wt_all) % (n_dt_all / s_dt_all);
+    // arma::colvec n_wt_all = n_word_topic.col(w) + n_wt.col(w) + n_word_topic_fit.col(w);
+    // arma::colvec s_wt_all = s_word_topic + s_wt + s_word_topic_fit;
+    // arma::colvec n_dt_all = n_doc_topic.col(m) + n_dt.col(m);
+    // double s_dt_all = s_doc_topic[m] + s_dt[m];
+    // arma::colvec p = ((n_wt_all + beta) / (s_wt_all + V * beta)) % ((n_dt_all + alpha) / (s_dt_all + K * alpha));
+    //
 
-    // double Vbeta = V * beta;
-    // double Kalpha = K * alpha;
-    // std::vector< double > p(K);
-    // for (int k = 0; k < K; k++) {
-    //     p[k] = (n_word_topic.at(w, k) + n_wt.at(w, k) + nw_ft.at(w, k) + beta) / (s_word_topic[k] + s_wt[k] + nwsum_ft[k] + Vbeta) *
-    //            (n_doc_topic.at(m, k) + n_dt.at(m, k) + alpha) / (s_doc_topic[m] + s_dt[m] + Kalpha);
-    // }
+    double Vbeta = V * beta;
+    double Kalpha = K * alpha;
+    std::vector< double > p(K);
+    for (int k = 0; k < K; k++) {
+        p[k] = (n_word_topic.at(k, w) + n_wt.at(k, w) + n_word_topic_fit.at(k, w) + beta) / (s_word_topic[k] + s_wt[k] + s_word_topic_fit[k] + Vbeta) *
+               (n_doc_topic.at(k, m) + n_dt.at(k, m) + alpha) / (s_doc_topic[m] + s_dt[m] + Kalpha);
+        //p[k] = (n_word_topic.at(k, w) + n_wt.at(k, w) + beta) / (s_word_topic[k] + s_wt[k] + Vbeta) *
+        //       (n_doc_topic.at(k, m) + n_dt.at(k, m) + alpha) / (s_doc_topic[m] + s_dt[m] + Kalpha);
+    }
     // cumulate multinomial parameters
     for (int k = 1; k < K; k++) {
         p[k] += p[k - 1];
@@ -281,8 +283,8 @@ int LDA::sample(int m, int n,
     }
 
     // add newly estimated z_i to count variables
-    n_wt.at(w, topic) += 1;
-    n_dt.at(m, topic) += 1;
+    n_wt.at(topic, w) += 1;
+    n_dt.at(topic, m) += 1;
     s_wt[topic] += 1;
     s_dt[m] += 1;
 
@@ -292,7 +294,7 @@ int LDA::sample(int m, int n,
 void LDA::compute_theta() {
     for (int m = 0; m < M; m++) {
         for (int k = 0; k < K; k++) {
-            theta.at(m, k) = (n_doc_topic.at(m, k) + alpha) / (s_doc_topic[m] + K * alpha);
+            theta.at(m, k) = (n_doc_topic.at(k, m) + alpha) / (s_doc_topic[m] + K * alpha);
         }
     }
 }
@@ -300,7 +302,7 @@ void LDA::compute_theta() {
 void LDA::compute_phi() {
     for (int k = 0; k < K; k++) {
         for (int w = 0; w < V; w++) {
-            phi.at(k, w) = (n_word_topic.at(w, k) + nw_ft.at(w, k) + beta) / (s_word_topic[k] + nwsum_ft[k] + V * beta);
+            phi.at(k, w) = (n_word_topic.at(k, w) + n_word_topic_fit.at(k, w) + beta) / (s_word_topic[k] + s_word_topic_fit[k] + V * beta);
         }
     }
 }

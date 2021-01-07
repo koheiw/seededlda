@@ -8,7 +8,8 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
-                  arma::sp_mat &seeds, arma::sp_mat &words, int random, bool verbose) {
+             arma::sp_mat &seeds, arma::sp_mat &words, int random, bool verbose) {
+
     LDA lda;
     lda.K = k;
     lda.set_data(mt);
