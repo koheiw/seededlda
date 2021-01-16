@@ -1,3 +1,4 @@
+//#define ARMA_NO_DEBUG
 #include "lib.h"
 #include "dev.h"
 #include "lda.h"

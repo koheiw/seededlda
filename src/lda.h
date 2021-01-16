@@ -148,7 +148,8 @@ int LDA::init_est() {
     n_word_topic = arma::mat(K, V, arma::fill::zeros);
     n_doc_topic = arma::mat(K, M, arma::fill::zeros);
     s_word_topic = arma::colvec(K, arma::fill::zeros);
-    s_doc_topic = arma::mat(arma::sum(data, 0)).t();
+    //s_doc_topic = arma::mat(arma::sum(data, 0)).t();
+    s_doc_topic = arma::sum(data, 0).t();
     //s_doc_topic = arma::mat(arma::sum(data, 1));
     //dev::Timer timer;
     //dev::start_timer("Set z", timer);
@@ -251,22 +252,22 @@ int LDA::sample(int m, int n,
 
     // do multinomial sampling via cumulative method
 
-    // arma::colvec n_wt_all = n_word_topic.col(w) + n_wt.col(w) + n_word_topic_fit.col(w);
-    // arma::colvec s_wt_all = s_word_topic + s_wt + s_word_topic_fit;
-    // arma::colvec n_dt_all = n_doc_topic.col(m) + n_dt.col(m);
-    // double s_dt_all = s_doc_topic[m] + s_dt[m];
-    // arma::colvec p = ((n_wt_all + beta) / (s_wt_all + V * beta)) % ((n_dt_all + alpha) / (s_dt_all + K * alpha));
-    //
+    arma::colvec n_wt_all = n_word_topic.col(w) + n_wt.col(w) + n_word_topic_fit.col(w);
+    arma::colvec s_wt_all = s_word_topic + s_wt + s_word_topic_fit;
+    arma::colvec n_dt_all = n_doc_topic.col(m) + n_dt.col(m);
+    double s_dt_all = s_doc_topic[m] + s_dt[m];
+    arma::colvec p = ((n_wt_all + beta) / (s_wt_all + V * beta)) % ((n_dt_all + alpha) / (s_dt_all + K * alpha));
 
-    double Vbeta = V * beta;
-    double Kalpha = K * alpha;
-    std::vector< double > p(K);
-    for (int k = 0; k < K; k++) {
-        p[k] = (n_word_topic.at(k, w) + n_wt.at(k, w) + n_word_topic_fit.at(k, w) + beta) / (s_word_topic[k] + s_wt[k] + s_word_topic_fit[k] + Vbeta) *
-               (n_doc_topic.at(k, m) + n_dt.at(k, m) + alpha) / (s_doc_topic[m] + s_dt[m] + Kalpha);
-        //p[k] = (n_word_topic.at(k, w) + n_wt.at(k, w) + beta) / (s_word_topic[k] + s_wt[k] + Vbeta) *
-        //       (n_doc_topic.at(k, m) + n_dt.at(k, m) + alpha) / (s_doc_topic[m] + s_dt[m] + Kalpha);
-    }
+
+    // double Vbeta = V * beta;
+    // double Kalpha = K * alpha;
+    // std::vector< double > p(K);
+    // for (int k = 0; k < K; k++) {
+    //     p[k] = (n_word_topic.at(k, w) + n_wt.at(k, w) + n_word_topic_fit.at(k, w) + beta) / (s_word_topic[k] + s_wt[k] + s_word_topic_fit[k] + Vbeta) *
+    //            (n_doc_topic.at(k, m) + n_dt.at(k, m) + alpha) / (s_doc_topic[m] + s_dt[m] + Kalpha);
+    //     //p[k] = (n_word_topic.at(k, w) + n_wt.at(k, w) + beta) / (s_word_topic[k] + s_wt[k] + Vbeta) *
+    //     //       (n_doc_topic.at(k, m) + n_dt.at(k, m) + alpha) / (s_doc_topic[m] + s_dt[m] + Kalpha);
+    // }
     // cumulate multinomial parameters
     for (int k = 1; k < K; k++) {
         p[k] += p[k - 1];
