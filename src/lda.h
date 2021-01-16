@@ -235,10 +235,10 @@ void LDA::estimate(int m) {
     }
 
     // updated the global distribution
-    n_word_topic.col(m) += n_wt.col(m) - n_wt_init.col(m);
+    n_word_topic += n_wt - n_wt_init;
     n_doc_topic.col(m) += n_dt.col(m) - n_dt_init.col(m);
     s_word_topic += s_wt - s_wt_init;
-    s_doc_topic += s_dt - s_dt_init;
+    s_doc_topic[m] += s_dt[m] - s_dt_init[m];
 }
 
 
