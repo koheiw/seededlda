@@ -216,10 +216,18 @@ void LDA::fit() {
 void LDA::estimate(int m) {
 
     // object for the local distribution
-    arma::mat n_wt = arma::mat(K, V, arma::fill::zeros);
-    arma::mat n_dt = arma::mat(K, M, arma::fill::zeros);
-    arma::colvec s_wt = arma::colvec(K, arma::fill::zeros);
-    arma::colvec s_dt = arma::colvec(M, arma::fill::zeros);
+    //arma::mat n_wt = arma::mat(K, V, arma::fill::zeros);
+    //arma::mat n_dt = arma::mat(K, M, arma::fill::zeros);
+    //arma::colvec s_wt = arma::colvec(K, arma::fill::zeros);
+    //arma::colvec s_dt = arma::colvec(M, arma::fill::zeros);
+
+    arma::mat n_wt, n_wt_init, n_dt, n_dt_init;
+    n_wt = n_wt_init = n_word_topic + n_word_topic_fit;
+    n_dt = n_dt_init = n_doc_topic;
+
+    arma::colvec s_wt, s_wt_init, s_dt, s_dt_init;
+    s_wt = s_wt_init = s_word_topic + s_word_topic_fit;
+    s_dt = s_dt_init = s_doc_topic;
 
     if (texts[m].size() == 0) return;
     for (int n = 0; n < texts[m].size(); n++) {
@@ -227,14 +235,10 @@ void LDA::estimate(int m) {
     }
 
     // updated the global distribution
-    for (int n = 0; n < texts[m].size(); n++) {
-        if (n == 0 || texts[m][n - 1] != texts[m][n])
-            n_word_topic.col(texts[m][n]) += n_wt.col(texts[m][n]);
-    }
-
-    n_doc_topic.col(m) += n_dt.col(m);
-    s_word_topic += s_wt;
-    s_doc_topic += s_dt;
+    n_word_topic.col(m) += n_wt.col(m) - n_wt_init.col(m);
+    n_doc_topic.col(m) += n_dt.col(m) - n_dt_init.col(m);
+    s_word_topic += s_wt - s_wt_init;
+    s_doc_topic += s_dt - s_dt_init;
 }
 
 
@@ -252,12 +256,18 @@ int LDA::sample(int m, int n,
 
     // do multinomial sampling via cumulative method
 
-    arma::colvec n_wt_all = n_word_topic.col(w) + n_wt.col(w) + n_word_topic_fit.col(w);
-    arma::colvec s_wt_all = s_word_topic + s_wt + s_word_topic_fit;
-    arma::colvec n_dt_all = n_doc_topic.col(m) + n_dt.col(m);
-    double s_dt_all = s_doc_topic[m] + s_dt[m];
-    arma::colvec p = ((n_wt_all + beta) / (s_wt_all + V * beta)) % ((n_dt_all + alpha) / (s_dt_all + K * alpha));
+    // arma::colvec n_wt_all = n_word_topic.col(w) + n_wt.col(w); + n_word_topic_fit.col(w);
+    // arma::colvec s_wt_all = s_word_topic + s_wt + s_word_topic_fit;
+    // arma::colvec n_dt_all = n_doc_topic.col(m) + n_dt.col(m);
+    // double s_dt_all = s_doc_topic[m] + s_dt[m];
+    // arma::colvec p = ((n_wt_all + beta) / (s_wt_all + V * beta)) % ((n_dt_all + alpha) / (s_dt_all + K * alpha));
 
+    double Vbeta = V * beta;
+    double Kalpha = K * alpha;
+    std::vector< double > p(K);
+    for (int k = 0; k < K; k++) {
+        p[k] = ((n_wt.at(k, w) + beta) / (s_wt[k] + Vbeta)) * ((n_dt.at(k, m) + alpha) / (s_dt[m] + Kalpha));
+    }
 
     // double Vbeta = V * beta;
     // double Kalpha = K * alpha;
