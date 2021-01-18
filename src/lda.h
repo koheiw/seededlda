@@ -55,7 +55,7 @@ class LDA {
         bool verbose; // print progress messages
 
         arma::sp_mat data; // transposed document-feature matrix
-        arma::vec p; // temp variable for sampling
+        arma::rowvec p; // temp variable for sampling
         Texts topics; // topic assignments for words, size M x doc.size()
         Texts texts;
         arma::mat nw; // cwt[i][j]: number of instances of word/term i assigned to topic j, size V x K
@@ -66,8 +66,8 @@ class LDA {
         arma::mat phi; // phi: topic-word distributions, size K x V
 
         // prediction with fitted model
-        arma::umat nw_ft;
-        arma::urowvec nwsum_ft;
+        arma::mat nw_ft;
+        arma::rowvec nwsum_ft;
 
         // random number generators
         std::default_random_engine generator;
@@ -122,8 +122,8 @@ void LDA::set_fitted(arma::sp_mat words) {
 
     if ((int)words.n_rows != V || (int)words.n_cols != K)
         throw std::invalid_argument("Invalid word matrix");
-    nw_ft = arma::conv_to<arma::umat>::from(arma::mat(words));
-    nwsum_ft = arma::sum(nw_ft, 0);
+    nw_ft = arma::mat(words);
+    nwsum_ft = arma::rowvec(arma::mat(arma::sum(nw_ft, 0)));
 
 }
 
@@ -141,7 +141,7 @@ int LDA::init_est() {
     topics = Texts(M);
     texts = Texts(M);
 
-    p = arma::vec(K);
+    p = arma::rowvec(K);
     theta = arma::mat(M, K, arma::fill::zeros);
     phi = arma::mat(K, V, arma::fill::zeros);
 
@@ -236,6 +236,10 @@ int LDA::sample(int m, int n, int w) {
         p[k] = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + Vbeta) *
                (nd.at(m, k) + alpha) / (ndsum[m] + Kalpha);
     }
+
+    // p = ((nw.row(w) + nw_ft.row(w) + beta) / (nwsum + nwsum_ft + Vbeta)) %
+    //     ((nd.row(m) + alpha) / (ndsum[m] + Kalpha));
+
     // cumulate multinomial parameters
     for (int k = 1; k < K; k++) {
         p[k] += p[k - 1];
