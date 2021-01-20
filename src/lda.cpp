@@ -9,11 +9,19 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
                   arma::sp_mat &seeds, arma::sp_mat &words, int random, bool verbose) {
+
+    mt = mt.t();
+    seeds = seeds.t();
+    words = words.t();
+
     LDA lda;
     lda.K = k;
     lda.set_data(mt);
     lda.set_fitted(words);
     lda.random = random;
+    lda.seeded = arma::accu(seeds) > 0; // TODO move to set_seeds()
+    lda.fitted = arma::accu(words) > 0; // TODO move to set_words()
+
     if (max_iter > 0)
         lda.niters = max_iter;
     if (alpha > 0)
@@ -23,9 +31,9 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
     if (verbose)
         lda.verbose = verbose;
     if (lda.init_est() == 0) {
-        bool seeded = arma::accu(seeds) > 0;
+        // TODO make set_seeds()
         arma::mat s;
-        if (seeded) {
+        if (lda.seeded) {
             if (arma::size(seeds) != arma::size(lda.nw))
                 throw std::invalid_argument("Invalid seed matrix");
             s = arma::mat(seeds);
@@ -33,8 +41,8 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
             //lda.nwsum = lda.nwsum + arma::sum(s, 0);
         }
         lda.fit();
-        if (seeded)
-            lda.nwsum = lda.nwsum + arma::rowvec(arma::sum(s, 0));
+        if (lda.seeded)
+            lda.nwsum = lda.nwsum + arma::colvec(arma::sum(s, 1));
     }
     lda.compute_theta();
     lda.compute_phi();
