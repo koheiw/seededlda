@@ -11,6 +11,7 @@ textmodel_lda(
   max_iter = 2000,
   alpha = NULL,
   beta = NULL,
+  parallel = FALSE,
   verbose = quanteda_options("verbose"),
   ...
 )

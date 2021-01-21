@@ -8,7 +8,8 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
-                  arma::sp_mat &seeds, arma::sp_mat &words, int random, bool verbose) {
+             arma::sp_mat &seeds, arma::sp_mat &words, int random,
+             bool parallel = false, bool verbose = false) {
 
     mt = mt.t();
     seeds = seeds.t();
@@ -19,9 +20,6 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
     lda.set_data(mt);
     lda.set_fitted(words);
     lda.random = random;
-    lda.seeded = arma::accu(seeds) > 0; // TODO move to set_seeds()
-    lda.fitted = arma::accu(words) > 0; // TODO move to set_words()
-
     if (max_iter > 0)
         lda.niters = max_iter;
     if (alpha > 0)
@@ -31,17 +29,17 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
     if (verbose)
         lda.verbose = verbose;
     if (lda.init_est() == 0) {
-        // TODO make set_seeds()
+        bool seeded = arma::accu(seeds) > 0;
         arma::mat s;
-        if (lda.seeded) {
+        if (seeded) {
             if (arma::size(seeds) != arma::size(lda.nw))
                 throw std::invalid_argument("Invalid seed matrix");
             s = arma::mat(seeds);
             lda.nw = lda.nw + s; // set pseudo count
             //lda.nwsum = lda.nwsum + arma::sum(s, 0);
         }
-        lda.fit();
-        if (lda.seeded)
+        lda.fit(parallel);
+        if (seeded)
             lda.nwsum = lda.nwsum + arma::colvec(arma::sum(s, 1));
     }
     lda.compute_theta();
