@@ -29,7 +29,7 @@ textmodel_lda.dfm <- function(
 #' @importFrom methods as
 #' @import quanteda
 #' @useDynLib seededlda, .registration = TRUE
-lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose, old = FALSE, parallel = FALSE) {
+lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose, old = FALSE, parallel = 0) {
 
     k <- as.integer(k)
     max_iter <- as.integer(max_iter)

@@ -1,3 +1,4 @@
+#define ARMA_NO_DEBUG
 #include "lib.h"
 #include "dev.h"
 #include "lda.h"
@@ -9,7 +10,7 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
              arma::sp_mat &seeds, arma::sp_mat &words, int random,
-             bool parallel = false, bool verbose = false) {
+             int parallel = 0, bool verbose = false) {
 
     mt = mt.t();
     seeds = seeds.t();

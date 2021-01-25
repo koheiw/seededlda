@@ -92,10 +92,11 @@ class LDA {
         int init_est();
 
         // estimate LDA model using Gibbs sampling
-        void fit(bool parallel);
-        struct estimateWorker;
+        void fit(int parallel);
         void estimate(int m);
         void estimate();
+        void estimate2();
+        void estimate3();
         int sample(int m, int n, int w);
         int sample(int m, int n, int w,
                    arma::mat& nw_tp, arma::mat& nd_tp, arma::colvec& nwsum_tp);
@@ -194,7 +195,7 @@ int LDA::init_est() {
     return 0;
 }
 
-void LDA::fit(bool parallel) {
+void LDA::fit(int parallel) {
 
     if (verbose)
         Rprintf("   ...Gibbs sampling in %d itterations\n", niters);
@@ -207,8 +208,12 @@ void LDA::fit(bool parallel) {
             if (verbose)
                 Rprintf("   ...iteration %d\n", liter);
         }
-        if (parallel) {
+        if (parallel == 1) {
             estimate();
+        } else if (parallel == 2) {
+            estimate2();
+        } else if (parallel == 3) {
+            estimate3();
         } else {
             for (int m = 0; m < M; m++) {
                 estimate(m);
@@ -225,49 +230,137 @@ void LDA::fit(bool parallel) {
     if (verbose)
         Rprintf("   ...complete\n");
 }
+/*
+void LDA::estimate() {
+
+
+    struct estimateWorker: public Worker {
+        // arma::sp_mat &data;
+        // Texts &texts, &topics;
+        // arma::mat &nw, &nd;
+        // arma::colvec &nwsum, &ndsum;
+        LDA &lda;
+
+        // estimateWorker(arma::sp_mat &data_, Texts &texts_, Texts &topics_,
+        //                arma::mat &nw_, arma::mat &nd_,
+        //                arma::colvec &nwsum_, arma::colvec &ndsum_) :
+        //   data(data_), texts(texts_), topics(topics_), nw(nw_), nd(nd_),
+        //   nwsum(nwsum_), ndsum(ndsum_) {}
+        estimateWorker(LDA &lda_): lda(lda_){};
+
+        void operator()(std::size_t begin, std::size_t end) {
+            arma::mat nw_tp = arma::mat(size(lda.nw));
+            arma::mat nd_tp = arma::mat(size(lda.nd));
+            arma::colvec nwsum_tp = arma::colvec(size(lda.nwsum));
+            for (std::size_t m = begin; m < end; m++) {
+                for (int n = 0; n < lda.texts[m].size(); n++) {
+                    //texts[m][n] = texts[m][n];
+                    lda.topics[m][n] = lda.sample(m, n, lda.texts[m][n], nw_tp, nd_tp, nwsum_tp);
+                }
+            }
+        }
+    };
+    estimateWorker estimate_worker(*this);
+    int g = std::ceil(M / tbb::this_task_arena::max_concurrency());
+    parallelFor(0, texts.size(), estimate_worker, g);
+}
+*/
+void LDA::estimate3() {
+
+  Mutex mutex;
+  int g = std::ceil(M / tbb::this_task_arena::max_concurrency());
+  tbb::parallel_for(tbb::blocked_range<int>(0, M, g), [&](tbb::blocked_range<int> r) {
+    //mutex.lock();
+    //cout << "Range " << r.begin() << " " << r.end() << "\n";
+    //mutex.unlock();
+    arma::mat nw_tp = arma::mat(size(nw));
+    arma::mat nd_tp = arma::mat(size(nd));
+    arma::colvec nwsum_tp = arma::colvec(size(nwsum));
+    for (int m = r.begin(); m < r.end(); ++m) {
+      if (texts[m].size() == 0) return;
+      for (int n = 0; n < texts[m].size(); n++) {
+        topics[m][n] = sample(m, n, texts[m][n], nw_tp, nd_tp, nwsum_tp);
+      }
+    }
+    mutex.lock();
+    for (int m = r.begin(); m < r.end(); ++m) {
+      arma::sp_mat::const_col_iterator it = data.begin_col(m);
+      arma::sp_mat::const_col_iterator it_end = data.end_col(m);
+      for(; it != it_end; ++it) {
+        int w = it.row();
+        nw.col(w) += nw_tp.col(w);
+      }
+      nw.col(m) += nw_tp.col(m);
+    }
+    nwsum += nwsum_tp;
+    mutex.unlock();
+  }, tbb::auto_partitioner());
+}
+
+void LDA::estimate2() {
+
+  Mutex mutex;
+  int g = std::ceil(M / tbb::this_task_arena::max_concurrency());
+  tbb::parallel_for(tbb::blocked_range<int>(0, M, g), [&](tbb::blocked_range<int> r) {
+    //mutex.lock();
+    //cout << "Range " << r.begin() << " " << r.end() << "\n";
+    //mutex.unlock();
+    arma::mat nw_tp = arma::mat(size(nw));
+    arma::mat nd_tp = arma::mat(size(nd));
+    arma::colvec nwsum_tp = arma::colvec(size(nwsum));
+    for (int m = r.begin(); m < r.end(); ++m) {
+      if (texts[m].size() == 0) return;
+      for (int n = 0; n < texts[m].size(); n++) {
+        topics[m][n] = sample(m, n, texts[m][n], nw_tp, nd_tp, nwsum_tp);
+      }
+    }
+    mutex.lock();
+    nw.cols(r.begin(), r.end() - 1) += nw_tp.cols(r.begin(), r.end() - 1);
+    nw.cols(r.begin(), r.end() - 1) += nw_tp.cols(r.begin(), r.end() - 1);
+    nwsum += nwsum_tp;
+    mutex.unlock();
+  }, tbb::auto_partitioner());
+}
+
 
 void LDA::estimate() {
-    tbb::parallel_for(tbb::blocked_range<int>(0, M), [&](tbb::blocked_range<int> r) {
-      //Rcout << "Range " << r.begin() << " " << r.end() << "\n";
-      for (int m = r.begin(); m < r.end(); ++m) {
 
-            if (texts[m].size() == 0) return;
+    Mutex mutex;
+    int g = std::ceil(M / tbb::this_task_arena::max_concurrency());
+    tbb::parallel_for(tbb::blocked_range<int>(0, M, g), [&](tbb::blocked_range<int> r) {
+        //mutex.lock();
+        //Rcout << "Range " << r.begin() << " " << r.end() << "\n";
+        //mutex.unlock();
+        for (int m = r.begin(); m < r.end(); ++m) {
             arma::mat nw_tp = arma::mat(size(nw));
             arma::mat nd_tp = arma::mat(size(nd));
             arma::colvec nwsum_tp = arma::colvec(size(nwsum));
+            if (texts[m].size() == 0) return;
             for (int n = 0; n < texts[m].size(); n++) {
                 topics[m][n] = sample(m, n, texts[m][n], nw_tp, nd_tp, nwsum_tp);
             }
-            // arma::sp_mat::const_col_iterator it = data.begin_col(m);
-            // arma::sp_mat::const_col_iterator it_end = data.end_col(m);
-            // for(; it != it_end; ++it) {
-            //     int w = it.row();
-            //     nw.col(w) += nw_tp.col(w);
-            // }
-            // nw.col(m) += nw_tp.col(m);
-            // nwsum += nwsum_tp;
+            mutex.lock();
+            arma::sp_mat::const_col_iterator it = data.begin_col(m);
+            arma::sp_mat::const_col_iterator it_end = data.end_col(m);
+            for(; it != it_end; ++it) {
+                int w = it.row();
+                nw.col(w) += nw_tp.col(w);
+            }
+            nw.col(m) += nw_tp.col(m);
+            nwsum += nwsum_tp;
+            mutex.unlock();
         }
-    });
+    }, tbb::auto_partitioner());
 }
+
 
 void LDA::estimate(int m) {
 
     if (texts[m].size() == 0) return;
-    arma::mat nw_tp = arma::mat(size(nw));
-    arma::mat nd_tp = arma::mat(size(nd));
-    arma::colvec nwsum_tp = arma::colvec(size(nwsum));
     for (int n = 0; n < texts[m].size(); n++) {
-        topics[m][n] = sample(m, n, texts[m][n], nw_tp, nd_tp, nwsum_tp);
+        //texts[m][n] = texts[m][n];
+        topics[m][n] = sample(m, n, texts[m][n]);
     }
-    arma::sp_mat::const_col_iterator it = data.begin_col(m);
-    arma::sp_mat::const_col_iterator it_end = data.end_col(m);
-    for(; it != it_end; ++it) {
-        int w = it.row();
-        nw.col(w) += nw_tp.col(w);
-    }
-    nw.col(m) += nw_tp.col(m);
-    nwsum += nwsum_tp;
-
 }
 
 
@@ -316,7 +409,8 @@ int LDA::sample(int m, int n, int w) {
 }
 
 int LDA::sample(int m, int n, int w,
-                arma::mat& nw_tp, arma::mat& nd_tp, arma::colvec& nwsum_tp) {
+                arma::mat& nw_tp, arma::mat& nd_tp,
+                arma::colvec& nwsum_tp) {
 
     // remove z_i from the count variables
     int topic = topics[m][n];
