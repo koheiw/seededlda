@@ -277,13 +277,12 @@ void LDA::estimate() {
 
 void LDA::estimate5() {
 
-  Mutex mutex;
   int t = tbb::this_task_arena::max_concurrency();
   if (verbose)
     Rprintf("   ...parallel sampling with %d threads\n", t);
   int g = std::ceil(M / t);
 
-  tbb::parallel_for(tbb::blocked_range<int>(0, M, g), [&](tbb::blocked_range<int> r) {
+  tbb::parallel_for(tbb::blocked_range<int>(0, M, g), [this](tbb::blocked_range<int> r) {
     //mutex.lock();
     //cout << "Range " << r.begin() << " " << r.end() << "\n";
     //mutex.unlock();
@@ -332,9 +331,8 @@ void LDA::estimate5() {
 
 void LDA::estimate4() {
 
-  Mutex mutex;
   int g = std::ceil(M / tbb::this_task_arena::max_concurrency());
-  tbb::parallel_for(tbb::blocked_range<int>(0, M, g), [&](tbb::blocked_range<int> r) {
+  tbb::parallel_for(tbb::blocked_range<int>(0, M, g), [this](tbb::blocked_range<int> r) {
     //mutex.lock();
     //Rcout << "Range " << r.begin() << " " << r.end() << "\n";
     //mutex.unlock();
@@ -353,10 +351,8 @@ void LDA::estimate4() {
 
 void LDA::estimate3() {
 
-  Mutex mutex;
   int g = std::ceil(M / tbb::this_task_arena::max_concurrency());
-
-  tbb::parallel_for(tbb::blocked_range<int>(0, M, g), [&](tbb::blocked_range<int> r) {
+  tbb::parallel_for(tbb::blocked_range<int>(0, M, g), [this](tbb::blocked_range<int> r) {
     //mutex.lock();
     //cout << "Range " << r.begin() << " " << r.end() << "\n";
     //mutex.unlock();
@@ -386,9 +382,8 @@ void LDA::estimate3() {
 
 void LDA::estimate2() {
 
-  Mutex mutex;
   int g = std::ceil(M / tbb::this_task_arena::max_concurrency());
-  tbb::parallel_for(tbb::blocked_range<int>(0, M, g), [&](tbb::blocked_range<int> r) {
+  tbb::parallel_for(tbb::blocked_range<int>(0, M, g), [this](tbb::blocked_range<int> r) {
     //mutex.lock();
     //cout << "Range " << r.begin() << " " << r.end() << "\n";
     //mutex.unlock();
@@ -412,9 +407,8 @@ void LDA::estimate2() {
 
 void LDA::estimate() {
 
-    Mutex mutex;
     int g = std::ceil(M / tbb::this_task_arena::max_concurrency());
-    tbb::parallel_for(tbb::blocked_range<int>(0, M, g), [&](tbb::blocked_range<int> r) {
+    tbb::parallel_for(tbb::blocked_range<int>(0, M, g), [this](tbb::blocked_range<int> r) {
         //mutex.lock();
         //Rcout << "Range " << r.begin() << " " << r.end() << "\n";
         //mutex.unlock();
