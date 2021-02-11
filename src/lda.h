@@ -427,7 +427,7 @@ void LDA::estimate() {
                 int w = it.row();
                 nw.col(w) += nw_tp.col(w);
             }
-            nw.col(m) += nw_tp.col(m);
+            nd.col(m) += nd_tp.col(m);
             nwsum += nwsum_tp;
             mutex.unlock();
         }
