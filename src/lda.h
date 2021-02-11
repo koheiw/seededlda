@@ -57,6 +57,8 @@ class LDA {
         bool seeded;
         bool fitted;
 
+        Mutex mutex;
+
         arma::sp_mat data; // transposed document-feature matrix
         arma::colvec p; // temp variable for sampling
         Texts topics; // topic assignments for words, size M x doc.size()
@@ -97,6 +99,8 @@ class LDA {
         void estimate();
         void estimate2();
         void estimate3();
+        void estimate4();
+        void estimate5();
         int sample(int m, int n, int w);
         int sample(int m, int n, int w,
                    arma::mat& nw_tp, arma::mat& nd_tp, arma::colvec& nwsum_tp);
@@ -208,19 +212,23 @@ void LDA::fit(int parallel) {
             if (verbose)
                 Rprintf("   ...iteration %d\n", liter);
         }
-        if (parallel == 1) {
+        if (parallel == 0) {
+          for (int m = 0; m < M; m++) {
+            estimate(m);
+          }
+        } else if (parallel == 1) {
             estimate();
         } else if (parallel == 2) {
             estimate2();
         } else if (parallel == 3) {
             estimate3();
-        } else {
-            for (int m = 0; m < M; m++) {
-                estimate(m);
-            }
+        } else if (parallel == 4) {
+            estimate4();
         }
-
     }
+
+    if (parallel == 5)
+      estimate5();
 
     if (verbose)
         Rprintf("   ...computing theta and phi\n");
@@ -265,10 +273,89 @@ void LDA::estimate() {
     parallelFor(0, texts.size(), estimate_worker, g);
 }
 */
+
+
+void LDA::estimate5() {
+
+  Mutex mutex;
+  int t = tbb::this_task_arena::max_concurrency();
+  if (verbose)
+    Rprintf("   ...parallel sampling with %d threads\n", t);
+  int g = std::ceil(M / t);
+
+  tbb::parallel_for(tbb::blocked_range<int>(0, M, g), [&](tbb::blocked_range<int> r) {
+    //mutex.lock();
+    //cout << "Range " << r.begin() << " " << r.end() << "\n";
+    //mutex.unlock();
+    int id = tbb::task_arena::current_thread_index();
+    arma::mat nw_tp = arma::mat(size(nw));
+    arma::mat nd_tp = arma::mat(size(nd));
+    arma::colvec nwsum_tp = arma::colvec(size(nwsum));
+
+    int last_iter = liter;
+    for (liter = last_iter + 1; liter <= niters + last_iter; liter++) {
+
+      // sample locally
+      for (int m = r.begin(); m < r.end(); ++m) {
+        if (texts[m].size() == 0) return;
+        for (int n = 0; n < texts[m].size(); n++) {
+          topics[m][n] = sample(m, n, texts[m][n], nw_tp, nd_tp, nwsum_tp);
+        }
+      }
+
+      if (liter % 100 == 0) {
+        // update global count
+        mutex.lock();
+        //if (verbose)
+        //  Rprintf("   ...update global count by thread %d\n", id);
+        for (int m = r.begin(); m < r.end(); ++m) {
+          arma::sp_mat::const_col_iterator it = data.begin_col(m);
+          arma::sp_mat::const_col_iterator it_end = data.end_col(m);
+          for(; it != it_end; ++it) {
+            int w = it.row();
+            nw.col(w) += nw_tp.col(w);
+          }
+          nd.col(m) += nd_tp.col(m);
+        }
+        nwsum += nwsum_tp;
+        mutex.unlock();
+
+        // reset
+        nw_tp.zeros();
+        nd_tp.zeros();
+        nwsum_tp.zeros();
+      }
+    }
+  }, tbb::auto_partitioner());
+}
+
+
+void LDA::estimate4() {
+
+  Mutex mutex;
+  int g = std::ceil(M / tbb::this_task_arena::max_concurrency());
+  tbb::parallel_for(tbb::blocked_range<int>(0, M, g), [&](tbb::blocked_range<int> r) {
+    //mutex.lock();
+    //Rcout << "Range " << r.begin() << " " << r.end() << "\n";
+    //mutex.unlock();
+    for (int m = r.begin(); m < r.end(); ++m) {
+      arma::mat nw_tp = arma::mat(size(nw));
+      arma::mat nd_tp = arma::mat(size(nd));
+      arma::colvec nwsum_tp = arma::colvec(size(nwsum));
+      if (texts[m].size() == 0) return;
+      for (int n = 0; n < texts[m].size(); n++) {
+        topics[m][n] = sample(m, n, texts[m][n]);
+      }
+    }
+  }, tbb::auto_partitioner());
+}
+
+
 void LDA::estimate3() {
 
   Mutex mutex;
   int g = std::ceil(M / tbb::this_task_arena::max_concurrency());
+
   tbb::parallel_for(tbb::blocked_range<int>(0, M, g), [&](tbb::blocked_range<int> r) {
     //mutex.lock();
     //cout << "Range " << r.begin() << " " << r.end() << "\n";
@@ -290,7 +377,7 @@ void LDA::estimate3() {
         int w = it.row();
         nw.col(w) += nw_tp.col(w);
       }
-      nw.col(m) += nw_tp.col(m);
+      nd.col(m) += nd_tp.col(m);
     }
     nwsum += nwsum_tp;
     mutex.unlock();
@@ -315,8 +402,8 @@ void LDA::estimate2() {
       }
     }
     mutex.lock();
-    nw.cols(r.begin(), r.end() - 1) += nw_tp.cols(r.begin(), r.end() - 1);
-    nw.cols(r.begin(), r.end() - 1) += nw_tp.cols(r.begin(), r.end() - 1);
+    nw += nw_tp;
+    nd.cols(r.begin(), r.end() - 1) += nd_tp.cols(r.begin(), r.end() - 1);
     nwsum += nwsum_tp;
     mutex.unlock();
   }, tbb::auto_partitioner());
@@ -368,9 +455,11 @@ int LDA::sample(int m, int n, int w) {
 
     // remove z_i from the count variables
     int topic = topics[m][n];
+    mutex.lock();
     nw.at(topic, w) -= 1;
     nd.at(topic, m) -= 1;
     nwsum[topic] -= 1;
+    mutex.unlock();
 
     double Vbeta = V * beta;
     double Kalpha = K * alpha;
@@ -401,9 +490,11 @@ int LDA::sample(int m, int n, int w) {
     }
 
     // add newly estimated z_i to count variables
+    mutex.lock();
     nw.at(topic, w) += 1;
     nd.at(topic, m) += 1;
     nwsum[topic] += 1;
+    mutex.unlock();
 
     return topic;
 }
