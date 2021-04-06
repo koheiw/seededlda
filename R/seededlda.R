@@ -30,7 +30,8 @@
 #'
 #' data("data_corpus_moviereviews", package = "quanteda.textmodels")
 #' corp <- head(data_corpus_moviereviews, 500)
-#' dfmt <- dfm(corp, remove_number = TRUE) %>%
+#' toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE)
+#' dfmt <- dfm(toks) %>%
 #'     dfm_remove(stopwords('en'), min_nchar = 2) %>%
 #'     dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile",
 #'              max_docfreq = 0.1, docfreq_type = "prop")
@@ -47,7 +48,7 @@
 #'                         moster = c("monster*", "ghost*", "zombie*"),
 #'                         war = c("war", "soldier*", "tanks"),
 #'                         crime = c("crime*", "murder", "killer")))
-#' slda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
+#' slda <- textmodel_seededlda(dfmt, dict, residual = TRUE, min_termfreq = 100)
 #' terms(slda)
 #' topics(slda)
 #' }
