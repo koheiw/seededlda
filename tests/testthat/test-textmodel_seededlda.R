@@ -1,4 +1,3 @@
-context("textmodel_seededlda")
 
 require(quanteda)
 data(data_corpus_moviereviews, package = "quanteda.textmodels")
@@ -15,10 +14,11 @@ sifi <- c("space", "mars", "alien", "earth")
 test_that("seeded LDA is working", {
 
     dict <- dictionary(list(romance = c("love*", "couple*"),
-                            sifi = c("arean*", "star", "space")))
+                            sifi = c("alien*", "star", "space")))
 
     set.seed(1234)
-    lda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
+    lda <- textmodel_seededlda(dfmt, dict, residual = TRUE,
+                               min_termfreq = 100)
 
     expect_equal(dim(terms(lda, 10)), c(10, 3))
     expect_equal(dim(terms(lda, 20)), c(20, 3))
@@ -77,7 +77,7 @@ test_that("seeded LDA is working", {
 test_that("seeded LDA is working", {
 
     dict <- dictionary(list(romance = c("love*", "couple*", "couples"),
-                            sifi = c("arean*", "star", "space", "dragon")))
+                            sifi = c("alien*", "star", "space", "dragon")))
 
     set.seed(1234)
     lda1 <- textmodel_seededlda(dfmt, dict, residual = TRUE)
@@ -92,7 +92,7 @@ test_that("seeded LDA is working", {
 test_that("predict works with seeded LDA", {
 
     dict <- dictionary(list(romance = c("love*", "couple*"),
-                            sifi = c("arean*", "star", "space")))
+                            sifi = c("alien*", "star", "space")))
 
     dfmt_train <- head(dfmt, 450)
     dfmt_test <- tail(dfmt, 50)

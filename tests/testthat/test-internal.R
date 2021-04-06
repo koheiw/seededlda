@@ -5,7 +5,7 @@ dict <- dictionary(list(A = c("a", "aa*", "abc"),
                         B = c("b*", "bb*", "bcd"),
                         AB = c("aa", "bb")))
 txt <- c("a aa aa aaa abc", "b b bb bcd bcd")
-dfmt <- dfm(txt)
+dfmt <- dfm(tokens(txt))
 
 test_that("tfm is working", {
 
