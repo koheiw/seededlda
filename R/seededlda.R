@@ -41,7 +41,7 @@
 #'
 #' # semisupervised LDA
 #' dict <- dictionary(list(people = c("family", "couple", "kids"),
-#'                         space = c("areans", "planet", "space"),
+#'                         space = c("alien", "planet", "space"),
 #'                         moster = c("monster*", "ghost*", "zombie*"),
 #'                         war = c("war", "soldier*", "tanks"),
 #'                         crime = c("crime*", "murder", "killer")))
