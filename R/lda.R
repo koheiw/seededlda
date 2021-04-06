@@ -29,7 +29,7 @@ textmodel_lda.dfm <- function(
 #' @importFrom methods as
 #' @import quanteda
 #' @useDynLib seededlda, .registration = TRUE
-lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose, old = FALSE, parallel = 0) {
+lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose, old = FALSE, ...) {
 
     k <- as.integer(k)
     max_iter <- as.integer(max_iter)
@@ -57,7 +57,7 @@ lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose, old =
     if (old) {
         result <- cpp_lda0(x, k, max_iter, alpha, beta, seeds, words, random, verbose)
     } else {
-        result <- cpp_lda(x, k, max_iter, alpha, beta, seeds, words, random, parallel, verbose)
+        result <- cpp_lda(x, k, max_iter, alpha, beta, seeds, words, random, verbose)
     }
 
     dimnames(result$phi) <- list(label, colnames(x))

@@ -10,7 +10,7 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
              arma::sp_mat &seeds, arma::sp_mat &words, int random,
-             int parallel = 0, bool verbose = false) {
+             bool verbose = false) {
 
     mt = mt.t();
     seeds = seeds.t();
@@ -39,7 +39,7 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
             lda.nw = lda.nw + s; // set pseudo count
             //lda.nwsum = lda.nwsum + arma::sum(s, 0);
         }
-        lda.fit(parallel);
+        lda.fit();
         if (seeded)
             lda.nwsum = lda.nwsum + arma::colvec(arma::sum(s, 1));
     }
