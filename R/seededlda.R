@@ -1,26 +1,28 @@
 #' Semisupervised Latent Dirichlet allocation
 #'
-#' `textmodel_seededlda()` implements semisupervised Latent Dirichlet allocation (seeded-LDA).
-#' The estimator's code adopted from the GibbsLDA++ library (Xuan-Hieu Phan,
-#' 2007). `textmodel_seededlda()` allows identification of pre-defined topics by
-#' semisupervised learning with a seed word dictionary.
-#' @param dictionary a [quanteda::dictionary()] with seed words as
-#'  examples of topics.
+#' `textmodel_seededlda()` implements semisupervised Latent Dirichlet allocation
+#' (seeded-LDA). The estimator's code adopted from the GibbsLDA++ library
+#' (Xuan-Hieu Phan, 2007). `textmodel_seededlda()` allows identification of
+#' pre-defined topics by semisupervised learning with a seed word dictionary.
+#' @param dictionary a [quanteda::dictionary()] with seed words that define
+#'   topics.
 #' @param residual if \code{TRUE} a residual topic (or "garbage topic") will be
 #'   added to user-defined topics.
 #' @param weight pseudo count given to seed words as a proportion of total
 #'   number of words in `x`.
 #' @param valuetype see [quanteda::valuetype]
 #' @param case_insensitive see [quanteda::valuetype]
-#' @param ... passed to [quanteda::dfm_trim] to select seed words based on their term or document frequency.
-#' @references
-#'   Lu, Bin et al. (2011).
-#'   [Multi-aspect Sentiment Analysis with Topic Models](https://dl.acm.org/doi/10.5555/2117693.2119585).
-#'   *Proceedings of the 2011 IEEE 11th International Conference on Data Mining Workshops*.
+#' @param ... passed to [quanteda::dfm_trim] to restrict seed words based on
+#'   their term or document frequency. This is useful when glob patterns in the
+#'   dictionary match too many words.
+#' @references Lu, Bin et al. (2011). [Multi-aspect Sentiment Analysis with
+#'   Topic Models](https://dl.acm.org/doi/10.5555/2117693.2119585). *Proceedings
+#'   of the 2011 IEEE 11th International Conference on Data Mining Workshops*.
 #'
-#'   Watanabe, Kohei & Zhou, Yuan (2020).
-#'   [Theory-Driven Analysis of Large Corpora: Semisupervised Topic Classification of the UN Speeches](https://doi.org/10.1177/0894439320907027).
-#'   *Social Science Computer Review*.
+#'   Watanabe, Kohei & Zhou, Yuan (2020). [Theory-Driven Analysis of Large
+#'   Corpora: Semisupervised Topic Classification of the UN
+#'   Speeches](https://doi.org/10.1177/0894439320907027). *Social Science
+#'   Computer Review*.
 #'
 #' @examples
 #' \dontrun{
