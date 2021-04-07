@@ -54,11 +54,11 @@ lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose, old =
         words <- as(Matrix::Matrix(0, nrow = nfeat(x), ncol = k), "dgCMatrix")
 
     random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
-    if (old) {
+    #if (old) {
         result <- cpp_lda0(x, k, max_iter, alpha, beta, seeds, words, random, verbose)
-    } else {
-        result <- cpp_lda(x, k, max_iter, alpha, beta, seeds, words, random, verbose)
-    }
+    #} else {
+    #    result <- cpp_lda(x, k, max_iter, alpha, beta, seeds, words, random, verbose)
+    #}
 
     dimnames(result$phi) <- list(label, colnames(x))
     dimnames(result$theta) <- list(rownames(x), label)

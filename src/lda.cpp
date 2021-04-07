@@ -1,4 +1,4 @@
-//#define ARMA_NO_DEBUG
+#define ARMA_NO_DEBUG
 #include "lib.h"
 #include "dev.h"
 #include "lda.h"
@@ -21,7 +21,7 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
     lda.set_data(mt);
     lda.set_fitted(words);
     lda.random = random;
-    if (max_iter > 0)
+    if (max_iter >= 0)
         lda.niters = max_iter;
     if (alpha > 0)
         lda.alpha = alpha;
@@ -37,14 +37,18 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
                 throw std::invalid_argument("Invalid seed matrix");
             s = arma::mat(seeds);
             lda.nw = lda.nw + s; // set pseudo count
-            //lda.nwsum = lda.nwsum + arma::sum(s, 0);
         }
         lda.fit();
         if (seeded)
             lda.nwsum = lda.nwsum + arma::colvec(arma::sum(s, 1));
     }
+    if (verbose)
+        Rprintf("   ...computing theta and phi\n");
     lda.compute_theta();
     lda.compute_phi();
+
+    if (verbose)
+        Rprintf("   ...complete\n");
 
     return List::create(Rcpp::Named("k") = lda.K,
                         Rcpp::Named("max_iter") = lda.niters,

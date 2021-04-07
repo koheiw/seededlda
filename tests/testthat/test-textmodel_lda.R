@@ -1,5 +1,3 @@
-context("textmodel_lda")
-
 require(quanteda)
 data(data_corpus_moviereviews, package = "quanteda.textmodels")
 

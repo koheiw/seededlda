@@ -11,7 +11,6 @@ textmodel_lda(
   max_iter = 2000,
   alpha = NULL,
   beta = NULL,
-  parallel = FALSE,
   verbose = quanteda_options("verbose"),
   ...
 )
@@ -44,10 +43,12 @@ textmodel_seededlda(
 \item{verbose}{logical; if \code{TRUE} print diagnostic information during
 fitting.}
 
-\item{...}{passed to \link[quanteda:dfm_trim]{quanteda::dfm_trim} to select seed words based on their term or document frequency.}
+\item{...}{passed to \link[quanteda:dfm_trim]{quanteda::dfm_trim} to restrict seed words based on
+their term or document frequency. This is useful when glob patterns in the
+dictionary match too many words.}
 
-\item{dictionary}{a \code{\link[quanteda:dictionary]{quanteda::dictionary()}} with seed words as
-examples of topics.}
+\item{dictionary}{a \code{\link[quanteda:dictionary]{quanteda::dictionary()}} with seed words that define
+topics.}
 
 \item{valuetype}{see \link[quanteda:valuetype]{quanteda::valuetype}}
 
@@ -60,10 +61,10 @@ added to user-defined topics.}
 number of words in \code{x}.}
 }
 \description{
-\code{textmodel_seededlda()} implements semisupervised Latent Dirichlet allocation (seeded-LDA).
-The estimator's code adopted from the GibbsLDA++ library (Xuan-Hieu Phan,
-2007). \code{textmodel_seededlda()} allows identification of pre-defined topics by
-semisupervised learning with a seed word dictionary.
+\code{textmodel_seededlda()} implements semisupervised Latent Dirichlet allocation
+(seeded-LDA). The estimator's code adopted from the GibbsLDA++ library
+(Xuan-Hieu Phan, 2007). \code{textmodel_seededlda()} allows identification of
+pre-defined topics by semisupervised learning with a seed word dictionary.
 }
 \examples{
 \dontrun{
@@ -71,7 +72,8 @@ require(quanteda)
 
 data("data_corpus_moviereviews", package = "quanteda.textmodels")
 corp <- head(data_corpus_moviereviews, 500)
-dfmt <- dfm(corp, remove_number = TRUE) \%>\%
+toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE)
+dfmt <- dfm(toks) \%>\%
     dfm_remove(stopwords('en'), min_nchar = 2) \%>\%
     dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile",
              max_docfreq = 0.1, docfreq_type = "prop")
@@ -84,7 +86,7 @@ predict(lda, newdata = tail(dfmt, 50))
 
 # semisupervised LDA
 dict <- dictionary(list(people = c("family", "couple", "kids"),
-                        space = c("areans", "planet", "space"),
+                        space = c("alien", "planet", "space"),
                         moster = c("monster*", "ghost*", "zombie*"),
                         war = c("war", "soldier*", "tanks"),
                         crime = c("crime*", "murder", "killer")))
@@ -94,13 +96,11 @@ topics(slda)
 }
 }
 \references{
-Lu, Bin et al. (2011).
-\href{https://dl.acm.org/doi/10.5555/2117693.2119585}{Multi-aspect Sentiment Analysis with Topic Models}.
-\emph{Proceedings of the 2011 IEEE 11th International Conference on Data Mining Workshops}.
+Lu, Bin et al. (2011). \href{https://dl.acm.org/doi/10.5555/2117693.2119585}{Multi-aspect Sentiment Analysis with Topic Models}. \emph{Proceedings
+of the 2011 IEEE 11th International Conference on Data Mining Workshops}.
 
-Watanabe, Kohei & Zhou, Yuan (2020).
-\href{https://doi.org/10.1177/0894439320907027}{Theory-Driven Analysis of Large Corpora: Semisupervised Topic Classification of the UN Speeches}.
-\emph{Social Science Computer Review}.
+Watanabe, Kohei & Zhou, Yuan (2020). \href{https://doi.org/10.1177/0894439320907027}{Theory-Driven Analysis of Large Corpora: Semisupervised Topic Classification of the UN Speeches}. \emph{Social Science
+Computer Review}.
 }
 \seealso{
 \link[topicmodels:lda]{topicmodels}

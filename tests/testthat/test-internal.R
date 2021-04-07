@@ -1,5 +1,3 @@
-context("internal functions")
-
 require(quanteda)
 dict <- dictionary(list(A = c("a", "aa*", "abc"),
                         B = c("b*", "bb*", "bcd"),

@@ -1,7 +1,8 @@
-# Changes in v0.5.2
+# Changes in v0.6.0
 
-* Added predict() to identify topics of unseen documents (#9)
-* Allow selecting seed words based on their frequencies using dfm_trim() in textmodel_seededlda() via ... (#8)
+* Adds predict() to identify topics of unseen documents (#9)
+* Allows selecting seed words based on their frequencies using `dfm_trim()` in `textmodel_seededlda()` via `...` (#8)
+* Improves the speed of Gibbs sampling by optimizing the C++ code
 
 # Changes in v0.5.1
 

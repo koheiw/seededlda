@@ -57,8 +57,6 @@ class LDA {
         bool seeded;
         bool fitted;
 
-        Mutex mutex;
-
         arma::sp_mat data; // transposed document-feature matrix
         arma::colvec p; // temp variable for sampling
         Texts topics; // topic assignments for words, size M x doc.size()
@@ -212,14 +210,7 @@ void LDA::fit() {
           estimate(m);
         }
     }
-
-    if (verbose)
-        Rprintf("   ...computing theta and phi\n");
-    //compute_theta();
-    //compute_phi();
     liter--;
-    if (verbose)
-        Rprintf("   ...complete\n");
 }
 
 // void LDA::estimate() {
@@ -266,11 +257,9 @@ int LDA::sample(int m, int n, int w) {
 
     // remove z_i from the count variables
     int topic = topics[m][n];
-    mutex.lock();
     nw.at(topic, w) -= 1;
     nd.at(topic, m) -= 1;
     nwsum[topic] -= 1;
-    mutex.unlock();
 
     double Vbeta = V * beta;
     double Kalpha = K * alpha;
@@ -301,11 +290,9 @@ int LDA::sample(int m, int n, int w) {
     }
 
     // add newly estimated z_i to count variables
-    mutex.lock();
     nw.at(topic, w) += 1;
     nd.at(topic, m) += 1;
     nwsum[topic] += 1;
-    mutex.unlock();
 
     return topic;
 }

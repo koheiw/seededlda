@@ -36,7 +36,8 @@ require(quanteda)
 
 data("data_corpus_moviereviews", package = "quanteda.textmodels")
 corp <- head(data_corpus_moviereviews, 500)
-dfmt <- dfm(corp, remove_number = TRUE) \%>\%
+toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE)
+dfmt <- dfm(toks) \%>\%
     dfm_remove(stopwords('en'), min_nchar = 2) \%>\%
     dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile",
              max_docfreq = 0.1, docfreq_type = "prop")
@@ -49,7 +50,7 @@ predict(lda, newdata = tail(dfmt, 50))
 
 # semisupervised LDA
 dict <- dictionary(list(people = c("family", "couple", "kids"),
-                        space = c("areans", "planet", "space"),
+                        space = c("alien", "planet", "space"),
                         moster = c("monster*", "ghost*", "zombie*"),
                         war = c("war", "soldier*", "tanks"),
                         crime = c("crime*", "murder", "killer")))
@@ -59,13 +60,11 @@ topics(slda)
 }
 }
 \references{
-Lu, Bin et al. (2011).
-\href{https://dl.acm.org/doi/10.5555/2117693.2119585}{Multi-aspect Sentiment Analysis with Topic Models}.
-\emph{Proceedings of the 2011 IEEE 11th International Conference on Data Mining Workshops}.
+Lu, Bin et al. (2011). \href{https://dl.acm.org/doi/10.5555/2117693.2119585}{Multi-aspect Sentiment Analysis with Topic Models}. \emph{Proceedings
+of the 2011 IEEE 11th International Conference on Data Mining Workshops}.
 
-Watanabe, Kohei & Zhou, Yuan (2020).
-\href{https://doi.org/10.1177/0894439320907027}{Theory-Driven Analysis of Large Corpora: Semisupervised Topic Classification of the UN Speeches}.
-\emph{Social Science Computer Review}.
+Watanabe, Kohei & Zhou, Yuan (2020). \href{https://doi.org/10.1177/0894439320907027}{Theory-Driven Analysis of Large Corpora: Semisupervised Topic Classification of the UN Speeches}. \emph{Social Science
+Computer Review}.
 }
 \seealso{
 \link[topicmodels:lda]{topicmodels}
