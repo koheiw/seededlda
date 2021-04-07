@@ -17,7 +17,7 @@ test_that("seeded LDA is working", {
 
     set.seed(1234)
     lda <- textmodel_seededlda(dfmt, dict, residual = TRUE,
-                               min_termfreq = 5)
+                               min_termfreq = 2)
 
     expect_equal(dim(terms(lda, 10)), c(10, 3))
     expect_equal(dim(terms(lda, 20)), c(20, 3))
