@@ -7,7 +7,7 @@ toks <- tokens(data_corpus_moviereviews[1:500],
                remove_number = TRUE)
 dfmt <- dfm(toks) %>%
     dfm_remove(stopwords(), min_nchar = 2) %>%
-    dfm_trim(max_docfreq = 0.5, docfreq_type = "prop")
+    dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
 sifi <- c("space", "mars", "alien", "earth")
 
 test_that("seeded LDA is working", {
@@ -17,7 +17,7 @@ test_that("seeded LDA is working", {
 
     set.seed(1234)
     lda <- textmodel_seededlda(dfmt, dict, residual = TRUE,
-                               min_termfreq = 2)
+                               min_termfreq = 10)
 
     expect_equal(dim(terms(lda, 10)), c(10, 3))
     expect_equal(dim(terms(lda, 20)), c(20, 3))
@@ -63,7 +63,7 @@ test_that("seeded LDA is working", {
     )
     expect_output(
         print(lda),
-        "Topics: 3; 500 documents; 22,989 features\\."
+        "Topics: 3; 500 documents; 22,605 features\\."
     )
     expect_equal(
         names(lda),
