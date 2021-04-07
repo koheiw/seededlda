@@ -47,5 +47,5 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
                         Rcpp::Named("beta") = lda.beta,
                         Rcpp::Named("phi") = wrap(lda.phi),
                         Rcpp::Named("theta") = wrap(lda.theta),
-                        Rcpp::Named("words") = wrap(lda.nw));
+                        Rcpp::Named("words") = wrap(arma::sp_umat(lda.nw)));
 }
