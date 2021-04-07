@@ -63,7 +63,7 @@ test_that("seeded LDA is working", {
     )
     expect_output(
         print(lda),
-        "Topics: 3; 500 documents; 22605 features."
+        "Topics: 3; 500 documents; 22,989 features\\."
     )
     expect_equal(
         names(lda),

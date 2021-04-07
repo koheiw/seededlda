@@ -91,12 +91,10 @@ textmodel_seededlda.dfm <- function(
 print.textmodel_lda <- function(x, ...) {
     cat("\nCall:\n")
     print(x$call)
-    cat("\n",
-        "Topics: ", x$k, "; ",
-        ndoc(x$data), " documents; ",
-        nfeat(x$data), " features.",
-        "\n",
-        sep = "")
+    cat("\n", "Topics: ", x$k, "; ",
+        prettyNum(ndoc(x$data), big.mark = ","), " documents; ",
+        prettyNum(nfeat(x$data), big.mark = ","), " features.",
+        "\n", sep = "")
 }
 
 #' Extract most likely terms

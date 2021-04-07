@@ -52,7 +52,7 @@ test_that("LDA is working", {
     )
     expect_output(
         print(lda),
-        "Topics: 5; 500 documents; 22605 features."
+        "Topics: 5; 500 documents; 22,605 features."
     )
     expect_equal(
         names(lda),
