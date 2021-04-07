@@ -1,5 +1,3 @@
-context("textmodel_seededlda")
-
 require(quanteda)
 data(data_corpus_moviereviews, package = "quanteda.textmodels")
 
@@ -9,16 +7,17 @@ toks <- tokens(data_corpus_moviereviews[1:500],
                remove_number = TRUE)
 dfmt <- dfm(toks) %>%
     dfm_remove(stopwords(), min_nchar = 2) %>%
-    dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
+    dfm_trim(max_docfreq = 0.5, docfreq_type = "prop")
 sifi <- c("space", "mars", "alien", "earth")
 
 test_that("seeded LDA is working", {
 
     dict <- dictionary(list(romance = c("love*", "couple*"),
-                            sifi = c("arean*", "star", "space")))
+                            sifi = c("alien*", "star", "space")))
 
     set.seed(1234)
-    lda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
+    lda <- textmodel_seededlda(dfmt, dict, residual = TRUE,
+                               min_termfreq = 5)
 
     expect_equal(dim(terms(lda, 10)), c(10, 3))
     expect_equal(dim(terms(lda, 20)), c(20, 3))
@@ -77,7 +76,7 @@ test_that("seeded LDA is working", {
 test_that("seeded LDA is working", {
 
     dict <- dictionary(list(romance = c("love*", "couple*", "couples"),
-                            sifi = c("arean*", "star", "space", "dragon")))
+                            sifi = c("alien*", "star", "space", "dragon")))
 
     set.seed(1234)
     lda1 <- textmodel_seededlda(dfmt, dict, residual = TRUE)
@@ -91,14 +90,15 @@ test_that("seeded LDA is working", {
 
 test_that("predict works with seeded LDA", {
 
-    dict <- dictionary(list(romance = c("love*", "couple*"),
-                            sifi = c("arean*", "star", "space")))
+    dict <- dictionary(list(romance = c("lover", "couple", "marige"),
+                            sifi = c("aliens", "star", "space")))
 
     dfmt_train <- head(dfmt, 450)
     dfmt_test <- tail(dfmt, 50)
 
     lda <- textmodel_seededlda(dfmt_train, dict, residual = TRUE)
 
+    # original data
     pred_train <- predict(lda)
     expect_equal(names(pred_train), docnames(dfmt_train))
     expect_equal(
@@ -107,6 +107,7 @@ test_that("predict works with seeded LDA", {
     )
     expect_true(sum(topics(lda) == pred_train) / length(pred_train) > 0.9)
 
+    # new data
     pred_test <- predict(lda, newdata = dfmt_test)
     expect_equal(names(pred_test), docnames(dfmt_test))
     expect_equal(
