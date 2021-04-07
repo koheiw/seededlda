@@ -15,13 +15,13 @@
 #' @param ... passed to [quanteda::dfm_trim] to restrict seed words based on
 #'   their term or document frequency. This is useful when glob patterns in the
 #'   dictionary match too many words.
-#' @references Lu, Bin et al. (2011). [Multi-aspect Sentiment Analysis with
-#'   Topic Models](https://dl.acm.org/doi/10.5555/2117693.2119585). *Proceedings
+#' @references Lu, Bin et al. (2011). "Multi-aspect Sentiment Analysis with
+#'   Topic Models". doi:10.5555/2117693.2119585. *Proceedings
 #'   of the 2011 IEEE 11th International Conference on Data Mining Workshops*.
 #'
-#'   Watanabe, Kohei & Zhou, Yuan (2020). [Theory-Driven Analysis of Large
+#'   Watanabe, Kohei & Zhou, Yuan (2020). "Theory-Driven Analysis of Large
 #'   Corpora: Semisupervised Topic Classification of the UN
-#'   Speeches](https://doi.org/10.1177/0894439320907027). *Social Science
+#'   Speeches". doi:10.1177/0894439320907027. *Social Science
 #'   Computer Review*.
 #'
 #' @examples
