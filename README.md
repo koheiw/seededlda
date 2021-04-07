@@ -63,9 +63,9 @@ print(dict)
 
 ``` r
 corp <- readRDS("tests/data/data_corpus_sputnik.RDS")
-toks <- tokens(corp) %>%
-        tokens_select("^[A-Za-z]+$", valuetype = "regex", min_nchar = 2) %>% 
-        tokens_compound(dict) # multi-word expressions
+toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE) %>%
+        tokens_select(min_nchar = 2) %>% 
+        tokens_compound(dict) # for multi-word expressions
 dfmt <- dfm(toks) %>% 
     dfm_remove(stopwords('en')) %>% 
     dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile", 
@@ -80,48 +80,48 @@ because `residual = TRUE` .
 set.seed(1234)
 slda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
 print(terms(slda, 20))
-##       economy    politics        society         diplomacy    military    
-##  [1,] "company"  "parliament"    "police"        "embassy"    "army"      
-##  [2,] "money"    "congress"      "school"        "diplomatic" "terrorist" 
-##  [3,] "market"   "white_house"   "hospital"      "ambassador" "navy"      
-##  [4,] "bank"     "politicians"   "prison"        "treaty"     "terrorists"
-##  [5,] "industry" "parliamentary" "media"         "diplomat"   "air_force" 
-##  [6,] "banks"    "lawmakers"     "reported"      "diplomats"  "soldiers"  
-##  [7,] "markets"  "voters"        "information"   "north"      "marine"    
-##  [8,] "banking"  "lawmaker"      "local"         "trump"      "syria"     
-##  [9,] "china"    "politician"    "video"         "nuclear"    "defense"   
-## [10,] "chinese"  "uk"            "women"         "korea"      "syrian"    
-## [11,] "percent"  "european"      "found"         "south"      "forces"    
-## [12,] "year"     "minister"      "public"        "sanctions"  "weapons"   
-## [13,] "economic" "eu"            "investigation" "iran"       "nato"      
-## [14,] "trade"    "party"         "news"          "korean"     "israel"    
-## [15,] "oil"      "political"     "court"         "foreign"    "daesh"     
-## [16,] "project"  "prime"         "report"        "security"   "turkish"   
-## [17,] "billion"  "german"        "group"         "meeting"    "turkey"    
-## [18,] "india"    "germany"       "department"    "relations"  "air"       
-## [19,] "million"  "british"       "children"      "donald"     "iraq"      
-## [20,] "system"   "world"         "man"           "moscow"     "saudi"     
-##       other   
-##  [1,] "like"  
-##  [2,] "now"   
-##  [3,] "just"  
-##  [4,] "even"  
-##  [5,] "think" 
-##  [6,] "trump" 
-##  [7,] "way"   
-##  [8,] "going" 
-##  [9,] "many"  
-## [10,] "years" 
-## [11,] "say"   
-## [12,] "want"  
-## [13,] "really"
-## [14,] "back"  
-## [15,] "made"  
-## [16,] "get"   
-## [17,] "world" 
-## [18,] "come"  
-## [19,] "need"  
-## [20,] "much"
+##       economy     politics        society           diplomacy      
+##  [1,] "company"   "parliament"    "police"          "diplomatic"   
+##  [2,] "money"     "congress"      "school"          "embassy"      
+##  [3,] "market"    "white_house"   "hospital"        "ambassador"   
+##  [4,] "bank"      "politicians"   "prison"          "treaty"       
+##  [5,] "industry"  "parliamentary" "schools"         "diplomat"     
+##  [6,] "banks"     "lawmakers"     "pic.twitter.com" "diplomats"    
+##  [7,] "markets"   "voters"        "media"           "north"        
+##  [8,] "banking"   "lawmaker"      "information"     "nuclear"      
+##  [9,] "stock"     "politician"    "reported"        "defense"      
+## [10,] "stockholm" "european"      "local"           "korea"        
+## [11,] "china"     "minister"      "video"           "south"        
+## [12,] "chinese"   "eu"            "women"           "trump"        
+## [13,] "percent"   "party"         "department"      "korean"       
+## [14,] "year"      "uk"            "found"           "missile"      
+## [15,] "india"     "sanctions"     "investigation"   "moscow"       
+## [16,] "oil"       "political"     "social"          "meeting"      
+## [17,] "countries" "prime"         "public"          "security"     
+## [18,] "economic"  "union"         "court"           "nato"         
+## [19,] "billion"   "germany"       "several"         "foreign"      
+## [20,] "trade"     "election"      "took"            "international"
+##       military     other     
+##  [1,] "army"       "trump"   
+##  [2,] "terrorist"  "just"    
+##  [3,] "navy"       "like"    
+##  [4,] "terrorists" "world"   
+##  [5,] "soldiers"   "think"   
+##  [6,] "air_force"  "now"     
+##  [7,] "marine"     "even"    
+##  [8,] "soldier"    "going"   
+##  [9,] "syria"      "get"     
+## [10,] "syrian"     "american"
+## [11,] "iran"       "made"    
+## [12,] "forces"     "say"     
+## [13,] "israel"     "way"     
+## [14,] "group"      "want"    
+## [15,] "daesh"      "really"  
+## [16,] "turkish"    "show"    
+## [17,] "turkey"     "come"    
+## [18,] "region"     "make"    
+## [19,] "security"   "know"    
+## [20,] "war"        "back"
 ```
 
 ``` r
@@ -129,5 +129,5 @@ topic <- table(topics(slda))
 print(topic)
 ## 
 ##   economy  politics   society diplomacy  military     other 
-##       137       166       248       140       145       164
+##       140       160       243       134       121       202
 ```
