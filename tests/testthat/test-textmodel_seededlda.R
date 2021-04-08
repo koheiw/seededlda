@@ -74,6 +74,7 @@ test_that("seeded LDA is working", {
 })
 
 test_that("seeded LDA is working", {
+    skip_on_cran()
 
     dict <- dictionary(list(romance = c("love*", "couple*", "couples"),
                             sifi = c("alien*", "star", "space", "dragon")))
@@ -89,6 +90,7 @@ test_that("seeded LDA is working", {
 })
 
 test_that("predict works with seeded LDA", {
+    skip_on_cran()
 
     dict <- dictionary(list(romance = c("lover", "couple", "marige"),
                             sifi = c("aliens", "star", "space")))

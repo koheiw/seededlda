@@ -78,6 +78,7 @@ test_that("LDA works with empty documents", {
 })
 
 test_that("predict works with LDA", {
+    skip_on_cran()
 
     dfmt_train <- head(dfmt, 450)
     dfmt_test <- tail(dfmt, 50)
