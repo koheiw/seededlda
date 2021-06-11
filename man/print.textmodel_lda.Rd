@@ -15,4 +15,3 @@
 Print method for a LDA model
 }
 \keyword{internal}
-\keyword{textmodel}
