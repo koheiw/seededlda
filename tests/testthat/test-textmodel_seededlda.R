@@ -16,7 +16,7 @@ test_that("seeded LDA is working", {
                             sifi = c("alien*", "star", "space")))
 
     set.seed(1234)
-    lda <- textmodel_seededlda(dfmt, dict, residual = TRUE,
+    lda <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.02,
                                min_termfreq = 10)
 
     expect_equal(dim(terms(lda, 10)), c(10, 3))
@@ -30,6 +30,15 @@ test_that("seeded LDA is working", {
     )
     expect_true(
         all(sifi %in% terms(lda)[,"sifi"])
+    )
+    expect_identical(
+        lda$dictionary, dict
+    )
+    expect_true(
+        lda$residual
+    )
+    expect_equal(
+        lda$weight, 0.02
     )
     expect_false(
         any(sifi %in% terms(lda)[,"other"])
@@ -68,7 +77,8 @@ test_that("seeded LDA is working", {
     expect_equal(
         names(lda),
         c("k", "max_iter", "last_iter", "alpha", "beta", "phi", "theta",
-          "words", "data", "call")
+          "words", "data", "call", "dictionary", "valuetype", "case_insensitive",
+          "residual", "weight")
     )
     expect_equivalent(class(lda$words), "dgCMatrix")
 })

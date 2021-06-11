@@ -6,7 +6,7 @@
 #'   fitting.
 #' @param alpha the hyper parameter for topic-document distribution
 #' @param beta the hyper parameter for topic-word distribution
-#' @keywords textmodel experimental
+#' @keywords textmodel
 #' @seealso [topicmodels][topicmodels::LDA]
 #' @export
 textmodel_lda <- function(
