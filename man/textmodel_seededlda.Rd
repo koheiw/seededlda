@@ -66,7 +66,8 @@ dictionary match too many words.}
 pre-defined topics by semisupervised learning with a seed word dictionary.
 }
 \examples{
-\dontrun{
+\donttest{
+require(seededlda)
 require(quanteda)
 
 data("data_corpus_moviereviews", package = "quanteda.textmodels")
@@ -107,5 +108,4 @@ Computer Review}.
 \seealso{
 \link[topicmodels:lda]{topicmodels}
 }
-\keyword{experimental}
 \keyword{textmodel}

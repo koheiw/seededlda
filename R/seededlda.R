@@ -25,7 +25,8 @@
 #'   Computer Review*.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
+#' require(seededlda)
 #' require(quanteda)
 #'
 #' data("data_corpus_moviereviews", package = "quanteda.textmodels")
@@ -79,14 +80,20 @@ textmodel_seededlda.dfm <- function(
         stop("seeds must have the same features")
     k <- ncol(seeds)
     label <- colnames(seeds)
-    lda(x, k, label, max_iter, alpha, beta, seeds, NULL, verbose)
+    result <- lda(x, k, label, max_iter, alpha, beta, seeds, NULL, verbose)
+    result$dictionary <- dictionary
+    result$valuetype <- valuetype
+    result$case_insensitive <- case_insensitive
+    result$residual <- residual
+    result$weight <- weight
+    return(result)
 }
 
 #' Print method for a LDA model
 #' @param x for print method, the object to be printed
 #' @param ... unused
 #' @method print textmodel_lda
-#' @keywords internal textmodel
+#' @keywords internal
 #' @export
 print.textmodel_lda <- function(x, ...) {
     cat("\nCall:\n")

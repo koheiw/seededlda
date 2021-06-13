@@ -31,7 +31,8 @@ result becomes different from \code{topics()} even for the same documents becaus
 \code{predict()} triggers additional iterations.
 }
 \examples{
-\dontrun{
+\donttest{
+require(seededlda)
 require(quanteda)
 
 data("data_corpus_moviereviews", package = "quanteda.textmodels")

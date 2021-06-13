@@ -11,7 +11,7 @@ al. (2010)](https://dl.acm.org/citation.cfm?id=2119585). Until version
 0.3, that packages has been a simple wrapper around the **topicmodels**
 package, but the LDA estimator is newly implemented in C++ using the
 [GibbsLDA++](http://gibbslda.sourceforge.net/) library to be submitted
-to CRAN in August 202. The author believes this package implements the
+to CRAN in August 2020. The author believes this package implements the
 seeded-LDA model more closely to the original proposal.
 
 Please see [*Theory-Driven Analysis of Large Corpora: Semisupervised
@@ -131,3 +131,13 @@ print(topic)
 ##   economy  politics   society diplomacy  military     other 
 ##       140       160       243       134       121       202
 ```
+
+## Examples
+
+Please read the following papers for how to use Seeded LDA in social
+science research:
+
+Curini, Luigi and Vignoli, Valerio. 2021. [Committed Moderates and
+Uncommitted Extremists: Ideological Leaning and Parties’ Narratives on
+Military Interventions in Italy](https://doi.org/10.1093/fpa/orab016),
+*Foreign Policy Analysis*.
