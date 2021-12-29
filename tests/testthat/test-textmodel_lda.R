@@ -62,6 +62,18 @@ test_that("LDA is working", {
     expect_equivalent(class(lda$words), "dgCMatrix")
 })
 
+test_that("verbose works", {
+
+    expect_output(textmodel_lda(dfmt, k = 5, verbose = TRUE, max_iter = 200),
+                  paste("Fitting LDA with 5 topics\n",
+                        "   ...initializing\n",
+                        "   ...Gibbs sampling in 200 itterations\n",
+                        "   ...iteration 100\n",
+                        "   ...iteration 200\n",
+                        "   ...computing theta and phi\n",
+                        "   ...complete", sep = ""), fixed = TRUE)
+
+})
 
 test_that("LDA works with empty documents", {
 
