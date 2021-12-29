@@ -107,7 +107,7 @@ test_that("predict works with LDA", {
 })
 
 
-test_that("model argument works with seeded LDA", {
+test_that("model argument works with LDA", {
     skip_on_cran()
 
     dfmt_train <- head(dfmt, 450)
