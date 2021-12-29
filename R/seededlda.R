@@ -41,7 +41,8 @@
 #' lda <- textmodel_lda(head(dfmt, 450), 6)
 #' terms(lda)
 #' topics(lda)
-#' predict(lda, newdata = tail(dfmt, 50))
+#' lda2 <- textmodel_lda(tail(dfmt, 50), model = lda) # new documents
+#' topics(lda2)
 #'
 #' # semisupervised LDA
 #' dict <- dictionary(list(people = c("family", "couple", "kids"),
@@ -52,6 +53,7 @@
 #' slda <- textmodel_seededlda(dfmt, dict, residual = TRUE, min_termfreq = 10)
 #' terms(slda)
 #' topics(slda)
+#'
 #' }
 #' @export
 textmodel_seededlda <- function(
@@ -60,7 +62,6 @@ textmodel_seededlda <- function(
     case_insensitive = TRUE,
     residual = FALSE, weight = 0.01,
     max_iter = 2000, alpha = NULL, beta = NULL,
-    model = NULL,
     ..., verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_seededlda")
@@ -73,28 +74,15 @@ textmodel_seededlda.dfm <- function(
     case_insensitive = TRUE,
     residual = FALSE, weight = 0.01,
     max_iter = 2000, alpha = NULL, beta = NULL,
-    model = NULL,
     ..., verbose = quanteda_options("verbose")
 ) {
+    seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, ..., verbose = verbose))
+    if (!identical(colnames(x), rownames(seeds)))
+        stop("seeds must have the same features")
+    k <- ncol(seeds)
+    label <- colnames(seeds)
 
-    if (!is.null(model)) {
-        x <- dfm_match(x, colnames(model$phi))
-        k <- model$k
-        label <- rownames(model$phi)
-        alpha <- model$alpha
-        beta <- model$beta
-        seeds <- NULL
-        words <- model$words
-        warning("weight, alpha and beta values are overitten by the fitted model", call. = FALSE)
-    } else {
-        seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, ..., verbose = verbose))
-        if (!identical(colnames(x), rownames(seeds)))
-            stop("seeds must have the same features")
-        k <- ncol(seeds)
-        label <- colnames(seeds)
-        words <- NULL
-    }
-    result <- lda(x, k, label, max_iter, alpha, beta, seeds, words, verbose)
+    result <- lda(x, k, label, max_iter, alpha, beta, seeds, NULL, verbose)
     result$dictionary <- dictionary
     result$valuetype <- valuetype
     result$case_insensitive <- case_insensitive

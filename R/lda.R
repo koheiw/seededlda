@@ -6,12 +6,19 @@
 #'   fitting.
 #' @param alpha the hyper parameter for topic-document distribution
 #' @param beta the hyper parameter for topic-word distribution
+#' @param model a fitted LDA model. `k`, `alpha`, `beta` is overwritten by the values
+#'   saved in the fitted model. See details.
+#' @details To predict topics of new documents, first create a new model with new
+#'   documents `x` and a fitted LDA `model`; then, apply `topics()` to the new
+#'   model. `model` takes a object created by either by [textmodel_lda()] or
+#'   [textmodel_seededlda()].
+#'
 #' @keywords textmodel
 #' @seealso [topicmodels][topicmodels::LDA]
 #' @export
 textmodel_lda <- function(
     x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL,
-    verbose = quanteda_options("verbose")
+    model = NULL, verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_lda")
 }
@@ -19,11 +26,24 @@ textmodel_lda <- function(
 #' @export
 textmodel_lda.dfm <- function(
     x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL,
-    verbose = quanteda_options("verbose")
+    model = NULL, verbose = quanteda_options("verbose")
 ) {
 
-    label <- paste0("topic", seq_len(k))
-    lda(x, k, label, max_iter, alpha, beta, NULL, NULL, verbose)
+    if (!is.null(model)) {
+        if (!is.textmodel_lda(model))
+            stop("model must be a fitted textmodel_lda")
+        x <- dfm_match(x, colnames(model$phi))
+        k <- model$k
+        label <- rownames(model$phi)
+        alpha <- model$alpha
+        beta <- model$beta
+        words <- model$words
+        warning("k, alpha and beta values are overitten by the fitted model", call. = FALSE)
+    } else {
+        label <- paste0("topic", seq_len(k))
+        words <- NULL
+    }
+    lda(x, k, label, max_iter, alpha, beta, NULL, words, verbose)
 }
 
 #' @importFrom methods as
@@ -62,4 +82,8 @@ lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose) {
     result$call <- match.call()
     class(result) <- c("textmodel_lda", "textmodel", "list")
     return(result)
+}
+
+is.textmodel_lda <- function(x) {
+    "textmodel_lda" %in% class(x)
 }

@@ -85,7 +85,9 @@ test_that("predict works with LDA", {
 
     lda <- textmodel_lda(dfmt_train, k = 5)
 
-    pred_train <- predict(lda)
+    expect_warning({
+        pred_train <- predict(lda)
+    })
     expect_equal(names(pred_train), docnames(dfmt_train))
     expect_equal(
         levels(pred_train),
@@ -93,7 +95,9 @@ test_that("predict works with LDA", {
     )
     expect_true(sum(topics(lda) == pred_train) / length(pred_train) > 0.9)
 
-    pred_test <- predict(lda, newdata = dfmt_test)
+    expect_warning({
+        pred_test <- predict(lda, newdata = dfmt_test)
+    })
     expect_equal(names(pred_test), docnames(dfmt_test))
     expect_equal(
         levels(pred_test),
@@ -101,3 +105,38 @@ test_that("predict works with LDA", {
     )
 
 })
+
+
+test_that("model argument works with seeded LDA", {
+    skip_on_cran()
+
+    dfmt_train <- head(dfmt, 450)
+    dfmt_test <- tail(dfmt, 50)
+
+    # fit new model
+    lda <- textmodel_lda(dfmt_train, k = 5)
+
+    # in-sample prediction
+    expect_warning({
+        lda1 <- textmodel_lda(dfmt_train[1:50,], model = lda)
+    }, "k, alpha and beta values are overitten by the fitted model")
+    expect_false(all(lda$phi == lda1$phi))
+    expect_identical(dimnames(lda$phi), dimnames(lda1$phi))
+    expect_true(mean(topics(lda)[1:50] == topics(lda1)) > 0.8)
+    expect_equal(
+        levels(topics(lda1)),
+        c("topic1", "topic2", "topic3", "topic4", "topic5")
+    )
+
+    # out-of-sample prediction
+    expect_warning({
+        lda2 <- textmodel_lda(dfmt_test, model = lda)
+    }, "k, alpha and beta values are overitten by the fitted model")
+    expect_false(all(lda$phi == lda2$phi))
+    expect_identical(dimnames(lda$phi), dimnames(lda2$phi))
+    expect_equal(
+        levels(topics(lda2)),
+        c("topic1", "topic2", "topic3", "topic4", "topic5")
+    )
+})
+
