@@ -38,7 +38,7 @@ textmodel_lda.dfm <- function(
         alpha <- model$alpha
         beta <- model$beta
         words <- model$words
-        warning("k, alpha and beta values are overitten by the fitted model", call. = FALSE)
+        warning("k, alpha and beta values are overwriten by the fitted model", call. = FALSE)
     } else {
         label <- paste0("topic", seq_len(k))
         words <- NULL

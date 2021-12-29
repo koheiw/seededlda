@@ -152,7 +152,7 @@ test_that("model argument works with seeded LDA", {
     # in-sample prediction
     expect_warning({
         lda1 <- textmodel_lda(dfmt_train[1:50,], model = lda)
-    }, "k, alpha and beta values are overitten by the fitted model")
+    }, "k, alpha and beta values are overwriten by the fitted model")
     expect_false(all(lda$phi == lda1$phi))
     expect_identical(dimnames(lda$phi), dimnames(lda1$phi))
     expect_true(mean(topics(lda)[1:50] == topics(lda1)) > 0.9)
@@ -164,7 +164,7 @@ test_that("model argument works with seeded LDA", {
     # out-of-sample prediction
     expect_warning({
         lda2 <- textmodel_lda(dfmt_test, model = lda)
-    }, "k, alpha and beta values are overitten by the fitted model")
+    }, "k, alpha and beta values are overwriten by the fitted model")
     expect_false(all(lda$phi == lda2$phi))
     expect_identical(dimnames(lda$phi), dimnames(lda2$phi))
     expect_equal(
