@@ -127,3 +127,40 @@ test_that("predict works with seeded LDA", {
         c("romance", "sifi", "other")
     )
 })
+
+test_that("predict works with seeded LDA", {
+    skip_on_cran()
+
+    dict <- dictionary(list(romance = c("lover", "couple", "marige"),
+                            sifi = c("aliens", "star", "space")))
+
+    dfmt_train <- head(dfmt, 450)
+    dfmt_test <- tail(dfmt, 50)
+
+    # fit new model
+    lda <- textmodel_seededlda(dfmt_train, dict, residual = TRUE)
+
+    # in-sample prediction
+    expect_warning({
+        lda1 <- textmodel_seededlda(dfmt_train[1:50,], model = lda)
+    }, "weight, alpha and beta values are overitten by the fitted model")
+    expect_false(all(lda$phi == lda1$phi))
+    expect_identical(dimnames(lda$phi), dimnames(lda1$phi))
+    expect_true(mean(topics(lda)[1:50] == topics(lda1)) > 0.9)
+    expect_equal(
+        levels(topics(lda1)),
+        c("romance", "sifi", "other")
+    )
+
+    # out-of-sample prediction
+    expect_warning({
+        lda2 <- textmodel_seededlda(dfmt_test, model = lda)
+    }, "weight, alpha and beta values are overitten by the fitted model")
+    expect_false(all(lda$phi == lda2$phi))
+    expect_identical(dimnames(lda$phi), dimnames(lda2$phi))
+    expect_equal(
+        levels(topics(lda2)),
+        c("romance", "sifi", "other")
+    )
+})
+

@@ -55,11 +55,12 @@
 #' }
 #' @export
 textmodel_seededlda <- function(
-    x, dictionary,
+    x, dictionary = NULL,
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
     residual = FALSE, weight = 0.01,
     max_iter = 2000, alpha = NULL, beta = NULL,
+    model = NULL,
     ..., verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_seededlda")
@@ -67,20 +68,33 @@ textmodel_seededlda <- function(
 
 #' @export
 textmodel_seededlda.dfm <- function(
-    x, dictionary,
+    x, dictionary = NULL,
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
     residual = FALSE, weight = 0.01,
     max_iter = 2000, alpha = NULL, beta = NULL,
+    model = NULL,
     ..., verbose = quanteda_options("verbose")
 ) {
 
-    seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, ..., verbose = verbose))
-    if (!identical(colnames(x), rownames(seeds)))
-        stop("seeds must have the same features")
-    k <- ncol(seeds)
-    label <- colnames(seeds)
-    result <- lda(x, k, label, max_iter, alpha, beta, seeds, NULL, verbose)
+    if (!is.null(model)) {
+        x <- dfm_match(x, colnames(model$phi))
+        k <- model$k
+        label <- rownames(model$phi)
+        alpha <- model$alpha
+        beta <- model$beta
+        seeds <- NULL
+        words <- model$words
+        warning("weight, alpha and beta values are overitten by the fitted model", call. = FALSE)
+    } else {
+        seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, ..., verbose = verbose))
+        if (!identical(colnames(x), rownames(seeds)))
+            stop("seeds must have the same features")
+        k <- ncol(seeds)
+        label <- colnames(seeds)
+        words <- NULL
+    }
+    result <- lda(x, k, label, max_iter, alpha, beta, seeds, words, verbose)
     result$dictionary <- dictionary
     result$valuetype <- valuetype
     result$case_insensitive <- case_insensitive
