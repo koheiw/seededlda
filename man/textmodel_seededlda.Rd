@@ -11,12 +11,13 @@ textmodel_lda(
   max_iter = 2000,
   alpha = NULL,
   beta = NULL,
+  model = NULL,
   verbose = quanteda_options("verbose")
 )
 
 textmodel_seededlda(
   x,
-  dictionary,
+  dictionary = NULL,
   valuetype = c("glob", "regex", "fixed"),
   case_insensitive = TRUE,
   residual = FALSE,
@@ -38,6 +39,9 @@ textmodel_seededlda(
 \item{alpha}{the hyper parameter for topic-document distribution}
 
 \item{beta}{the hyper parameter for topic-word distribution}
+
+\item{model}{a fitted LDA model; if provided, \code{textmodel_lda()} inherits
+parameters from an existing model. See details.}
 
 \item{verbose}{logical; if \code{TRUE} print diagnostic information during
 fitting.}
@@ -65,6 +69,12 @@ dictionary match too many words.}
 (Xuan-Hieu Phan, 2007). \code{textmodel_seededlda()} allows identification of
 pre-defined topics by semisupervised learning with a seed word dictionary.
 }
+\details{
+To predict topics of new documents, first, fit a new model with
+new documents \code{x} and an existing LDA \code{model}; second, apply \code{topics()} to the
+new model. \code{model} takes objects created either by \code{\link[=textmodel_lda]{textmodel_lda()}} or
+\code{\link[=textmodel_seededlda]{textmodel_seededlda()}}.
+}
 \examples{
 \donttest{
 require(seededlda)
@@ -82,7 +92,8 @@ dfmt <- dfm(toks) \%>\%
 lda <- textmodel_lda(head(dfmt, 450), 6)
 terms(lda)
 topics(lda)
-predict(lda, newdata = tail(dfmt, 50))
+lda2 <- textmodel_lda(tail(dfmt, 50), model = lda) # new documents
+topics(lda2)
 
 # semisupervised LDA
 dict <- dictionary(list(people = c("family", "couple", "kids"),
@@ -93,6 +104,7 @@ dict <- dictionary(list(people = c("family", "couple", "kids"),
 slda <- textmodel_seededlda(dfmt, dict, residual = TRUE, min_termfreq = 10)
 terms(slda)
 topics(slda)
+
 }
 }
 \references{

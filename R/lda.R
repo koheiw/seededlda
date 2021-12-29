@@ -6,11 +6,11 @@
 #'   fitting.
 #' @param alpha the hyper parameter for topic-document distribution
 #' @param beta the hyper parameter for topic-word distribution
-#' @param model a fitted LDA model. `k`, `alpha`, `beta` is overwritten by the values
-#'   saved in the fitted model. See details.
-#' @details To predict topics of new documents, first create a new model with new
-#'   documents `x` and a fitted LDA `model`; then, apply `topics()` to the new
-#'   model. `model` takes a object created by either by [textmodel_lda()] or
+#' @param model a fitted LDA model; if provided, `textmodel_lda()` inherits
+#'   parameters from an existing model. See details.
+#' @details To predict topics of new documents, first, fit a new model with
+#'   new documents `x` and an existing LDA `model`; second, apply `topics()` to the
+#'   new model. `model` takes objects created either by [textmodel_lda()] or
 #'   [textmodel_seededlda()].
 #'
 #' @keywords textmodel

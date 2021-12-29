@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // cpp_lda
 List cpp_lda(arma::sp_mat& mt, int k, int max_iter, double alpha, double beta, arma::sp_mat& seeds, arma::sp_mat& words, int random, bool verbose);
 RcppExport SEXP _seededlda_cpp_lda(SEXP mtSEXP, SEXP kSEXP, SEXP max_iterSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP seedsSEXP, SEXP wordsSEXP, SEXP randomSEXP, SEXP verboseSEXP) {

@@ -30,6 +30,12 @@ by a Gibbs sampling with words allocated to topics in the fitted LDA. The
 result becomes different from \code{topics()} even for the same documents because
 \code{predict()} triggers additional iterations.
 }
+\details{
+To predict topics of new documents, first, fit a new model with
+new documents \code{x} and an existing LDA \code{model}; second, apply \code{topics()} to the
+new model. \code{model} takes objects created either by \code{\link[=textmodel_lda]{textmodel_lda()}} or
+\code{\link[=textmodel_seededlda]{textmodel_seededlda()}}.
+}
 \examples{
 \donttest{
 require(seededlda)
@@ -47,7 +53,8 @@ dfmt <- dfm(toks) \%>\%
 lda <- textmodel_lda(head(dfmt, 450), 6)
 terms(lda)
 topics(lda)
-predict(lda, newdata = tail(dfmt, 50))
+lda2 <- textmodel_lda(tail(dfmt, 50), model = lda) # new documents
+topics(lda2)
 
 # semisupervised LDA
 dict <- dictionary(list(people = c("family", "couple", "kids"),
@@ -58,6 +65,7 @@ dict <- dictionary(list(people = c("family", "couple", "kids"),
 slda <- textmodel_seededlda(dfmt, dict, residual = TRUE, min_termfreq = 10)
 terms(slda)
 topics(slda)
+
 }
 }
 \references{
@@ -73,3 +81,4 @@ Computer Review}.
 \seealso{
 \link[topicmodels:lda]{topicmodels}
 }
+\keyword{internal}
