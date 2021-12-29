@@ -17,7 +17,7 @@ textmodel_lda(
 
 textmodel_seededlda(
   x,
-  dictionary = NULL,
+  dictionary,
   valuetype = c("glob", "regex", "fixed"),
   case_insensitive = TRUE,
   residual = FALSE,

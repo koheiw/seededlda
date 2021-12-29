@@ -57,7 +57,7 @@
 #' }
 #' @export
 textmodel_seededlda <- function(
-    x, dictionary = NULL,
+    x, dictionary,
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
     residual = FALSE, weight = 0.01,
@@ -69,7 +69,7 @@ textmodel_seededlda <- function(
 
 #' @export
 textmodel_seededlda.dfm <- function(
-    x, dictionary = NULL,
+    x, dictionary,
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
     residual = FALSE, weight = 0.01,
