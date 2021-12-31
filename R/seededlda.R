@@ -16,13 +16,12 @@
 #'   their term or document frequency. This is useful when glob patterns in the
 #'   dictionary match too many words.
 #' @references Lu, Bin et al. (2011). "Multi-aspect Sentiment Analysis with
-#'   Topic Models". doi:10.5555/2117693.2119585. *Proceedings
-#'   of the 2011 IEEE 11th International Conference on Data Mining Workshops*.
+#'   Topic Models". doi:10.5555/2117693.2119585. *Proceedings of the 2011 IEEE
+#'   11th International Conference on Data Mining Workshops*.
 #'
 #'   Watanabe, Kohei & Zhou, Yuan (2020). "Theory-Driven Analysis of Large
-#'   Corpora: Semisupervised Topic Classification of the UN
-#'   Speeches". doi:10.1177/0894439320907027. *Social Science
-#'   Computer Review*.
+#'   Corpora: Semisupervised Topic Classification of the UN Speeches".
+#'   doi:10.1177/0894439320907027. *Social Science Computer Review*.
 #'
 #' @examples
 #' \donttest{
@@ -107,8 +106,11 @@ print.textmodel_lda <- function(x, ...) {
 }
 
 #' Extract most likely terms
-#' @param x a fitted LDA model
+#'
+#' `terms()` returns the most likely terms, or words, for topics based on the `phi` parameter.
+#' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
 #' @param n number of terms to be extracted
+#' @details Users can access the original matrix `x$phi` for likelihood scores.
 #' @export
 terms <- function(x, n = 10) {
     UseMethod("terms")
@@ -122,8 +124,12 @@ terms.textmodel_lda <- function(x, n = 10) {
 }
 
 #' Extract most likely topics
+#'
+#' `topics()` returns the most likely topics for documents based on the `theta` parameter.
 #' @export
-#' @param x a fitted LDA model
+#' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
+#' @details Users can access the original matrix `x$theta` for likelihood
+#'   scores; run `max.col(x$theta)` to obtain the same result as `topics(x)`.
 topics <- function(x) {
     UseMethod("topics")
 }

@@ -1,18 +1,27 @@
 #' @rdname textmodel_seededlda
 #' @param x the dfm on which the model will be fit
-#' @param k the number of topics
+#' @param k the number of topics; determined automatically by the number of keys
+#'   in `dictionary` in `textmodel_seededlda()`.
 #' @param max_iter the maximum number of iteration in Gibbs sampling.
 #' @param verbose logical; if `TRUE` print diagnostic information during
 #'   fitting.
-#' @param alpha the hyper parameter for topic-document distribution
-#' @param beta the hyper parameter for topic-word distribution
+#' @param alpha the value to smooth topic-document distribution; defaults to
+#'   `alpha = 50 / k`.
+#' @param beta the value to smooth topic-word distribution; defaults to `beta =
+#'   0.1`.
 #' @param model a fitted LDA model; if provided, `textmodel_lda()` inherits
 #'   parameters from an existing model. See details.
-#' @details To predict topics of new documents, first, fit a new model with
-#'   new documents `x` and an existing LDA `model`; second, apply `topics()` to the
-#'   new model. `model` takes objects created either by [textmodel_lda()] or
-#'   [textmodel_seededlda()].
-#'
+#' @details To predict topics of new documents (i.e. out-of-sample), first,
+#'   create a new LDA model from a existing LDA model passed to `model` in
+#'   `textmodel_lda()`; second, apply [topics()] to the new model. The `model`
+#'   argument takes objects created either by `textmodel_lda()` or
+#'   `textmodel_seededlda()`.
+#' @return `textmodel_seededlda()` and `textmodel_lda()` returns a list of model
+#'   parameters. `theta` is the distribution of topics over documents; `phi` is
+#'   the distribution of words over topics. `alpha` and `beta` are the small
+#'   constant added to the frequency of words to estimate `theta` and `phi`,
+#'   respectively, in Gibbs sampling. Other elements in the list subject to
+#'   change.
 #' @keywords textmodel
 #' @seealso [topicmodels][topicmodels::LDA]
 #' @export

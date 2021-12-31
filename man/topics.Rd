@@ -7,8 +7,12 @@
 topics(x)
 }
 \arguments{
-\item{x}{a fitted LDA model}
+\item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}}
 }
 \description{
-Extract most likely topics
+\code{topics()} returns the most likely topics for documents based on the \code{theta} parameter.
+}
+\details{
+Users can access the original matrix \code{x$theta} for likelihood
+scores; run \code{max.col(x$theta)} to obtain the same result as \code{topics(x)}.
 }

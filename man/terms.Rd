@@ -7,10 +7,13 @@
 terms(x, n = 10)
 }
 \arguments{
-\item{x}{a fitted LDA model}
+\item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}}
 
 \item{n}{number of terms to be extracted}
 }
 \description{
-Extract most likely terms
+\code{terms()} returns the most likely terms, or words, for topics based on the \code{phi} parameter.
+}
+\details{
+Users can access the original matrix \code{x$phi} for likelihood scores.
 }
