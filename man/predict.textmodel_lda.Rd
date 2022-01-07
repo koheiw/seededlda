@@ -24,11 +24,26 @@ fitting.}
 
 \item{...}{not used}
 }
+\value{
+\code{textmodel_seededlda()} and \code{textmodel_lda()} returns a list of model
+parameters. \code{theta} is the distribution of topics over documents; \code{phi} is
+the distribution of words over topics. \code{alpha} and \code{beta} are the small
+constant added to the frequency of words to estimate \code{theta} and \code{phi},
+respectively, in Gibbs sampling. Other elements in the list subject to
+change.
+}
 \description{
 Predicts topics of documents with a fitted LDA model. Prediction is performed
 by a Gibbs sampling with words allocated to topics in the fitted LDA. The
 result becomes different from \code{topics()} even for the same documents because
 \code{predict()} triggers additional iterations.
+}
+\details{
+To predict topics of new documents (i.e. out-of-sample), first,
+create a new LDA model from a existing LDA model passed to \code{model} in
+\code{textmodel_lda()}; second, apply \code{\link[=topics]{topics()}} to the new model. The \code{model}
+argument takes objects created either by \code{textmodel_lda()} or
+\code{textmodel_seededlda()}.
 }
 \examples{
 \donttest{
@@ -47,7 +62,8 @@ dfmt <- dfm(toks) \%>\%
 lda <- textmodel_lda(head(dfmt, 450), 6)
 terms(lda)
 topics(lda)
-predict(lda, newdata = tail(dfmt, 50))
+lda2 <- textmodel_lda(tail(dfmt, 50), model = lda) # new documents
+topics(lda2)
 
 # semisupervised LDA
 dict <- dictionary(list(people = c("family", "couple", "kids"),
@@ -58,18 +74,19 @@ dict <- dictionary(list(people = c("family", "couple", "kids"),
 slda <- textmodel_seededlda(dfmt, dict, residual = TRUE, min_termfreq = 10)
 terms(slda)
 topics(slda)
+
 }
 }
 \references{
 Lu, Bin et al. (2011). "Multi-aspect Sentiment Analysis with
-Topic Models". doi:10.5555/2117693.2119585. \emph{Proceedings
-of the 2011 IEEE 11th International Conference on Data Mining Workshops}.
+Topic Models". doi:10.5555/2117693.2119585. \emph{Proceedings of the 2011 IEEE
+11th International Conference on Data Mining Workshops}.
 
 Watanabe, Kohei & Zhou, Yuan (2020). "Theory-Driven Analysis of Large
-Corpora: Semisupervised Topic Classification of the UN
-Speeches". doi:10.1177/0894439320907027. \emph{Social Science
-Computer Review}.
+Corpora: Semisupervised Topic Classification of the UN Speeches".
+doi:10.1177/0894439320907027. \emph{Social Science Computer Review}.
 }
 \seealso{
 \link[topicmodels:lda]{topicmodels}
 }
+\keyword{internal}

@@ -8,11 +8,13 @@
 #' @param newdata dfm on which prediction should be made
 #' @param ... not used
 #' @inherit textmodel_seededlda
+#' @keywords internal
 #' @export
 predict.textmodel_lda <- function(object, newdata = NULL,
                                   max_iter = 2000,
                                   verbose = quanteda_options("verbose"), ...) {
 
+    .Deprecated(msg = "predict() is deprecated; use the model argument in textmodel_lda() to predict topics of new documents")
     max_iter <- as.integer(max_iter)
     if (!is.null(newdata)) {
         data <- newdata

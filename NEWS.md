@@ -1,3 +1,7 @@
+# Changes in v0.8.0
+
+* Add the `model` argument to `textmodel_lda()` to replace `predict()`.
+
 # Changes in v0.7.0
 
 * Change the `textmodel_seededlda` object to save dictionary and related settings (#18)

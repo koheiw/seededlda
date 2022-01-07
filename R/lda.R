@@ -1,17 +1,33 @@
 #' @rdname textmodel_seededlda
 #' @param x the dfm on which the model will be fit
-#' @param k the number of topics
+#' @param k the number of topics; determined automatically by the number of keys
+#'   in `dictionary` in `textmodel_seededlda()`.
 #' @param max_iter the maximum number of iteration in Gibbs sampling.
 #' @param verbose logical; if `TRUE` print diagnostic information during
 #'   fitting.
-#' @param alpha the hyper parameter for topic-document distribution
-#' @param beta the hyper parameter for topic-word distribution
+#' @param alpha the value to smooth topic-document distribution; defaults to
+#'   `alpha = 50 / k`.
+#' @param beta the value to smooth topic-word distribution; defaults to `beta =
+#'   0.1`.
+#' @param model a fitted LDA model; if provided, `textmodel_lda()` inherits
+#'   parameters from an existing model. See details.
+#' @details To predict topics of new documents (i.e. out-of-sample), first,
+#'   create a new LDA model from a existing LDA model passed to `model` in
+#'   `textmodel_lda()`; second, apply [topics()] to the new model. The `model`
+#'   argument takes objects created either by `textmodel_lda()` or
+#'   `textmodel_seededlda()`.
+#' @return `textmodel_seededlda()` and `textmodel_lda()` returns a list of model
+#'   parameters. `theta` is the distribution of topics over documents; `phi` is
+#'   the distribution of words over topics. `alpha` and `beta` are the small
+#'   constant added to the frequency of words to estimate `theta` and `phi`,
+#'   respectively, in Gibbs sampling. Other elements in the list subject to
+#'   change.
 #' @keywords textmodel
 #' @seealso [topicmodels][topicmodels::LDA]
 #' @export
 textmodel_lda <- function(
     x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL,
-    verbose = quanteda_options("verbose")
+    model = NULL, verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_lda")
 }
@@ -19,11 +35,24 @@ textmodel_lda <- function(
 #' @export
 textmodel_lda.dfm <- function(
     x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL,
-    verbose = quanteda_options("verbose")
+    model = NULL, verbose = quanteda_options("verbose")
 ) {
 
-    label <- paste0("topic", seq_len(k))
-    lda(x, k, label, max_iter, alpha, beta, NULL, NULL, verbose)
+    if (!is.null(model)) {
+        if (!is.textmodel_lda(model))
+            stop("model must be a fitted textmodel_lda")
+        x <- dfm_match(x, colnames(model$phi))
+        k <- model$k
+        label <- rownames(model$phi)
+        alpha <- model$alpha
+        beta <- model$beta
+        words <- model$words
+        warning("k, alpha and beta values are overwriten by the fitted model", call. = FALSE)
+    } else {
+        label <- paste0("topic", seq_len(k))
+        words <- NULL
+    }
+    lda(x, k, label, max_iter, alpha, beta, NULL, words, verbose)
 }
 
 #' @importFrom methods as
@@ -62,4 +91,8 @@ lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose) {
     result$call <- match.call()
     class(result) <- c("textmodel_lda", "textmodel", "list")
     return(result)
+}
+
+is.textmodel_lda <- function(x) {
+    "textmodel_lda" %in% class(x)
 }

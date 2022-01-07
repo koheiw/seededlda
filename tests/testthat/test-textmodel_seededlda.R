@@ -111,7 +111,9 @@ test_that("predict works with seeded LDA", {
     lda <- textmodel_seededlda(dfmt_train, dict, residual = TRUE)
 
     # original data
-    pred_train <- predict(lda)
+    expect_warning({
+        pred_train <- predict(lda)
+    })
     expect_equal(names(pred_train), docnames(dfmt_train))
     expect_equal(
         levels(pred_train),
@@ -120,10 +122,54 @@ test_that("predict works with seeded LDA", {
     expect_true(sum(topics(lda) == pred_train) / length(pred_train) > 0.9)
 
     # new data
-    pred_test <- predict(lda, newdata = dfmt_test)
+    expect_warning({
+        pred_test <- predict(lda, newdata = dfmt_test)
+    })
     expect_equal(names(pred_test), docnames(dfmt_test))
     expect_equal(
         levels(pred_test),
         c("romance", "sifi", "other")
     )
 })
+
+test_that("model argument works with seeded LDA", {
+    skip_on_cran()
+
+    dict <- dictionary(list(romance = c("lover", "couple", "marige"),
+                            sifi = c("aliens", "star", "space")))
+
+    dfmt_train <- head(dfmt, 450)
+    dfmt_test <- tail(dfmt, 50)
+
+    # fit new model
+    lda <- textmodel_seededlda(dfmt_train, dict, residual = TRUE)
+
+    expect_error(
+        textmodel_lda(dfmt_train[1:50,], model = list()),
+        "model must be a fitted textmodel_lda"
+    )
+
+    # in-sample prediction
+    expect_warning({
+        lda1 <- textmodel_lda(dfmt_train[1:50,], model = lda)
+    }, "k, alpha and beta values are overwriten by the fitted model")
+    expect_false(all(lda$phi == lda1$phi))
+    expect_identical(dimnames(lda$phi), dimnames(lda1$phi))
+    expect_true(mean(topics(lda)[1:50] == topics(lda1)) > 0.9)
+    expect_equal(
+        levels(topics(lda1)),
+        c("romance", "sifi", "other")
+    )
+
+    # out-of-sample prediction
+    expect_warning({
+        lda2 <- textmodel_lda(dfmt_test, model = lda)
+    }, "k, alpha and beta values are overwriten by the fitted model")
+    expect_false(all(lda$phi == lda2$phi))
+    expect_identical(dimnames(lda$phi), dimnames(lda2$phi))
+    expect_equal(
+        levels(topics(lda2)),
+        c("romance", "sifi", "other")
+    )
+})
+
