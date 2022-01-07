@@ -1,3 +1,4 @@
+
 # Seeded-LDA for semisupervised topic modeling
 
 <!-- badges: start -->
@@ -47,11 +48,11 @@ online?*](https://koheiw.net/wp-content/uploads/2019/06/Sputnik-05-ECPR.pdf).
 
 ``` r
 require(quanteda)
-require(seededlda) # changed from quanteda.seededlda to seededlda
+require(seededlda)
 ```
 
-Users of seeded-LDA has to construct a small dictionary of keywords
-(seed words) to define the desired topics.
+Users of seeded-LDA must provided a small dictionary of keywords (seed
+words) to define the desired topics.
 
 ``` r
 dict <- dictionary(file = "tests/data/topics.yml")
@@ -82,54 +83,54 @@ dfmt <- dfm(toks) %>%
 
 Many of the top terms of the seeded-LDA are seed words but related topic
 words are also identified. The result includes “other” as a junk topic
-because `residual = TRUE` .
+because `residual = TRUE`.
 
 ``` r
 set.seed(1234)
 slda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
 print(terms(slda, 20))
-##       economy     politics        society           diplomacy      
-##  [1,] "company"   "parliament"    "police"          "diplomatic"   
-##  [2,] "money"     "congress"      "school"          "embassy"      
-##  [3,] "market"    "white_house"   "hospital"        "ambassador"   
-##  [4,] "bank"      "politicians"   "prison"          "treaty"       
-##  [5,] "industry"  "parliamentary" "schools"         "diplomat"     
-##  [6,] "banks"     "lawmakers"     "pic.twitter.com" "diplomats"    
-##  [7,] "markets"   "voters"        "media"           "north"        
-##  [8,] "banking"   "lawmaker"      "information"     "nuclear"      
-##  [9,] "stock"     "politician"    "reported"        "defense"      
-## [10,] "stockholm" "european"      "local"           "korea"        
-## [11,] "china"     "minister"      "video"           "south"        
-## [12,] "chinese"   "eu"            "women"           "trump"        
-## [13,] "percent"   "party"         "department"      "korean"       
-## [14,] "year"      "uk"            "found"           "missile"      
-## [15,] "india"     "sanctions"     "investigation"   "moscow"       
-## [16,] "oil"       "political"     "social"          "meeting"      
-## [17,] "countries" "prime"         "public"          "security"     
-## [18,] "economic"  "union"         "court"           "nato"         
-## [19,] "billion"   "germany"       "several"         "foreign"      
-## [20,] "trade"     "election"      "took"            "international"
-##       military     other     
-##  [1,] "army"       "trump"   
-##  [2,] "terrorist"  "just"    
-##  [3,] "navy"       "like"    
-##  [4,] "terrorists" "world"   
-##  [5,] "soldiers"   "think"   
-##  [6,] "air_force"  "now"     
-##  [7,] "marine"     "even"    
-##  [8,] "soldier"    "going"   
-##  [9,] "syria"      "get"     
-## [10,] "syrian"     "american"
-## [11,] "iran"       "made"    
-## [12,] "forces"     "say"     
-## [13,] "israel"     "way"     
-## [14,] "group"      "want"    
-## [15,] "daesh"      "really"  
-## [16,] "turkish"    "show"    
-## [17,] "turkey"     "come"    
-## [18,] "region"     "make"    
-## [19,] "security"   "know"    
-## [20,] "war"        "back"
+##       economy     politics        society           diplomacy   
+##  [1,] "company"   "parliament"    "police"          "diplomatic"
+##  [2,] "money"     "congress"      "school"          "embassy"   
+##  [3,] "market"    "white_house"   "hospital"        "ambassador"
+##  [4,] "bank"      "politicians"   "prison"          "treaty"    
+##  [5,] "industry"  "parliamentary" "schools"         "diplomat"  
+##  [6,] "banks"     "lawmakers"     "pic.twitter.com" "diplomats" 
+##  [7,] "markets"   "voters"        "media"           "like"      
+##  [8,] "banking"   "lawmaker"      "reported"        "just"      
+##  [9,] "stock"     "politician"    "local"           "now"       
+## [10,] "stockholm" "minister"      "information"     "think"     
+## [11,] "china"     "european"      "video"           "even"      
+## [12,] "percent"   "sanctions"     "public"          "trump"     
+## [13,] "chinese"   "eu"            "social"          "going"     
+## [14,] "economic"  "political"     "court"           "made"      
+## [15,] "india"     "party"         "women"           "years"     
+## [16,] "year"      "foreign"       "man"             "way"       
+## [17,] "oil"       "prime"         "report"          "say"       
+## [18,] "project"   "union"         "found"           "want"      
+## [19,] "billion"   "moscow"        "investigation"   "many"      
+## [20,] "million"   "trump"         "department"      "really"    
+##       military        other      
+##  [1,] "army"          "north"    
+##  [2,] "terrorist"     "nuclear"  
+##  [3,] "navy"          "korea"    
+##  [4,] "terrorists"    "south"    
+##  [5,] "air_force"     "iran"     
+##  [6,] "soldiers"      "trump"    
+##  [7,] "marine"        "korean"   
+##  [8,] "soldier"       "world"    
+##  [9,] "defense"       "israel"   
+## [10,] "syria"         "deal"     
+## [11,] "syrian"        "saudi"    
+## [12,] "forces"        "kim"      
+## [13,] "security"      "show"     
+## [14,] "nato"          "israeli"  
+## [15,] "weapons"       "agreement"
+## [16,] "daesh"         "program"  
+## [17,] "turkish"       "cup"      
+## [18,] "turkey"        "trump's"  
+## [19,] "international" "japan"    
+## [20,] "group"         "peace"
 ```
 
 ``` r
@@ -137,12 +138,12 @@ topic <- table(topics(slda))
 print(topic)
 ## 
 ##   economy  politics   society diplomacy  military     other 
-##       140       160       243       134       121       202
+##       136       181       262       158       144       119
 ```
 
 ## Examples
 
-Please read the following papers for how to use Seeded LDA in social
+Please read the following papers for how to apply seeded-LDA in social
 science research:
 
 Curini, Luigi and Vignoli, Valerio. 2021. [Committed Moderates and

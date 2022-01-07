@@ -52,7 +52,10 @@ test_that("LDA is working", {
     )
     expect_output(
         print(lda),
-        "Topics: 5; 500 documents; 22,605 features."
+        paste0("\nCall:\n",
+               "textmodel_lda(x = dfmt, k = 5)\n\n",
+               "5 topics; 500 documents; 22,605 features."),
+        fixed = TRUE
     )
     expect_equal(
         names(lda),

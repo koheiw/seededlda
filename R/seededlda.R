@@ -99,7 +99,7 @@ textmodel_seededlda.dfm <- function(
 print.textmodel_lda <- function(x, ...) {
     cat("\nCall:\n")
     print(x$call)
-    cat("\n", "Topics: ", x$k, "; ",
+    cat("\n", prettyNum(x$k, big.mark = ","), " topics; ",
         prettyNum(ndoc(x$data), big.mark = ","), " documents; ",
         prettyNum(nfeat(x$data), big.mark = ","), " features.",
         "\n", sep = "")

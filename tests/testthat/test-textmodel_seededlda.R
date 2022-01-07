@@ -72,7 +72,11 @@ test_that("seeded LDA is working", {
     )
     expect_output(
         print(lda),
-        "Topics: 3; 500 documents; 22,605 features\\."
+        paste0("\nCall:\n",
+               "textmodel_seededlda(x = dfmt, dictionary = dict, residual = TRUE, \n" ,
+               "    weight = 0.02, min_termfreq = 10)\n\n",
+               "3 topics; 500 documents; 22,605 features."),
+        fixed = TRUE
     )
     expect_equal(
         names(lda),
