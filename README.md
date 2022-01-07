@@ -1,3 +1,14 @@
+<!-- badges: start -->
+
+[![CRAN
+Version](https://www.r-pkg.org/badges/version/seededlda)](https://CRAN.R-project.org/package=seededlda)
+[![Downloads](https://cranlogs.r-pkg.org/badges/seededlda)](https://CRAN.R-project.org/package=seededlda)
+[![Total
+Downloads](https://cranlogs.r-pkg.org/badges/grand-total/seededlda?color=orange)](https://CRAN.R-project.org/package=seededlda)
+[![R build
+status](https://github.com/koheiw/seededlda/workflows/R-CMD-check/badge.svg)](https://github.com/koheiw/seededlda/actions)
+[![codecov](https://codecov.io/gh/koheiw/seededlda/branch/master/graph/badge.svg)](https://codecov.io/gh/koheiw/seededlda)
+<!-- badges: end -->
 
 # Semisupervised LDA for theory-driven text analysis
 
