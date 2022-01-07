@@ -12,9 +12,6 @@ status](https://github.com/koheiw/seededlda/workflows/R-CMD-check/badge.svg)](ht
 [![codecov](https://codecov.io/gh/koheiw/seededlda/branch/master/graph/badge.svg)](https://codecov.io/gh/koheiw/seededlda)
 <!-- badges: end -->
 
-**NOTICE:** This R package is renamed from **quanteda.seededlda** to
-**seededlda** for CRAN submission.
-
 **seededlda** is an R package that implements the seeded-LDA for
 semisupervised topic modeling using **quanteda**. The seeded-LDA model
 was proposed by [Lu et
