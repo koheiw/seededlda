@@ -1,3 +1,5 @@
+# Seeded-LDA for semisupervised topic modeling
+
 <!-- badges: start -->
 
 [![CRAN
@@ -9,8 +11,6 @@ Downloads](https://cranlogs.r-pkg.org/badges/grand-total/seededlda?color=orange)
 status](https://github.com/koheiw/seededlda/workflows/R-CMD-check/badge.svg)](https://github.com/koheiw/seededlda/actions)
 [![codecov](https://codecov.io/gh/koheiw/seededlda/branch/master/graph/badge.svg)](https://codecov.io/gh/koheiw/seededlda)
 <!-- badges: end -->
-
-# Semisupervised LDA for theory-driven text analysis
 
 **NOTICE:** This R package is renamed from **quanteda.seededlda** to
 **seededlda** for CRAN submission.
