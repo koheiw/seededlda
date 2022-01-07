@@ -48,11 +48,11 @@ online?*](https://koheiw.net/wp-content/uploads/2019/06/Sputnik-05-ECPR.pdf).
 
 ``` r
 require(quanteda)
-require(seededlda) # changed from quanteda.seededlda to seededlda
+require(seededlda)
 ```
 
-Users of seeded-LDA has to construct a small dictionary of keywords
-(seed words) to define the desired topics.
+Users of seeded-LDA must provided a small dictionary of keywords (seed
+words) to define the desired topics.
 
 ``` r
 dict <- dictionary(file = "tests/data/topics.yml")
@@ -83,7 +83,7 @@ dfmt <- dfm(toks) %>%
 
 Many of the top terms of the seeded-LDA are seed words but related topic
 words are also identified. The result includes “other” as a junk topic
-because `residual = TRUE` .
+because `residual = TRUE`.
 
 ``` r
 set.seed(1234)
@@ -143,7 +143,7 @@ print(topic)
 
 ## Examples
 
-Please read the following papers for how to use Seeded LDA in social
+Please read the following papers for how to apply seeded-LDA in social
 science research:
 
 Curini, Luigi and Vignoli, Valerio. 2021. [Committed Moderates and
