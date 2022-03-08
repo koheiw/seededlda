@@ -10,11 +10,12 @@ divergence(x)
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}}
 }
 \description{
-\code{divergence()} computes the divergence of topics to help users to find the
-optimal number of topics for LDA. Divergence is the average Kullback–Leibler
-distance between all the pairs of topic vectors in \code{x$phi}. The divergence
-score maximizes when the chosen number of topic \code{k} is optimal (Deveaud et
-al., 2014).
+These functions help users to find the optimal number of topics for LDA.
+}
+\details{
+\code{divergence()} computes the average Kullback–Leibler distance between all the
+pairs of topic vectors in \code{x$phi}. The divergence score maximizes when the
+chosen number of topic \code{k} is optimal (Deveaud et al., 2014).
 }
 \references{
 Deveaud, Romain et al. (2014). "Accurate and Effective Latent
