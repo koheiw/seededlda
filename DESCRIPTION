@@ -13,7 +13,8 @@ Encoding: UTF-8
 Depends:
     R (>= 3.5.0),
     quanteda (> 2.0),
-    methods
+    methods,
+    proxyC
 Imports:
     Matrix
 LinkingTo: Rcpp, RcppParallel, RcppArmadillo (>= 0.7.600.1.0), quanteda
