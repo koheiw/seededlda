@@ -1,7 +1,7 @@
 Package: seededlda
 Type: Package
 Title: Seeded-LDA for Topic Modeling
-Version: 0.8.0
+Version: 0.8.1
 Authors@R: c(person("Kohei", "Watanabe", email = "watanabe.kohei@gmail.com", role = c("aut", "cre", "cph")),
              person("Phan", "Xuan-Hieu", email = "pxhieu@gmail.com", role = c("aut", "cph"), comment = "GibbsLDA++"))
 Description: Implements the seeded-LDA model (Lu, Ott, Cardie & Tsou 2010) <doi:10.1109/ICDMW.2011.125> using the quanteda package and the GibbsLDA++ library for semisupervised topic modeling. 

@@ -1,3 +1,7 @@
+# Changes in v0.8.1
+
+* Add `divergence()` to optimize the number of `k` or seed words (#26).
+
 # Changes in v0.8.0
 
 * Add the `model` argument to `textmodel_lda()` to replace `predict()`.
