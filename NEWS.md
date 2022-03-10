@@ -1,6 +1,6 @@
 # Changes in v0.8.1
 
-* Add `divergence()` to optimize the number of `k` or seed words (#26).
+* Add `divergence()` to optimize the number of topics or the seed words (#26).
 
 # Changes in v0.8.0
 
