@@ -24,6 +24,10 @@ test_that("LDA is working", {
     expect_true(
         sum(apply(terms(lda), 2, function(x)  all(sifi %in% x))) == 1 # there is a sifi topic
     )
+    expect_equal(
+        names(topics(lda)),
+        docnames(lda$data)
+    )
     expect_setequal(
        topics(lda),
        c("topic1", "topic2", "topic3", "topic4", "topic5")

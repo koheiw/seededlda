@@ -43,6 +43,10 @@ test_that("seeded LDA is working", {
     expect_false(
         any(sifi %in% terms(lda)[,"other"])
     )
+    expect_equal(
+        names(topics(lda)),
+        docnames(lda$data)
+    )
     expect_setequal(
         topics(lda),
         c("romance", "sifi", "other")
