@@ -138,6 +138,7 @@ topics <- function(x) {
 topics.textmodel_lda <- function(x) {
     result <- factor(max.col(x$theta), labels = colnames(x$theta),
                      levels = seq_len(ncol(x$theta)))
+    names(result) <- rownames(x$theta)
     result[rowSums(x$data) == 0] <- NA
     return(result)
 }
