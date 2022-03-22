@@ -89,6 +89,7 @@ lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose) {
     dimnames(result$theta) <- list(rownames(x), label)
     result$data <- x
     result$call <- match.call(sys.function(-2), call = sys.call(-2))
+    result$version <- packageVersion("seededlda")
     class(result) <- c("textmodel_lda", "textmodel", "list")
     return(result)
 }
