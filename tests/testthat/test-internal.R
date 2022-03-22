@@ -29,4 +29,14 @@ test_that("tfm is working", {
                                 "b" = 0, "bb" = 0, "bcd" = 0))
     expect_equal(tfm3["other",], c("a" = 0, "aa" = 0, "aaa" = 0, "abc" = 0,
                                    "b" = 0, "bb" = 0, "bcd" = 0))
+
+    dfm4 <- seededlda:::tfm(dfmt, dict, min_termfreq = 2, residual = 4)
+    expect_equal(rownames(dfm4),
+                 c("A", "B", "AB", "other1", "other2", "other3", "other4"))
+
+    options(slda_residual_name = "topic")
+    dfm5 <- seededlda:::tfm(dfmt, dict, min_termfreq = 2, residual = 4)
+    expect_equal(rownames(dfm5),
+                 c("A", "B", "AB", "topic1", "topic2", "topic3", "topic4"))
+    options(slda_residual_name = "other") # reset
 })

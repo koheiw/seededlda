@@ -20,7 +20,7 @@ textmodel_seededlda(
   dictionary,
   valuetype = c("glob", "regex", "fixed"),
   case_insensitive = TRUE,
-  residual = FALSE,
+  residual = 0,
   weight = 0.01,
   max_iter = 2000,
   alpha = NULL,
@@ -55,8 +55,8 @@ topics.}
 
 \item{case_insensitive}{see \link[quanteda:valuetype]{quanteda::valuetype}}
 
-\item{residual}{if \code{TRUE} a residual topic (or "garbage topic") will be
-added to user-defined topics.}
+\item{residual}{the number of undefined topics. They are named "other" by
+default, but it can be changed via \code{base::options(slda_residual_name)}.}
 
 \item{weight}{pseudo count given to seed words as a proportion of total
 number of words in \code{x}.}
@@ -76,8 +76,8 @@ change.
 \description{
 \code{textmodel_seededlda()} implements semisupervised Latent Dirichlet allocation
 (seeded-LDA). The estimator's code adopted from the GibbsLDA++ library
-(Xuan-Hieu Phan, 2007). \code{textmodel_seededlda()} allows identification of
-pre-defined topics by semisupervised learning with a seed word dictionary.
+(Xuan-Hieu Phan, 2007). \code{textmodel_seededlda()} allows users to specify
+topics using a seed word dictionary.
 }
 \details{
 To predict topics of new documents (i.e. out-of-sample), first,

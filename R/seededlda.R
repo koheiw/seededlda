@@ -2,12 +2,12 @@
 #'
 #' `textmodel_seededlda()` implements semisupervised Latent Dirichlet allocation
 #' (seeded-LDA). The estimator's code adopted from the GibbsLDA++ library
-#' (Xuan-Hieu Phan, 2007). `textmodel_seededlda()` allows identification of
-#' pre-defined topics by semisupervised learning with a seed word dictionary.
+#' (Xuan-Hieu Phan, 2007). `textmodel_seededlda()` allows users to specify
+#' topics using a seed word dictionary.
 #' @param dictionary a [quanteda::dictionary()] with seed words that define
 #'   topics.
-#' @param residual if \code{TRUE} a residual topic (or "garbage topic") will be
-#'   added to user-defined topics.
+#' @param residual the number of undefined topics. They are named "other" by
+#'   default, but it can be changed via `base::options(slda_residual_name)`.
 #' @param weight pseudo count given to seed words as a proportion of total
 #'   number of words in `x`.
 #' @param valuetype see [quanteda::valuetype]
@@ -59,7 +59,7 @@ textmodel_seededlda <- function(
     x, dictionary,
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
-    residual = FALSE, weight = 0.01,
+    residual = 0, weight = 0.01,
     max_iter = 2000, alpha = NULL, beta = NULL,
     ..., verbose = quanteda_options("verbose")
 ) {
@@ -71,7 +71,7 @@ textmodel_seededlda.dfm <- function(
     x, dictionary,
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
-    residual = FALSE, weight = 0.01,
+    residual = 0, weight = 0.01,
     max_iter = 2000, alpha = NULL, beta = NULL,
     ..., verbose = quanteda_options("verbose")
 ) {
@@ -149,11 +149,12 @@ topics.textmodel_lda <- function(x) {
 tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
-                weight = 0.01, residual = TRUE,
+                weight = 0.01, residual = 1,
                 weight_scheme = c("all", "topic", "word"),
                 ...,
                 verbose = quanteda_options("verbose")) {
 
+    residual <- as.integer(residual)
     valuetype <- match.arg(valuetype)
     weight_scheme <- match.arg(weight_scheme)
 
@@ -179,9 +180,14 @@ tfm <- function(x, dictionary,
         }
         result <- rbind(result, as(temp, "dgCMatrix"))
     }
-    if (residual) {
-        key <- c(key, "other")
-        result <- rbind(result, Matrix(0, nrow = 1, ncol = length(feat), sparse = TRUE))
+    if (residual > 0) {
+        label <- getOption("slda_residual_name", "other")
+        if (residual == 1) {
+            key <- c(key, label)
+        } else {
+            key <- c(key, paste0(label, seq_len(residual)))
+        }
+        result <- rbind(result, Matrix(0, nrow = residual, ncol = length(feat), sparse = TRUE))
     }
     dimnames(result) <- list(key, feat)
     return(result)
