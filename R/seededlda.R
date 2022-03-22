@@ -145,14 +145,17 @@ topics.textmodel_lda <- function(x) {
 
 #' Internal function to construct topic-feature matrix
 #' @noRd
+#' @importFrom Matrix Matrix
 tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
                 weight = 0.01, residual = TRUE,
+                weight_scheme = c("all", "topic", "word"),
                 ...,
                 verbose = quanteda_options("verbose")) {
 
     valuetype <- match.arg(valuetype)
+    weight_scheme <- match.arg(weight_scheme)
 
     if (!quanteda::is.dictionary(dictionary))
         stop("dictionary must be a dictionary object")
@@ -161,20 +164,25 @@ tfm <- function(x, dictionary,
 
     key <- names(dictionary)
     feat <- featnames(x)
-    count <- floor(sum(x)) * weight
+    total <- sum(x)
     x <- dfm_trim(x, ..., verbose = verbose)
     x <- as.dfm(rbind(colSums(x)))
-    result <- Matrix::Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
+    result <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
     for (i in seq_along(dictionary)) {
         temp <- dfm_select(x, pattern = dictionary[i])
-        temp <- dfm_match(temp, features = feat) > 0
-        result <- rbind(result, temp)
+        if (weight_scheme == "all") {
+            temp <- (dfm_match(temp, features = feat) > 0) * total * weight
+        } else if (weight_scheme == "topic") {
+            temp <- (dfm_match(temp, features = feat) > 0) * sum(temp) * weight
+        } else {
+            temp <- dfm_match(temp, features = feat) * weight
+        }
+        result <- rbind(result, as(temp, "dgCMatrix"))
     }
     if (residual) {
         key <- c(key, "other")
-        result <- rbind(result, Matrix::Matrix(0, nrow = 1, ncol = length(feat), sparse = TRUE))
+        result <- rbind(result, Matrix(0, nrow = 1, ncol = length(feat), sparse = TRUE))
     }
-    result <- result * count
     dimnames(result) <- list(key, feat)
     return(result)
 }
