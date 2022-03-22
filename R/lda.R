@@ -56,6 +56,7 @@ textmodel_lda.dfm <- function(
 }
 
 #' @importFrom methods as
+#' @importFrom utils packageVersion
 #' @import quanteda
 #' @useDynLib seededlda, .registration = TRUE
 lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose) {
