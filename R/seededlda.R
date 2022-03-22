@@ -75,6 +75,7 @@ textmodel_seededlda.dfm <- function(
     max_iter = 2000, alpha = NULL, beta = NULL,
     ..., verbose = quanteda_options("verbose")
 ) {
+    residual <- as.integer(residual)
     seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, ..., verbose = verbose))
     if (!identical(colnames(x), rownames(seeds)))
         stop("seeds must have the same features")
