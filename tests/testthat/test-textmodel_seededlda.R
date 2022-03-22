@@ -34,8 +34,8 @@ test_that("seeded LDA is working", {
     expect_identical(
         lda$dictionary, dict
     )
-    expect_true(
-        lda$residual
+    expect_equal(
+        lda$residual, 1
     )
     expect_equal(
         lda$weight, 0.02
@@ -85,8 +85,8 @@ test_that("seeded LDA is working", {
     expect_equal(
         names(lda),
         c("k", "max_iter", "last_iter", "alpha", "beta", "phi", "theta",
-          "words", "data", "call", "dictionary", "valuetype", "case_insensitive",
-          "residual", "weight")
+          "words", "data", "call", "version",
+          "dictionary", "valuetype", "case_insensitive", "residual", "weight")
     )
     expect_equivalent(class(lda$words), "dgCMatrix")
 })
