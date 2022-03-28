@@ -1,6 +1,7 @@
 ## Changes in v0.8.1
 
-* Fix a bug in `textmodel_seededlda()` that ignores n-grams when the concatenator is not "_".
+* Change `textmodel_seededlda()` to set positive integer values to `residual`.
+* Fix a bug in `textmodel_seededlda()` that ignores n-grams when `concatenator` is not "_".
 * Change `topics()` to return document names.
 * Add `divergence()` to optimize the number of topics or the seed words (#26).
 
