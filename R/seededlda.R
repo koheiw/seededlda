@@ -168,7 +168,7 @@ tfm <- function(x, dictionary,
     feat <- featnames(x)
     total <- sum(x)
     x <- dfm_trim(x, ..., verbose = verbose)
-    x <- as.dfm(rbind(colSums(x)))
+    x <- dfm_group(x, rep("text", ndoc(x)))
     result <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
     for (i in seq_along(dictionary)) {
         temp <- dfm_select(x, pattern = dictionary[i])

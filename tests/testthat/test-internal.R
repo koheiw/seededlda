@@ -57,3 +57,22 @@ test_that("tfm is working", {
                                 "b" = 0, "bb" = 0.01, "bcd" = 0))
 
 })
+
+test_that("tfm works with ngrams", {
+
+    txt <- c("UN is the United Nations.",
+             "ICC is the International Criminal Court.")
+    toks <- tokens(txt)
+    dict <- dictionary(list("un" = c("united nations", "un"),
+                            "icc" = c("international criminal court", "icc")))
+    toks1 <- tokens_compound(toks, dict, concatenator = " ")
+    dfmt1 <- dfm(toks1)
+    expect_equal(rowSums(seededlda:::tfm(dfmt1, dict)),
+                 c("un" = 0.2, "icc" = 0.2, "other" = 0))
+
+    toks2 <- tokens_compound(toks, dict, concatenator = "+")
+    dfmt2 <- dfm(toks2)
+    expect_equal(rowSums(seededlda:::tfm(dfmt2, dict)),
+                 c("un" = 0.2, "icc" = 0.2, "other" = 0))
+})
+
