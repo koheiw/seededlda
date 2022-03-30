@@ -60,7 +60,7 @@ textmodel_seededlda <- function(
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
     residual = 0, weight = 0.01,
-    max_iter = 2000, alpha = NULL, beta = NULL, inertia = 0,
+    max_iter = 2000, alpha = NULL, beta = NULL, gamma = 0,
     ..., verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_seededlda")
@@ -72,7 +72,7 @@ textmodel_seededlda.dfm <- function(
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
     residual = 0, weight = 0.01,
-    max_iter = 2000, alpha = NULL, beta = NULL, inertia = 0,
+    max_iter = 2000, alpha = NULL, beta = NULL, gamma = 0,
     ..., verbose = quanteda_options("verbose")
 ) {
     residual <- as.integer(residual)
@@ -82,7 +82,7 @@ textmodel_seededlda.dfm <- function(
     k <- ncol(seeds)
     label <- colnames(seeds)
 
-    result <- lda(x, k, label, max_iter, alpha, beta, inertia, seeds, NULL, verbose)
+    result <- lda(x, k, label, max_iter, alpha, beta, gamma, seeds, NULL, verbose)
     result$dictionary <- dictionary
     result$valuetype <- valuetype
     result$case_insensitive <- case_insensitive

@@ -9,8 +9,9 @@
 #'   `alpha = 50 / k`.
 #' @param beta the value to smooth topic-word distribution; defaults to `beta =
 #'   0.1`.
-#' @param inertia a parameter to determine change of topics between sentences or
-#'   paragraphs. When `inertia = 0`, they are treated as independent.
+#' @param gamma a parameter to determine change of topics between sentences or
+#'   paragraphs. When `gamma > 0`, Gibbs sampling for the current document is
+#'   affected by the previous document's topics.
 #' @param model a fitted LDA model; if provided, `textmodel_lda()` inherits
 #'   parameters from an existing model. See details.
 #' @details To predict topics of new documents (i.e. out-of-sample), first,
@@ -28,7 +29,7 @@
 #' @seealso [topicmodels][topicmodels::LDA]
 #' @export
 textmodel_lda <- function(
-    x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL, inertia = 0,
+    x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL, gamma = 0,
     model = NULL, verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_lda")
@@ -36,7 +37,7 @@ textmodel_lda <- function(
 
 #' @export
 textmodel_lda.dfm <- function(
-    x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL, inertia = 0, # NOTE: change to gamma?
+    x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL, gamma = 0,
     model = NULL, verbose = quanteda_options("verbose")
 ) {
 
@@ -48,10 +49,10 @@ textmodel_lda.dfm <- function(
         label <- rownames(model$phi)
         alpha <- model$alpha
         beta <- model$beta
-        if (!is.null(model$inertia)) {
-            inertia <- model$inertia
+        if (!is.null(model$gamma)) {
+            gamma <- model$gamma
         } else {
-            inertia <- 0
+            gamma <- 0
         }
         words <- model$words
         warning("k, alpha and beta values are overwriten by the fitted model", call. = FALSE)
@@ -59,14 +60,14 @@ textmodel_lda.dfm <- function(
         label <- paste0("topic", seq_len(k))
         words <- NULL
     }
-    lda(x, k, label, max_iter, alpha, beta, inertia, NULL, words, verbose)
+    lda(x, k, label, max_iter, alpha, beta, gamma, NULL, words, verbose)
 }
 
 #' @importFrom methods as
 #' @importFrom utils packageVersion
 #' @import quanteda
 #' @useDynLib seededlda, .registration = TRUE
-lda <- function(x, k, label, max_iter, alpha, beta, inertia, seeds, words, verbose) {
+lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, verbose) {
 
     k <- check_integer(k)
     max_iter <- check_integer(max_iter)
@@ -82,7 +83,7 @@ lda <- function(x, k, label, max_iter, alpha, beta, inertia, seeds, words, verbo
         beta <- check_double(beta, min = 0, max = 1)
     }
     verbose <- check_logical(verbose)
-    inertia <- check_double(inertia, min = 0, max = 1)
+    gamma <- check_double(gamma, min = 0, max = 1)
     k <- check_integer(k, min = 1, max = 1000)
 
     if (is.null(seeds))
@@ -91,8 +92,8 @@ lda <- function(x, k, label, max_iter, alpha, beta, inertia, seeds, words, verbo
         words <- as(Matrix::Matrix(0, nrow = nfeat(x), ncol = k), "dgCMatrix")
 
     random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
-    result <- cpp_lda(x, k, max_iter, alpha, beta, seeds, words,
-                      inertia, !duplicated(docid(x)),
+    result <- cpp_lda(x, k, max_iter, alpha, beta, gamma, seeds, words,
+                      !duplicated(docid(x)),
                       random, verbose)
 
     dimnames(result$phi) <- list(label, colnames(x))

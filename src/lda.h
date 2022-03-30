@@ -48,7 +48,7 @@ class LDA {
         int M; // dataset size (i.e., number of docs)
         int V; // vocabulary size
         int K; // number of topics
-        double alpha, beta; // LDA hyperparameters
+        double alpha, beta; // parameters for smoothing
         int niters; // number of Gibbs sampling iterations
         int liter; // the iteration at which the model was saved
         int random; // seed for random number generation
@@ -65,7 +65,7 @@ class LDA {
         arma::mat phi; // phi: topic-word distributions, size K x V
 
         // topic transition
-        double inertia; // parameter for topic transition
+        double gamma; // parameter for topic transition
         std::vector<bool> initial; // initial[i], documents i are first sentence, size M
 
         // prediction with fitted model
@@ -110,7 +110,7 @@ void LDA::set_default_values() {
     liter = 0;
     verbose = false;
     random = 1234;
-    inertia = 0;
+    gamma = 0;
     initial = std::vector<bool>(M);
 }
 
@@ -238,14 +238,24 @@ int LDA::sampling(int m, int n, int w) {
     double Vbeta = V * beta;
     double Kalpha = K * alpha;
     // do multinomial sampling via cumulative method
+
+    // topic of the previous document
+    std::vector<double> pd(K);
     for (int k = 0; k < K; k++) {
-        if (m == 0 || initial[m] || inertia == 0) {
+        if (m == 0 || initial[m] || gamma == 0) {
+            pd[k] = 0;
+        } else {
+            pd[k] = ((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + Kalpha));
+        }
+    }
+
+    for (int k = 0; k < K; k++) {
+        if (m == 0 || initial[m] || gamma == 0) {
             p[k] = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + Vbeta) *
                    (nd.at(m, k) + alpha) / (ndsum[m] + Kalpha);
         } else {
             p[k] = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + Vbeta) *
-                   (((nd.at(m, k) + alpha) / (ndsum[m] + Kalpha)) * (1 - inertia) +
-                   ((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + Kalpha)) * inertia);
+                   (((nd.at(m, k) + alpha) / (ndsum[m] + Kalpha)) * (1 - gamma)) + (pd[k] * gamma);
         }
     }
     // cumulate multinomial parameters

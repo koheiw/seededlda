@@ -8,16 +8,15 @@ using namespace std;
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
+List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, double gamma,
              arma::sp_mat &seeds, arma::sp_mat &words,
-             double inertia, std::vector<bool> &initial,
+             std::vector<bool> &initial,
              int random, bool verbose) {
     LDA lda;
     lda.K = k;
     lda.set_data(mt);
     lda.set_fitted(words);
     lda.random = random;
-    lda.inertia = inertia;
     lda.initial = initial;
     if (max_iter > 0)
         lda.niters = max_iter;
@@ -25,6 +24,8 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
         lda.alpha = alpha;
     if (beta > 0)
         lda.beta = beta;
+    if (gamma > 0)
+        lda.gamma = gamma;
     if (verbose)
         lda.verbose = verbose;
     if (lda.init_est() == 0) {
@@ -49,8 +50,8 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
                         Rcpp::Named("last_iter") = lda.liter,
                         Rcpp::Named("alpha") = lda.alpha,
                         Rcpp::Named("beta") = lda.beta,
+                        Rcpp::Named("gamma") = lda.gamma,
                         Rcpp::Named("phi") = wrap(lda.phi),
                         Rcpp::Named("theta") = wrap(lda.theta),
-                        Rcpp::Named("inertia") = wrap(lda.inertia),
                         Rcpp::Named("words") = wrap(arma::sp_umat(lda.nw)));
 }
