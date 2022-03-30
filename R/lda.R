@@ -9,6 +9,8 @@
 #'   `alpha = 50 / k`.
 #' @param beta the value to smooth topic-word distribution; defaults to `beta =
 #'   0.1`.
+#' @param inertia a parameter to determine change of topics between sentences or
+#'   paragraphs. When `inertia = 0`, they are treated as independent.
 #' @param model a fitted LDA model; if provided, `textmodel_lda()` inherits
 #'   parameters from an existing model. See details.
 #' @details To predict topics of new documents (i.e. out-of-sample), first,
@@ -26,7 +28,7 @@
 #' @seealso [topicmodels][topicmodels::LDA]
 #' @export
 textmodel_lda <- function(
-    x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL,
+    x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL, inertia = 0,
     model = NULL, verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_lda")
@@ -34,7 +36,7 @@ textmodel_lda <- function(
 
 #' @export
 textmodel_lda.dfm <- function(
-    x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL,
+    x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL, inertia = 0,
     model = NULL, verbose = quanteda_options("verbose")
 ) {
 
@@ -46,37 +48,37 @@ textmodel_lda.dfm <- function(
         label <- rownames(model$phi)
         alpha <- model$alpha
         beta <- model$beta
+        # inertia <- model$inertia # TODO: add this
         words <- model$words
         warning("k, alpha and beta values are overwriten by the fitted model", call. = FALSE)
     } else {
         label <- paste0("topic", seq_len(k))
         words <- NULL
     }
-    lda(x, k, label, max_iter, alpha, beta, NULL, words, verbose)
+    lda(x, k, label, max_iter, alpha, beta, inertia, NULL, words, verbose)
 }
 
 #' @importFrom methods as
 #' @importFrom utils packageVersion
 #' @import quanteda
 #' @useDynLib seededlda, .registration = TRUE
-lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose) {
+lda <- function(x, k, label, max_iter, alpha, beta, inertia, seeds, words, verbose) {
 
     k <- as.integer(k)
     max_iter <- as.integer(max_iter)
     if (is.null(alpha)) {
         alpha <- -1.0 # default value will be set in C++
     } else {
-        alpha <- as.double(alpha)
+        alpha <- check_double(alpha, min = 0, max = 1)
     }
     if (is.null(beta)) {
         beta <- -1.0 # default value will be set in C++
     } else {
-        beta <- as.double(beta)
+        beta <- check_double(beta, min = 0, max = 1)
     }
-    verbose <- as.logical(verbose)
-
-    if (k < 1)
-        stop("k must be larger than zero")
+    verbose <- check_logical(verbose)
+    inertia <- check_double(inertia, min = 0, max = 1)
+    k <- check_integer(k, min = 1, max = 1000)
 
     if (is.null(seeds))
         seeds <- as(Matrix::Matrix(0, nrow = nfeat(x), ncol = k), "dgCMatrix")
@@ -84,7 +86,9 @@ lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose) {
         words <- as(Matrix::Matrix(0, nrow = nfeat(x), ncol = k), "dgCMatrix")
 
     random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
-    result <- cpp_lda(x, k, max_iter, alpha, beta, seeds, words, random, verbose)
+    result <- cpp_lda(x, k, max_iter, alpha, beta, seeds, words,
+                      inertia, !duplicated(docid(x)),
+                      random, verbose)
 
     dimnames(result$phi) <- list(label, colnames(x))
     dimnames(result$theta) <- list(rownames(x), label)

@@ -52,7 +52,7 @@ test_that("LDA is working", {
     )
     expect_error(
         textmodel_lda(dfmt, k = 0),
-        "k must be larger than zero"
+        "The value of k must be between 1 and 1000"
     )
     expect_output(
         print(lda),

@@ -57,12 +57,16 @@ class LDA {
         arma::sp_mat data; // transposed document-feature matrix
         arma::vec p; // temp variable for sampling
         Texts z; // topic assignments for words, size M x doc.size()
-        arma::umat nw; // cwt[i][j]: number of instances of word/term i assigned to topic j, size V x K
-        arma::umat nd; // na[i][j]: number of words in document i assigned to topic j, size M x K
+        arma::umat nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
+        arma::umat nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
         arma::urowvec nwsum; // nwsum[j]: total number of words assigned to topic j, size K
         arma::ucolvec ndsum; // nasum[i]: total number of words in document i, size M
         arma::mat theta; // theta: document-topic distributions, size M x K
         arma::mat phi; // phi: topic-word distributions, size K x V
+
+        // topic transition
+        double inertia; // parameter for topic transition
+        std::vector<bool> restart; // restart[i], documents i are first sentence, size M
 
         // prediction with fitted model
         arma::umat nw_ft;
@@ -106,6 +110,8 @@ void LDA::set_default_values() {
     liter = 0;
     verbose = false;
     random = 1234;
+    inertia = 0;
+    restart = std::vector<bool>(M);
 }
 
 void LDA::set_data(arma::sp_mat mt) {
@@ -233,8 +239,14 @@ int LDA::sampling(int m, int n, int w) {
     double Kalpha = K * alpha;
     // do multinomial sampling via cumulative method
     for (int k = 0; k < K; k++) {
-        p[k] = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + Vbeta) *
-               (nd.at(m, k) + alpha) / (ndsum[m] + Kalpha);
+        if (m == 0 || restart[m] || inertia == 0) {
+            p[k] = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + Vbeta) *
+                   (nd.at(m, k) + alpha) / (ndsum[m] + Kalpha);
+        } else {
+            p[k] = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + Vbeta) *
+                   (((nd.at(m, k) + alpha) / (ndsum[m] + Kalpha)) * (1 - inertia) +
+                   ((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + Kalpha)) * inertia);
+        }
     }
     // cumulate multinomial parameters
     for (int k = 1; k < K; k++) {

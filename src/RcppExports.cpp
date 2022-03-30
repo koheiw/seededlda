@@ -12,8 +12,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // cpp_lda
-List cpp_lda(arma::sp_mat& mt, int k, int max_iter, double alpha, double beta, arma::sp_mat& seeds, arma::sp_mat& words, int random, bool verbose);
-RcppExport SEXP _seededlda_cpp_lda(SEXP mtSEXP, SEXP kSEXP, SEXP max_iterSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP seedsSEXP, SEXP wordsSEXP, SEXP randomSEXP, SEXP verboseSEXP) {
+List cpp_lda(arma::sp_mat& mt, int k, int max_iter, double alpha, double beta, arma::sp_mat& seeds, arma::sp_mat& words, double inertia, std::vector<bool>& restart, int random, bool verbose);
+RcppExport SEXP _seededlda_cpp_lda(SEXP mtSEXP, SEXP kSEXP, SEXP max_iterSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP seedsSEXP, SEXP wordsSEXP, SEXP inertiaSEXP, SEXP restartSEXP, SEXP randomSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -24,15 +24,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< arma::sp_mat& >::type seeds(seedsSEXP);
     Rcpp::traits::input_parameter< arma::sp_mat& >::type words(wordsSEXP);
+    Rcpp::traits::input_parameter< double >::type inertia(inertiaSEXP);
+    Rcpp::traits::input_parameter< std::vector<bool>& >::type restart(restartSEXP);
     Rcpp::traits::input_parameter< int >::type random(randomSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_lda(mt, k, max_iter, alpha, beta, seeds, words, random, verbose));
+    rcpp_result_gen = Rcpp::wrap(cpp_lda(mt, k, max_iter, alpha, beta, seeds, words, inertia, restart, random, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_seededlda_cpp_lda", (DL_FUNC) &_seededlda_cpp_lda, 9},
+    {"_seededlda_cpp_lda", (DL_FUNC) &_seededlda_cpp_lda, 11},
     {NULL, NULL, 0}
 };
 

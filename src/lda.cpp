@@ -9,12 +9,16 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
-                  arma::sp_mat &seeds, arma::sp_mat &words, int random, bool verbose) {
+             arma::sp_mat &seeds, arma::sp_mat &words,
+             double inertia, std::vector<bool> &restart,
+             int random, bool verbose) {
     LDA lda;
     lda.K = k;
     lda.set_data(mt);
     lda.set_fitted(words);
     lda.random = random;
+    lda.inertia = inertia;
+    lda.restart = restart;
     if (max_iter > 0)
         lda.niters = max_iter;
     if (alpha > 0)
