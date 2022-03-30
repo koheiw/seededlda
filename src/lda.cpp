@@ -10,7 +10,7 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
              arma::sp_mat &seeds, arma::sp_mat &words,
-             double inertia, std::vector<bool> &restart,
+             double inertia, std::vector<bool> &initial,
              int random, bool verbose) {
     LDA lda;
     lda.K = k;
@@ -18,7 +18,7 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
     lda.set_fitted(words);
     lda.random = random;
     lda.inertia = inertia;
-    lda.restart = restart;
+    lda.initial = initial;
     if (max_iter > 0)
         lda.niters = max_iter;
     if (alpha > 0)
@@ -51,5 +51,6 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta,
                         Rcpp::Named("beta") = lda.beta,
                         Rcpp::Named("phi") = wrap(lda.phi),
                         Rcpp::Named("theta") = wrap(lda.theta),
+                        Rcpp::Named("inertia") = wrap(lda.inertia),
                         Rcpp::Named("words") = wrap(arma::sp_umat(lda.nw)));
 }

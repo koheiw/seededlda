@@ -36,7 +36,7 @@ textmodel_lda <- function(
 
 #' @export
 textmodel_lda.dfm <- function(
-    x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL, inertia = 0,
+    x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL, inertia = 0, # NOTE: change to gamma?
     model = NULL, verbose = quanteda_options("verbose")
 ) {
 
@@ -48,7 +48,11 @@ textmodel_lda.dfm <- function(
         label <- rownames(model$phi)
         alpha <- model$alpha
         beta <- model$beta
-        # inertia <- model$inertia # TODO: add this
+        if (!is.null(model$inertia)) {
+            inertia <- model$inertia
+        } else {
+            inertia <- 0
+        }
         words <- model$words
         warning("k, alpha and beta values are overwriten by the fitted model", call. = FALSE)
     } else {
@@ -64,8 +68,9 @@ textmodel_lda.dfm <- function(
 #' @useDynLib seededlda, .registration = TRUE
 lda <- function(x, k, label, max_iter, alpha, beta, inertia, seeds, words, verbose) {
 
-    k <- as.integer(k)
-    max_iter <- as.integer(max_iter)
+    k <- check_integer(k)
+    max_iter <- check_integer(max_iter)
+
     if (is.null(alpha)) {
         alpha <- -1.0 # default value will be set in C++
     } else {

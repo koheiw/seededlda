@@ -66,7 +66,7 @@ class LDA {
 
         // topic transition
         double inertia; // parameter for topic transition
-        std::vector<bool> restart; // restart[i], documents i are first sentence, size M
+        std::vector<bool> initial; // initial[i], documents i are first sentence, size M
 
         // prediction with fitted model
         arma::umat nw_ft;
@@ -111,7 +111,7 @@ void LDA::set_default_values() {
     verbose = false;
     random = 1234;
     inertia = 0;
-    restart = std::vector<bool>(M);
+    initial = std::vector<bool>(M);
 }
 
 void LDA::set_data(arma::sp_mat mt) {
@@ -239,7 +239,7 @@ int LDA::sampling(int m, int n, int w) {
     double Kalpha = K * alpha;
     // do multinomial sampling via cumulative method
     for (int k = 0; k < K; k++) {
-        if (m == 0 || restart[m] || inertia == 0) {
+        if (m == 0 || initial[m] || inertia == 0) {
             p[k] = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + Vbeta) *
                    (nd.at(m, k) + alpha) / (ndsum[m] + Kalpha);
         } else {
