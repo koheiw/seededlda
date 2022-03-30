@@ -11,7 +11,7 @@ textmodel_lda(
   max_iter = 2000,
   alpha = NULL,
   beta = NULL,
-  inertia = 0,
+  gamma = 0,
   model = NULL,
   verbose = quanteda_options("verbose")
 )
@@ -26,7 +26,7 @@ textmodel_seededlda(
   max_iter = 2000,
   alpha = NULL,
   beta = NULL,
-  inertia = 0,
+  gamma = 0,
   ...,
   verbose = quanteda_options("verbose")
 )
@@ -44,8 +44,9 @@ in \code{dictionary} in \code{textmodel_seededlda()}.}
 
 \item{beta}{the value to smooth topic-word distribution; defaults to \code{beta = 0.1}.}
 
-\item{inertia}{a parameter to determine change of topics between sentences or
-paragraphs. When \code{inertia = 0}, they are treated as independent.}
+\item{gamma}{a parameter to determine change of topics between sentences or
+paragraphs. When \code{gamma > 0}, Gibbs sampling for the current document is
+affected by the previous document's topics.}
 
 \item{model}{a fitted LDA model; if provided, \code{textmodel_lda()} inherits
 parameters from an existing model. See details.}

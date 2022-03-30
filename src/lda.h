@@ -250,7 +250,6 @@ int LDA::sampling(int m, int n, int w) {
     double Vbeta = V * beta;
     double Kalpha = K * alpha;
     // do multinomial sampling via cumulative method
-
     for (int k = 0; k < K; k++) {
         if (m == 0 || initial[m] || gamma == 0) {
             p[k] = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + Vbeta) *
