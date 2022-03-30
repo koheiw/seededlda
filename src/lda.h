@@ -69,6 +69,7 @@ class LDA {
         std::vector<bool> initial; // initial[i], documents i are first sentence, size M
 
         // prediction with fitted model
+        arma::vec q; // temp variable for previous document
         arma::umat nw_ft;
         arma::urowvec nwsum_ft;
 
@@ -153,6 +154,8 @@ int LDA::init_est() {
     nwsum = arma::urowvec(K, arma::fill::zeros);
     ndsum = arma::conv_to<arma::ucolvec>::from(arma::mat(arma::sum(data, 0)));
 
+    q = arma::vec(K);
+
     //dev::Timer timer;
     //dev::start_timer("Set z", timer);
     for (int m = 0; m < M; m++) {
@@ -203,6 +206,15 @@ void LDA::estimate() {
             if (z[m].size() == 0) continue;
             int n = 0;
 
+            // topic of the previous document
+            for (int k = 0; k < K; k++) {
+                if (m == 0 || initial[m] || gamma == 0) {
+                    q[k] = 0;
+                } else {
+                    q[k] = (nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + K * alpha);
+                }
+            }
+
             arma::sp_mat::const_col_iterator it = data.begin_col(m);
             arma::sp_mat::const_col_iterator it_end = data.end_col(m);
             for(; it != it_end; ++it) {
@@ -239,23 +251,13 @@ int LDA::sampling(int m, int n, int w) {
     double Kalpha = K * alpha;
     // do multinomial sampling via cumulative method
 
-    // topic of the previous document
-    std::vector<double> pd(K);
-    for (int k = 0; k < K; k++) {
-        if (m == 0 || initial[m] || gamma == 0) {
-            pd[k] = 0;
-        } else {
-            pd[k] = ((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + Kalpha));
-        }
-    }
-
     for (int k = 0; k < K; k++) {
         if (m == 0 || initial[m] || gamma == 0) {
             p[k] = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + Vbeta) *
                    (nd.at(m, k) + alpha) / (ndsum[m] + Kalpha);
         } else {
             p[k] = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + Vbeta) *
-                   (((nd.at(m, k) + alpha) / (ndsum[m] + Kalpha)) * (1 - gamma)) + (pd[k] * gamma);
+                   (((nd.at(m, k) + alpha) / (ndsum[m] + Kalpha)) * (1 - gamma)) + (q[k] * gamma);
         }
     }
     // cumulate multinomial parameters
