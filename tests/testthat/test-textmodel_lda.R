@@ -168,3 +168,32 @@ test_that("divergence() is working", {
                  2.94, tolerance = 0.1)
 })
 
+test_that("gamma is working", {
+
+    corp <- corpus_reshape(data_corpus_moviereviews[1:100])
+    toks <- tokens(corp,
+                   remove_punct = TRUE,
+                   remove_symbols = TRUE,
+                   remove_number = TRUE)
+    dfmt <- dfm(toks) %>%
+        dfm_remove(stopwords(), min_nchar = 2) %>%
+        dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
+
+    # make docid all unique
+    dfmt2 <- dfmt
+    dfmt2@docvars$docid_ <- dfmt2@docvars$docname_
+
+    set.seed(1234)
+    lda1 <- textmodel_lda(dfmt, k = 5, gamma = 0)
+
+    set.seed(1234)
+    lda2 <- textmodel_lda(dfmt, k = 5, gamma = 0.5)
+
+    set.seed(1234)
+    lda3 <- textmodel_lda(dfmt, k = 5, gamma = 0.5)
+
+    head(topics(lda1))
+    head(topics(lda2))
+    mean(topics(lda1) == topics(lda2), na.rm = TRUE)
+
+})

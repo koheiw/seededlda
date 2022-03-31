@@ -92,9 +92,11 @@ lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, verbose
         words <- as(Matrix::Matrix(0, nrow = nfeat(x), ncol = k), "dgCMatrix")
 
     random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
+    initial <- !duplicated(docid(x))
+    if (all(initial) && gamma)
+        warning("gamma has no effect when docid are all unique.", call. = FALSE)
     result <- cpp_lda(x, k, max_iter, alpha, beta, gamma, seeds, words,
-                      !duplicated(docid(x)),
-                      random, verbose)
+                      initial, random, verbose)
 
     dimnames(result$phi) <- list(label, colnames(x))
     dimnames(result$theta) <- list(rownames(x), label)
