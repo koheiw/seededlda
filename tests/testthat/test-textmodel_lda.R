@@ -14,6 +14,11 @@ test_that("LDA is working", {
 
     set.seed(1234)
     lda <- textmodel_lda(dfmt, k = 5)
+    # saveRDS(lda, "tests/data/lda.RDS")
+
+    lda_v081 <- readRDS("../data/lda_v081.RDS")
+    expect_equal(lda$phi, lda_v081$phi)
+    expect_equal(lda$theta, lda_v081$theta)
 
     expect_equal(dim(terms(lda, 10)), c(10, 5))
     expect_equal(dim(terms(lda, 20)), c(20, 5))
@@ -187,13 +192,22 @@ test_that("gamma is working", {
     lda1 <- textmodel_lda(dfmt, k = 5, gamma = 0)
 
     set.seed(1234)
-    lda2 <- textmodel_lda(dfmt, k = 5, gamma = 0.5)
+    expect_warning({
+        lda2 <- textmodel_lda(dfmt2, k = 5, gamma = 0.5)
+    }, "gamma has no effect when docid are all unique")
+
+    expect_equal(lda1$phi, lda2$phi)
+    expect_equal(lda1$theta, lda2$theta)
 
     set.seed(1234)
-    lda3 <- textmodel_lda(dfmt, k = 5, gamma = 0.5)
+    lda3 <- textmodel_lda(dfmt, k = 5, gamma = 0.1)
+    expect_gt(mean(diff(as.integer(topics(lda3))) == 0, na.rm = TRUE),
+              mean(diff(as.integer(topics(lda2))) == 0, na.rm = TRUE))
 
-    head(topics(lda1))
-    head(topics(lda2))
-    mean(topics(lda1) == topics(lda2), na.rm = TRUE)
+    set.seed(1234)
+    lda4 <- textmodel_lda(dfmt, k = 5, gamma = 0.2)
+    expect_gt(mean(diff(as.integer(topics(lda4))) == 0, na.rm = TRUE),
+              mean(diff(as.integer(topics(lda3))) == 0, na.rm = TRUE))
+
 
 })
