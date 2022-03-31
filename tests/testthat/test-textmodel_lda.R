@@ -14,6 +14,7 @@ test_that("LDA is working", {
 
     set.seed(1234)
     lda <- textmodel_lda(dfmt, k = 5)
+    # saveRDS(lda, "tests/data/lda_v081.RDS")
 
     expect_equal(dim(terms(lda, 10)), c(10, 5))
     expect_equal(dim(terms(lda, 20)), c(20, 5))
