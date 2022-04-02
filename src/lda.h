@@ -209,9 +209,9 @@ void LDA::estimate() {
             // topic of the previous document
             for (int k = 0; k < K; k++) {
                 if (m == 0 || initial[m] || gamma == 0) {
-                    q[k] = 0;
+                    q[k] = 1;
                 } else {
-                    q[k] = (nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + K * alpha);
+                    q[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + K * alpha), gamma);
                 }
             }
 
@@ -251,13 +251,8 @@ int LDA::sampling(int m, int n, int w) {
     double Kalpha = K * alpha;
     // do multinomial sampling via cumulative method
     for (int k = 0; k < K; k++) {
-        if (m == 0 || initial[m] || gamma == 0) {
-            p[k] = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + Vbeta) *
-                   (nd.at(m, k) + alpha) / (ndsum[m] + Kalpha);
-        } else {
-            p[k] = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + Vbeta) *
-                   (((nd.at(m, k) + alpha) / (ndsum[m] + Kalpha)) * (1 - gamma)) + (q[k] * gamma);
-        }
+        p[k] = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + Vbeta) *
+               ((nd.at(m, k) + alpha) / (ndsum[m] + Kalpha)) * q[k];
     }
     // cumulate multinomial parameters
     for (int k = 1; k < K; k++) {
