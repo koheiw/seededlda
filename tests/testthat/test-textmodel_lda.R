@@ -209,5 +209,13 @@ test_that("gamma is working", {
     expect_gt(mean(diff(as.integer(topics(lda4))) == 0, na.rm = TRUE),
               mean(diff(as.integer(topics(lda3))) == 0, na.rm = TRUE))
 
+    expect_error(
+        textmodel_lda(dfmt, k = 5, gamma = -0.1),
+        "The value of gamma must be between 0 and 1"
+    )
 
+    expect_error(
+        textmodel_lda(dfmt, k = 5, gamma = 2.0),
+        "The value of gamma must be between 0 and 1"
+    )
 })

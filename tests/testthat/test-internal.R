@@ -8,6 +8,7 @@ dfmt <- dfm(tokens(txt))
 test_that("tfm is working", {
 
     tfm1 <- seededlda:::tfm(dfmt, dict)
+    expect_s4_class(tfm1, "dgCMatrix")
     expect_equal(tfm1["A",], c("a" = 0.1, "aa" = 0.1, "aaa" = 0.1, "abc" = 0.1,
                                "b" = 0, "bb" = 0, "bcd" = 0))
     expect_equal(tfm1["B",], c("a" = 0, "aa" = 0, "aaa" = 0, "abc" = 0,
@@ -18,9 +19,11 @@ test_that("tfm is working", {
                                    "b" = 0, "bb" = 0, "bcd" = 0))
 
     tfm2 <- seededlda:::tfm(dfmt, dict, residual = FALSE)
+    expect_s4_class(tfm2, "dgCMatrix")
     expect_equal(rownames(tfm2), c("A", "B", "AB"))
 
     tfm3 <- seededlda:::tfm(dfmt, dict, min_termfreq = 2)
+    expect_s4_class(tfm3, "dgCMatrix")
     expect_equal(tfm3["A",], c("a" = 0, "aa" = 0.1, "aaa" = 0, "abc" = 0,
                                "b" = 0, "bb" = 0, "bcd" = 0))
     expect_equal(tfm3["B",], c("a" = 0, "aa" = 0, "aaa" = 0, "abc" = 0,
@@ -31,11 +34,13 @@ test_that("tfm is working", {
                                    "b" = 0, "bb" = 0, "bcd" = 0))
 
     tfm4 <- seededlda:::tfm(dfmt, dict, min_termfreq = 2, residual = 4)
+    expect_s4_class(tfm4, "dgCMatrix")
     expect_equal(rownames(tfm4),
                  c("A", "B", "AB", "other1", "other2", "other3", "other4"))
 
     options(slda_residual_name = "topic")
     tfm5 <- seededlda:::tfm(dfmt, dict, min_termfreq = 2, residual = 4)
+    expect_s4_class(tfm5, "dgCMatrix")
     expect_equal(rownames(tfm5),
                  c("A", "B", "AB", "topic1", "topic2", "topic3", "topic4"))
     options(slda_residual_name = "other") # reset
