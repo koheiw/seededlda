@@ -10,8 +10,8 @@
 #' @param beta the value to smooth topic-word distribution; defaults to `beta =
 #'   0.1`.
 #' @param gamma a parameter to determine change of topics between sentences or
-#'   paragraphs. When `gamma > 0`, Gibbs sampling for the current document is
-#'   affected by the previous document's topics.
+#'   paragraphs. When `gamma > 0`, Gibbs sampling of topics for the current
+#'   document is affected by the previous document's topics.
 #' @param model a fitted LDA model; if provided, `textmodel_lda()` inherits
 #'   parameters from an existing model. See details.
 #' @details To predict topics of new documents (i.e. out-of-sample), first,

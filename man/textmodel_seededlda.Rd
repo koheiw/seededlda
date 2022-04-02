@@ -45,8 +45,8 @@ in \code{dictionary} in \code{textmodel_seededlda()}.}
 \item{beta}{the value to smooth topic-word distribution; defaults to \code{beta = 0.1}.}
 
 \item{gamma}{a parameter to determine change of topics between sentences or
-paragraphs. When \code{gamma > 0}, Gibbs sampling for the current document is
-affected by the previous document's topics.}
+paragraphs. When \code{gamma > 0}, Gibbs sampling of topics for the current
+document is affected by the previous document's topics.}
 
 \item{model}{a fitted LDA model; if provided, \code{textmodel_lda()} inherits
 parameters from an existing model. See details.}
