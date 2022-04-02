@@ -67,9 +67,9 @@ class LDA {
         // topic transition
         double gamma; // parameter for topic transition
         std::vector<bool> initial; // initial[i], documents i are first sentence, size M
+        arma::vec q; // temp variable for previous document
 
         // prediction with fitted model
-        arma::vec q; // temp variable for previous document
         arma::umat nw_ft;
         arma::urowvec nwsum_ft;
 
