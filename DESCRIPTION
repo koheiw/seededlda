@@ -14,7 +14,7 @@ Depends:
     R (>= 3.5.0),
     quanteda (> 2.0),
     methods,
-    proxyC
+    proxyC (>= 0.2.4)
 Imports:
     Matrix
 LinkingTo: Rcpp, RcppParallel, RcppArmadillo (>= 0.7.600.1.0), quanteda
