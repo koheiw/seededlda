@@ -23,6 +23,7 @@ textmodel_seededlda(
   case_insensitive = TRUE,
   residual = 0,
   weight = 0.01,
+  balance = FALSE,
   max_iter = 2000,
   alpha = NULL,
   beta = NULL,
@@ -66,6 +67,9 @@ default, but it can be changed via \code{base::options(slda_residual_name)}.}
 
 \item{weight}{pseudo count given to seed words as a proportion of total
 number of words in \code{x}.}
+
+\item{balance}{if \code{TRUE}, gives the equal amount of weight to all the topics
+even when the number of their seed words vary.}
 
 \item{...}{passed to \link[quanteda:dfm_trim]{quanteda::dfm_trim} to restrict seed words based on
 their term or document frequency. This is useful when glob patterns in the
