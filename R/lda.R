@@ -87,15 +87,16 @@ lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, verbose
     k <- check_integer(k, min = 1, max = 1000)
 
     if (is.null(seeds))
-        seeds <- as(Matrix::Matrix(0, nrow = nfeat(x), ncol = k), "dgCMatrix")
+        seeds <- Matrix::Matrix(0, nrow = nfeat(x), ncol = k)
     if (is.null(words))
-        words <- as(Matrix::Matrix(0, nrow = nfeat(x), ncol = k), "dgCMatrix")
+        words <- Matrix::Matrix(0, nrow = nfeat(x), ncol = k)
 
     random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
     initial <- !duplicated(docid(x))
     if (all(initial) && gamma)
         warning("gamma has no effect when docid are all unique.", call. = FALSE)
-    result <- cpp_lda(x, k, max_iter, alpha, beta, gamma, seeds, words,
+    result <- cpp_lda(x, k, max_iter, alpha, beta, gamma,
+                      as(seeds, "dgCMatrix"), as(words, "dgCMatrix"),
                       initial, random, verbose)
 
     dimnames(result$phi) <- list(label, colnames(x))

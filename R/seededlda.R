@@ -192,5 +192,6 @@ tfm <- function(x, dictionary,
         result <- rbind(result, Matrix(0, nrow = residual, ncol = length(feat), sparse = TRUE))
     }
     dimnames(result) <- list(key, feat)
+    result <- as(result, "dgCMatrix")
     return(result)
 }
