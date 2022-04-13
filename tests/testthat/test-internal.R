@@ -45,21 +45,8 @@ test_that("tfm is working", {
                  c("A", "B", "AB", "topic1", "topic2", "topic3", "topic4"))
     options(slda_residual_name = "other") # reset
 
-    tfm6 <- seededlda:::tfm(dfmt, dict, weight_scheme = "topic", residual = 0)
-    expect_equal(tfm6["A",], c("a" = 0.05, "aa" = 0.05, "aaa" = 0.05, "abc" = 0.05,
-                               "b" = 0, "bb" = 0, "bcd" = 0))
-    expect_equal(tfm6["B",], c("a" = 0, "aa" = 0, "aaa" = 0, "abc" = 0,
-                               "b" = 0.05, "bb" = 0.05, "bcd" = 0.05))
-    expect_equal(tfm6["AB",], c("a" = 0, "aa" = 0.03, "aaa" = 0, "abc" = 0,
-                                "b" = 0, "bb" = 0.03, "bcd" = 0))
-
-    tfm7 <- seededlda:::tfm(dfmt, dict, weight_scheme = "word", residual = 0)
-    expect_equal(tfm7["A",], c("a" = 0.01, "aa" = 0.02, "aaa" = 0.01, "abc" = 0.01,
-                               "b" = 0, "bb" = 0, "bcd" = 0))
-    expect_equal(tfm7["B",], c("a" = 0, "aa" = 0, "aaa" = 0, "abc" = 0,
-                               "b" = 0.02, "bb" = 0.01, "bcd" = 0.02))
-    expect_equal(tfm7["AB",], c("a" = 0, "aa" = 0.02, "aaa" = 0, "abc" = 0,
-                                "b" = 0, "bb" = 0.01, "bcd" = 0))
+    tfm6 <- seededlda:::tfm(dfmt, dict, residual = 0, balance = TRUE)
+    expect_equal(rowSums(tfm6), c("A" = 0.3, "B" = 0.3, "AB" = 0.3))
 
 })
 

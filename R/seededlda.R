@@ -10,6 +10,8 @@
 #'   default, but it can be changed via `base::options(slda_residual_name)`.
 #' @param weight pseudo count given to seed words as a proportion of total
 #'   number of words in `x`.
+#' @param balance if `TRUE`, gives the equal amount of weight to all the topics
+#'   even when the number of their seed words vary.
 #' @param valuetype see [quanteda::valuetype]
 #' @param case_insensitive see [quanteda::valuetype]
 #' @param ... passed to [quanteda::dfm_trim] to restrict seed words based on
@@ -59,7 +61,7 @@ textmodel_seededlda <- function(
     x, dictionary,
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
-    residual = 0, weight = 0.01,
+    residual = 0, weight = 0.01, balance = FALSE,
     max_iter = 2000, alpha = NULL, beta = NULL, gamma = 0,
     ..., verbose = quanteda_options("verbose")
 ) {
@@ -71,12 +73,13 @@ textmodel_seededlda.dfm <- function(
     x, dictionary,
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
-    residual = 0, weight = 0.01,
+    residual = 0, weight = 0.01, balance = FALSE,
     max_iter = 2000, alpha = NULL, beta = NULL, gamma = 0,
     ..., verbose = quanteda_options("verbose")
 ) {
     residual <- as.integer(residual)
-    seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, ..., verbose = verbose))
+    seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, balance = balance,
+                   ..., verbose = verbose))
     if (!identical(colnames(x), rownames(seeds)))
         stop("seeds must have the same features")
     k <- ncol(seeds)
@@ -151,13 +154,12 @@ tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
                 weight = 0.01, residual = 1,
-                weight_scheme = c("all", "topic", "word"),
+                balance = FALSE,
                 ...,
                 verbose = quanteda_options("verbose")) {
 
     residual <- as.integer(residual)
     valuetype <- match.arg(valuetype)
-    weight_scheme <- match.arg(weight_scheme)
 
     if (!quanteda::is.dictionary(dictionary))
         stop("dictionary must be a dictionary object")
@@ -166,20 +168,19 @@ tfm <- function(x, dictionary,
 
     key <- names(dictionary)
     feat <- featnames(x)
-    total <- sum(x)
+    weight <- sum(x) * weight
     x <- dfm_trim(x, ..., verbose = verbose)
     x <- dfm_group(x, rep("text", ndoc(x)))
     result <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
     for (i in seq_along(dictionary)) {
         temp <- dfm_select(x, pattern = dictionary[i])
-        if (weight_scheme == "all") {
-            temp <- (dfm_match(temp, features = feat) > 0) * total * weight
-        } else if (weight_scheme == "topic") {
-            temp <- (dfm_match(temp, features = feat) > 0) * sum(temp) * weight
-        } else {
-            temp <- dfm_match(temp, features = feat) * weight
-        }
+        temp <- dfm_match(temp, features = feat) > 0
         result <- rbind(result, as(temp, "dgCMatrix"))
+    }
+    if (balance) {
+        result <- result * weight * (nrow(result) / Matrix::rowSums(result))
+    } else {
+        result <- result * weight
     }
     if (residual > 0) {
         label <- getOption("slda_residual_name", "other")
