@@ -149,7 +149,7 @@ topics.textmodel_lda <- function(x) {
 
 #' Internal function to construct topic-feature matrix
 #' @noRd
-#' @importFrom Matrix Matrix
+#' @importFrom Matrix Matrix rowSums
 tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
@@ -177,11 +177,16 @@ tfm <- function(x, dictionary,
         temp <- dfm_match(temp, features = feat) > 0
         result <- rbind(result, as(temp, "dgCMatrix"))
     }
+
+    weight <- rep(weight, nrow(result))
     if (balance) {
-        result <- result * weight * (nrow(result) / Matrix::rowSums(result))
-    } else {
-        result <- result * weight
+        s <- rowSums(result)
+        e <- sum(result) / sum(s > 0) # ignore topics without match
+        weight <- weight * (e / s)
+        weight[s == 0] <- 0
     }
+    result <- result * weight
+
     if (residual > 0) {
         label <- getOption("slda_residual_name", "other")
         if (residual == 1) {
