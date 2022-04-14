@@ -1,11 +1,12 @@
 require(quanteda)
-dict <- dictionary(list(A = c("a", "aa*", "abc"),
-                        B = c("b*", "bb*", "bcd"),
-                        AB = c("aa", "bb")))
-txt <- c("a aa aa aaa abc", "b b bb bcd bcd")
-dfmt <- dfm(tokens(txt))
 
 test_that("tfm is working", {
+
+    dict <- dictionary(list(A = c("a", "aa*", "abc"),
+                            B = c("b*", "bb*", "bcd"),
+                            AB = c("aa", "bb")))
+    txt <- c("a aa aa aaa abc", "b b bb bcd bcd")
+    dfmt <- dfm(tokens(txt))
 
     tfm1 <- seededlda:::tfm(dfmt, dict)
     expect_s4_class(tfm1, "dgCMatrix")
@@ -47,6 +48,23 @@ test_that("tfm is working", {
 
     tfm6 <- seededlda:::tfm(dfmt, dict, residual = 0, balance = TRUE)
     expect_equal(rowSums(tfm6), c("A" = 0.3, "B" = 0.3, "AB" = 0.3))
+
+    tfm7 <- seededlda:::tfm(dfmt, dict, residual = 1, balance = TRUE)
+    expect_equal(rowSums(tfm7), c("A" = 0.3, "B" = 0.3, "AB" = 0.3, "other" = 0))
+
+    # topics without matches
+
+    txt2 <- c("a aaa abc", "b b bcd bcd")
+    dfmt2 <- dfm(tokens(txt2))
+
+    tfm8 <- seededlda:::tfm(dfmt2, dict, residual = 0, balance = FALSE)
+    expect_equal(rowSums(tfm8), c("A" = 0.21, "B" = 0.14, "AB" = 0))
+
+    tfm9 <- seededlda:::tfm(dfmt2, dict, residual = 1, balance = FALSE)
+    expect_equal(rowSums(tfm9), c("A" = 0.21, "B" = 0.14, "AB" = 0, "other" = 0))
+
+    tfm10 <- seededlda:::tfm(dfmt2, dict, residual = 1, balance = TRUE)
+    expect_equal(rowSums(tfm10), c("A" = 0.175, "B" = 0.175, "AB" = 0, "other" = 0))
 
 })
 
