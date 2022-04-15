@@ -72,7 +72,7 @@ test_that("seeded LDA is working", {
     )
     expect_error(
         textmodel_seededlda(dfmt, dict, weight = -0.1),
-        "weight must be pisitive a value"
+        "The value of weight must be between 0 and 1"
     )
     expect_output(
         print(lda),

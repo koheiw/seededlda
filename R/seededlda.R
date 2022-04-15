@@ -77,7 +77,10 @@ textmodel_seededlda.dfm <- function(
     max_iter = 2000, alpha = NULL, beta = NULL, gamma = 0,
     ..., verbose = quanteda_options("verbose")
 ) {
-    residual <- as.integer(residual)
+
+    residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
+    weight <- check_double(weight, min_len = 1, max_len = length(dictionary), min = 0, max = 1)
+
     seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, balance = balance,
                    ..., verbose = verbose))
     if (!identical(colnames(x), rownames(seeds)))
@@ -158,17 +161,18 @@ tfm <- function(x, dictionary,
                 ...,
                 verbose = quanteda_options("verbose")) {
 
-    residual <- as.integer(residual)
     valuetype <- match.arg(valuetype)
+    residual <- as.integer(residual)
 
     if (!quanteda::is.dictionary(dictionary))
         stop("dictionary must be a dictionary object")
-    if (weight < 0)
-        stop("weight must be pisitive a value")
 
     key <- names(dictionary)
     feat <- featnames(x)
+
+    weight <- as.double(weight)
     weight <- sum(x) * weight
+
     x <- dfm_trim(x, ..., verbose = verbose)
     x <- dfm_group(x, rep("text", ndoc(x)))
     result <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
@@ -177,11 +181,17 @@ tfm <- function(x, dictionary,
         temp <- dfm_match(temp, features = feat) > 0
         result <- rbind(result, as(temp, "dgCMatrix"))
     }
-
-    weight <- rep(weight, nrow(result))
+    if (length(weight) == 1) {
+        weight <- rep(weight, nrow(result))
+    } else {
+        if (balance)
+            stop("The length of weight must be one when balance = TRUE")
+        if (length(weight) != length(key))
+            stop("The length of weight and dictionary keys must be the same")
+    }
     if (balance) {
         s <- rowSums(result)
-        e <- sum(result) / sum(s > 0) # ignore topics without match
+        e <- sum(result) / nrow(result)
         weight <- weight * (e / s)
         weight[s == 0] <- 0
     }

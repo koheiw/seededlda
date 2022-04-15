@@ -64,7 +64,32 @@ test_that("tfm is working", {
     expect_equal(rowSums(tfm9), c("A" = 0.21, "B" = 0.14, "AB" = 0, "other" = 0))
 
     tfm10 <- seededlda:::tfm(dfmt2, dict, residual = 1, balance = TRUE)
-    expect_equal(rowSums(tfm10), c("A" = 0.175, "B" = 0.175, "AB" = 0, "other" = 0))
+    expect_equal(rowSums(tfm10),
+                 c("A" = 0.117, "B" = 0.117, "AB" = 0, "other" = 0), tolerance = 0.001)
+
+})
+
+test_that("tfm works with weight vector", {
+
+    dict <- dictionary(list(A = c("a", "aa*", "abc"),
+                            B = c("b*", "bb*", "bcd"),
+                            AB = c("aa", "bb")))
+    txt <- c("a aa aa aaa abc", "b b bb bcd bcd")
+    dfmt <- dfm(tokens(txt))
+
+    tfm1 <- seededlda:::tfm(dfmt, dict, residual = 1, balance = FALSE, weight = 0.1)
+    tfm2 <- seededlda:::tfm(dfmt, dict, residual = 1, balance = FALSE,
+                            weight = c(0.2, 0.3, 0.1))
+    expect_equal(rowSums(tfm1) * c(2, 3, 1, 1), rowSums(tfm2))
+
+    expect_error(
+        seededlda:::tfm(dfmt, dict, residual = 1, balance = FALSE, weight = c(0.2, 0.3)),
+        "The length of weight and dictionary keys must be the same"
+    )
+    expect_error(
+        seededlda:::tfm(dfmt, dict, residual = 1, balance = TRUE, weight = c(0.2, 0.3, 0.1)),
+        "The length of weight must be one when balance = TRUE"
+    )
 
 })
 
