@@ -1,4 +1,6 @@
 require(quanteda)
+
+options(slda_residual_name = "other")
 data(data_corpus_moviereviews, package = "quanteda.textmodels")
 
 toks <- tokens(data_corpus_moviereviews[1:500],
@@ -21,7 +23,9 @@ test_that("LDA is working", {
     expect_equal(lda$theta, lda_v081$theta)
 
     expect_equal(dim(terms(lda, 10)), c(10, 5))
+    expect_equal(dim(terms(lda, 10, residual = FALSE)), c(10, 5))
     expect_equal(dim(terms(lda, 20)), c(20, 5))
+    expect_equal(dim(terms(lda, 20, residual = FALSE)), c(20, 5))
     expect_equal(
         colnames(terms(lda)),
         c("topic1", "topic2", "topic3", "topic4", "topic5")
@@ -37,8 +41,16 @@ test_that("LDA is working", {
        topics(lda),
        c("topic1", "topic2", "topic3", "topic4", "topic5")
     )
+    expect_setequal(
+        topics(lda, residual = FALSE),
+        c("topic1", "topic2", "topic3", "topic4", "topic5")
+    )
     expect_equal(
         levels(topics(lda)),
+        c("topic1", "topic2", "topic3", "topic4", "topic5")
+    )
+    expect_equal(
+        levels(topics(lda, residual = FALSE)),
         c("topic1", "topic2", "topic3", "topic4", "topic5")
     )
     expect_equal(

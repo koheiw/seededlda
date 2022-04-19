@@ -4,12 +4,14 @@
 \alias{terms}
 \title{Extract most likely terms}
 \usage{
-terms(x, n = 10)
+terms(x, n = 10, residual = TRUE)
 }
 \arguments{
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}}
 
 \item{n}{number of terms to be extracted}
+
+\item{residual, }{if \code{FALSE}, ignores residual topics in seeded-LDA.}
 }
 \description{
 \code{terms()} returns the most likely terms, or words, for topics based on the \code{phi} parameter.

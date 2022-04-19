@@ -4,10 +4,12 @@
 \alias{topics}
 \title{Extract most likely topics}
 \usage{
-topics(x)
+topics(x, residual = TRUE)
 }
 \arguments{
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}}
+
+\item{residual, }{if \code{FALSE}, ignores residual topics in seeded-LDA.}
 }
 \description{
 \code{topics()} returns the most likely topics for documents based on the \code{theta} parameter.

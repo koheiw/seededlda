@@ -117,17 +117,25 @@ print.textmodel_lda <- function(x, ...) {
 #' `terms()` returns the most likely terms, or words, for topics based on the `phi` parameter.
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
 #' @param n number of terms to be extracted
+#' @param residual, if `FALSE`, ignores residual topics in seeded-LDA.
 #' @details Users can access the original matrix `x$phi` for likelihood scores.
 #' @export
-terms <- function(x, n = 10) {
+terms <- function(x, n = 10, residual = TRUE) {
     UseMethod("terms")
 }
 #' @export
 #' @method terms textmodel_lda
 #' @importFrom utils head
-terms.textmodel_lda <- function(x, n = 10) {
-    apply(x$phi, 1, function(x, y, z) head(y[order(x, decreasing = TRUE), drop = FALSE], z),
-          colnames(x$phi), n)
+terms.textmodel_lda <- function(x, n = 10, residual = TRUE) {
+
+    residual <- check_logical(residual, min_len = 1, max_len = 1)
+    if (residual || is.null(x$dictionary)) {
+        phi <- x$phi
+    } else {
+        phi <- x$phi[names(x$dictionary),,drop = FALSE]
+    }
+    apply(phi, 1, function(x, y, z) head(y[order(x, decreasing = TRUE), drop = FALSE], z),
+          colnames(phi), n)
 }
 
 #' Extract most likely topics
@@ -135,17 +143,25 @@ terms.textmodel_lda <- function(x, n = 10) {
 #' `topics()` returns the most likely topics for documents based on the `theta` parameter.
 #' @export
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
+#' @param residual, if `FALSE`, ignores residual topics in seeded-LDA.
 #' @details Users can access the original matrix `x$theta` for likelihood
 #'   scores; run `max.col(x$theta)` to obtain the same result as `topics(x)`.
-topics <- function(x) {
+topics <- function(x, residual = TRUE) {
     UseMethod("topics")
 }
 #' @export
 #' @method topics textmodel_lda
-topics.textmodel_lda <- function(x) {
-    result <- factor(max.col(x$theta), labels = colnames(x$theta),
-                     levels = seq_len(ncol(x$theta)))
-    names(result) <- rownames(x$theta)
+topics.textmodel_lda <- function(x, residual = TRUE) {
+
+    residual <- check_logical(residual, min_len = 1, max_len = 1)
+    if (residual || is.null(x$dictionary)) {
+        theta <- x$theta
+    } else {
+        theta <- x$theta[,names(x$dictionary),drop = FALSE]
+    }
+    result <- factor(max.col(theta), labels = colnames(theta),
+                     levels = seq_len(ncol(theta)))
+    names(result) <- rownames(theta)
     result[rowSums(x$data) == 0] <- NA
     return(result)
 }
