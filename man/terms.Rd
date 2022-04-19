@@ -11,10 +11,12 @@ terms(x, n = 10, residual = TRUE)
 
 \item{n}{number of terms to be extracted}
 
-\item{residual, }{if \code{FALSE}, ignores residual topics in seeded-LDA.}
+\item{residual}{if \code{FALSE}, ignores residual topics; meaningful only when
+\code{x} is a seeded-LDA model.}
 }
 \description{
-\code{terms()} returns the most likely terms, or words, for topics based on the \code{phi} parameter.
+\code{terms()} returns the most likely terms, or words, for topics based on the
+\code{phi} parameter.
 }
 \details{
 Users can access the original matrix \code{x$phi} for likelihood scores.

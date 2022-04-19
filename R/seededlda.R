@@ -114,10 +114,12 @@ print.textmodel_lda <- function(x, ...) {
 
 #' Extract most likely terms
 #'
-#' `terms()` returns the most likely terms, or words, for topics based on the `phi` parameter.
+#' `terms()` returns the most likely terms, or words, for topics based on the
+#' `phi` parameter.
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
 #' @param n number of terms to be extracted
-#' @param residual, if `FALSE`, ignores residual topics in seeded-LDA.
+#' @param residual if `FALSE`, ignores residual topics; meaningful only when
+#'   `x` is a seeded-LDA model.
 #' @details Users can access the original matrix `x$phi` for likelihood scores.
 #' @export
 terms <- function(x, n = 10, residual = TRUE) {
@@ -140,10 +142,12 @@ terms.textmodel_lda <- function(x, n = 10, residual = TRUE) {
 
 #' Extract most likely topics
 #'
-#' `topics()` returns the most likely topics for documents based on the `theta` parameter.
+#' `topics()` returns the most likely topics for documents based on the `theta`
+#' parameter.
 #' @export
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
-#' @param residual, if `FALSE`, ignores residual topics in seeded-LDA.
+#' @param residual if `FALSE`, ignores residual topics; meaningful only when `x`
+#'   is a seeded-LDA model.
 #' @details Users can access the original matrix `x$theta` for likelihood
 #'   scores; run `max.col(x$theta)` to obtain the same result as `topics(x)`.
 topics <- function(x, residual = TRUE) {

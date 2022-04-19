@@ -9,10 +9,12 @@ topics(x, residual = TRUE)
 \arguments{
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}}
 
-\item{residual, }{if \code{FALSE}, ignores residual topics in seeded-LDA.}
+\item{residual}{if \code{FALSE}, ignores residual topics; meaningful only when \code{x}
+is a seeded-LDA model.}
 }
 \description{
-\code{topics()} returns the most likely topics for documents based on the \code{theta} parameter.
+\code{topics()} returns the most likely topics for documents based on the \code{theta}
+parameter.
 }
 \details{
 Users can access the original matrix \code{x$theta} for likelihood
