@@ -22,9 +22,7 @@ test_that("seeded LDA is working", {
                                min_termfreq = 10)
 
     expect_equal(dim(terms(lda, 10)), c(10, 3))
-    expect_equal(dim(terms(lda, 10, residual = FALSE)), c(10, 2))
     expect_equal(dim(terms(lda, 20)), c(20, 3))
-    expect_equal(dim(terms(lda, 20, residual = FALSE)), c(20, 2))
     expect_equal(
         colnames(terms(lda)),
         c("romance", "sifi", "other")
@@ -56,7 +54,7 @@ test_that("seeded LDA is working", {
         c("romance", "sifi", "other")
     )
     expect_setequal(
-        topics(lda, residual = FALSE),
+        topics(lda, select = c("romance", "sifi")),
         c("romance", "sifi")
     )
     expect_equal(
@@ -64,7 +62,7 @@ test_that("seeded LDA is working", {
         c("romance", "sifi", "other")
     )
     expect_equal(
-        levels(topics(lda, residual = FALSE)),
+        levels(topics(lda, select = c("romance", "sifi"))),
         c("romance", "sifi")
     )
     expect_equal(

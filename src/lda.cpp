@@ -36,11 +36,11 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, d
                 throw std::invalid_argument("Invalid seed matrix");
             s = arma::conv_to<arma::umat>::from(arma::mat(seeds));
             lda.nw = lda.nw + s; // set pseudo count
-            lda.nwsum = lda.nwsum + arma::sum(s, 0);
+            //lda.nwsum = lda.nwsum + arma::sum(s, 0);
         }
         lda.estimate();
-        //if (seeded)
-        //    lda.nwsum = lda.nwsum + arma::sum(s, 0);
+        if (seeded)
+            lda.nwsum = lda.nwsum + arma::sum(s, 0);
     }
     lda.compute_theta();
     lda.compute_phi();

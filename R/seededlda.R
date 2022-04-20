@@ -118,26 +118,19 @@ print.textmodel_lda <- function(x, ...) {
 #' `phi` parameter.
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
 #' @param n number of terms to be extracted
-#' @param residual if `FALSE`, ignores residual topics; meaningful only when
-#'   `x` is a seeded-LDA model.
 #' @details Users can access the original matrix `x$phi` for likelihood scores.
 #' @export
-terms <- function(x, n = 10, residual = TRUE) {
+terms <- function(x, n = 10) {
     UseMethod("terms")
 }
 #' @export
 #' @method terms textmodel_lda
 #' @importFrom utils head
-terms.textmodel_lda <- function(x, n = 10, residual = TRUE) {
+terms.textmodel_lda <- function(x, n = 10) {
 
-    residual <- check_logical(residual, min_len = 1, max_len = 1)
-    if (residual || is.null(x$dictionary)) {
-        phi <- x$phi
-    } else {
-        phi <- x$phi[names(x$dictionary),,drop = FALSE]
-    }
-    apply(phi, 1, function(x, y, z) head(y[order(x, decreasing = TRUE), drop = FALSE], z),
-          colnames(phi), n)
+    apply(x$phi, 1, function(x, y, z) {
+        head(y[order(x, decreasing = TRUE), drop = FALSE], z)
+    }, colnames(phi), n)
 }
 
 #' Extract most likely topics
@@ -146,22 +139,21 @@ terms.textmodel_lda <- function(x, n = 10, residual = TRUE) {
 #' parameter.
 #' @export
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
-#' @param residual if `FALSE`, ignores residual topics; meaningful only when `x`
-#'   is a seeded-LDA model.
+#' @param select if specified, returns one of the selected topic with the highest
+#'   likelihood; specify either names or indices of topics in `x$theta`.
 #' @details Users can access the original matrix `x$theta` for likelihood
 #'   scores; run `max.col(x$theta)` to obtain the same result as `topics(x)`.
-topics <- function(x, residual = TRUE) {
+topics <- function(x, select = NULL) {
     UseMethod("topics")
 }
 #' @export
 #' @method topics textmodel_lda
-topics.textmodel_lda <- function(x, residual = TRUE) {
+topics.textmodel_lda <- function(x, select = NULL) {
 
-    residual <- check_logical(residual, min_len = 1, max_len = 1)
-    if (residual || is.null(x$dictionary)) {
+    if (is.null(select)) {
         theta <- x$theta
     } else {
-        theta <- x$theta[,names(x$dictionary),drop = FALSE]
+        theta <- x$theta[, select, drop = FALSE]
     }
     result <- factor(max.col(theta), labels = colnames(theta),
                      levels = seq_len(ncol(theta)))
