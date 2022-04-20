@@ -79,7 +79,7 @@ textmodel_seededlda.dfm <- function(
 ) {
 
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
-    weight <- check_double(weight, min_len = 1, max_len = length(dictionary), min = 0, max = 1)
+    #weight <- check_double(weight, min_len = 1, max_len = length(dictionary), min = 0, max = 1)
 
     seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, balance = balance,
                    ..., verbose = verbose))
@@ -191,31 +191,35 @@ tfm <- function(x, dictionary,
     feat <- featnames(x)
 
     weight <- as.double(weight)
-    weight <- sum(x) * weight
+    #weight <- sum(x) * weight
 
     x <- dfm_trim(x, ..., verbose = verbose)
     x <- dfm_group(x, rep("text", ndoc(x)))
     result <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
     for (i in seq_along(dictionary)) {
         temp <- dfm_select(x, pattern = dictionary[i])
-        temp <- dfm_match(temp, features = feat) > 0
+        temp <- dfm_match(temp, features = feat)
         result <- rbind(result, as(temp, "dgCMatrix"))
     }
     if (length(weight) == 1) {
-        weight <- rep(weight, nrow(result))
+        weight <- rep(weight, ncol(result))
     } else {
         if (balance)
             stop("The length of weight must be one when balance = TRUE")
         if (length(weight) != length(key))
             stop("The length of weight and dictionary keys must be the same")
     }
-    if (balance) {
-        s <- rowSums(result)
-        e <- sum(result) / nrow(result)
-        weight <- weight * (e / s)
-        weight[s == 0] <- 0
-    }
-    result <- result * weight
+    # if (balance) {
+    #     s <- rowSums(result)
+    #
+    #     e <- sum(result) / nrow(result)
+    #     weight <- weight * (e / s)
+    #     weight[s == 0] <- 0
+    # }
+    s <- colSums(result)
+    result <- result > 0
+    result <- t(t(result) * (s * weight))
+    #result <- result * weight
 
     if (residual > 0) {
         label <- getOption("slda_residual_name", "other")
