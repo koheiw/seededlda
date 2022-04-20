@@ -61,7 +61,7 @@ textmodel_seededlda <- function(
     x, dictionary,
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
-    residual = 0, weight = 0.01, balance = FALSE,
+    residual = 0, weight = 1, balance = TRUE,
     max_iter = 2000, alpha = NULL, beta = NULL, gamma = 0,
     ..., verbose = quanteda_options("verbose")
 ) {
@@ -73,7 +73,7 @@ textmodel_seededlda.dfm <- function(
     x, dictionary,
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
-    residual = 0, weight = 0.01, balance = FALSE,
+    residual = 0, weight = 1, balance = TRUE,
     max_iter = 2000, alpha = NULL, beta = NULL, gamma = 0,
     ..., verbose = quanteda_options("verbose")
 ) {
@@ -176,8 +176,8 @@ topics.textmodel_lda <- function(x, residual = TRUE) {
 tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
-                weight = 0.01, residual = 1,
-                balance = FALSE,
+                weight = 1, residual = 1,
+                balance = TRUE,
                 ...,
                 verbose = quanteda_options("verbose")) {
 
@@ -209,16 +209,23 @@ tfm <- function(x, dictionary,
         if (length(weight) != length(key))
             stop("The length of weight and dictionary keys must be the same")
     }
-    # if (balance) {
-    #     s <- rowSums(result)
-    #
-    #     e <- sum(result) / nrow(result)
-    #     weight <- weight * (e / s)
-    #     weight[s == 0] <- 0
-    # }
-    s <- colSums(result)
-    result <- result > 0
-    result <- t(t(result) * (s * weight))
+
+    s <- sum(result)
+    # row profile
+    if (balance) {
+        p <- rep(1, nrow(result))
+    } else {
+        p <- (rowSums(result) / s) * nrow(result)
+    }
+    # column profile
+    q <- colSums(result) / s
+
+    w <- tcrossprod(p, q) * s
+    result <- (result > 0) * w * weight
+
+    # s <- colSums(result)
+    # result <- result > 0
+    # result <- t(t(result) * (s * weight))
     #result <- result * weight
 
     if (residual > 0) {
