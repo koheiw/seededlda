@@ -67,6 +67,14 @@ test_that("tfm is working", {
     expect_equal(rowSums(tfm10),
                  c("A" = 0.117, "B" = 0.117, "AB" = 0, "other" = 0), tolerance = 0.001)
 
+    # no match
+    tfm11 <- seededlda:::tfm(dfmt, dictionary(list(X = "x", Y = "y")),
+                             residual = 1, balance = TRUE)
+    expect_equal(rowSums(tfm11), c("X" = 0, "Y" = 0, "other" = 0))
+
+    tfm12 <- seededlda:::tfm(dfmt, dictionary(list(X = character(), Y = character())),
+                             residual = 1, balance = TRUE)
+    expect_equal(rowSums(tfm12), c("X" = 0, "Y" = 0, "other" = 0))
 })
 
 test_that("tfm works with weight vector", {

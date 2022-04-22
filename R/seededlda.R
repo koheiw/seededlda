@@ -211,17 +211,19 @@ tfm <- function(x, dictionary,
     }
 
     s <- sum(result)
-    # row profile
-    if (balance) {
-        p <- rep(1, nrow(result))
-    } else {
-        p <- (rowSums(result) / s) * nrow(result)
-    }
-    # column profile
-    q <- colSums(result) / s
+    if (s > 0) {
+        # row profile
+        if (balance) {
+            p <- rep(1, nrow(result))
+        } else {
+            p <- (rowSums(result) / s) * nrow(result)
+        }
+        # column profile
+        q <- colSums(result) / s
 
-    w <- tcrossprod(p, q) * s
-    result <- (result > 0) * w * weight
+        w <- tcrossprod(p, q) * s
+        result <- (result > 0) * w * weight
+    }
 
     # s <- colSums(result)
     # result <- result > 0
