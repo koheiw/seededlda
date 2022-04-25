@@ -73,13 +73,13 @@ textmodel_seededlda.dfm <- function(
     x, dictionary,
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
-    residual = 0, weight = 1, uniform = TRUE,
+    residual = 0, weight = 0.01, uniform = TRUE,
     max_iter = 2000, alpha = NULL, beta = NULL, gamma = 0,
     ..., verbose = quanteda_options("verbose")
 ) {
 
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
-    weight <- check_double(weight, min_len = 1, max_len = 1, min = 0, max = 100)
+    weight <- check_double(weight, min_len = 1, max_len = 1, min = 0, max = 1)
 
     seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, uniform = uniform,
                    ..., verbose = verbose))
@@ -176,7 +176,7 @@ topics.textmodel_lda <- function(x, residual = TRUE) {
 tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
-                weight = 1, residual = 1,
+                weight = 0.01, residual = 1,
                 uniform = TRUE,
                 old = FALSE,
                 ...,
@@ -206,17 +206,15 @@ tfm <- function(x, dictionary,
     s <- sum(result)
     if (!old) {
         if (s > 0) {
-            # row profile
             if (uniform) {
                 p <- rep(1, nrow(result))
             } else {
-                p <- (rowSums(result) / s) * nrow(result)
+                p <- (rowSums(result) / s) * nrow(result) # row profile
             }
-            # column profile
-            q <- colSums(result) / s
-
-            w <- tcrossprod(p, q) * s
-            result <- (result > 0) * w * weight
+            q <- colSums(result) / s # column profile
+            w <- tcrossprod(p, q)
+            weight <- weight * 100 # for compatibility with pre v0.9
+            result <- (result > 0) * w * s * weight
         }
     } else {
         result <- (result > 0) * s * weight

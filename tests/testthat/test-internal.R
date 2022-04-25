@@ -34,37 +34,55 @@ test_that("tfm is working", {
     expect_equal(tfm3["other",], c("a" = 0, "aa" = 0, "aaa" = 0, "abc" = 0,
                                    "b" = 0, "bb" = 0, "bcd" = 0))
 
-    tfm4 <- seededlda:::tfm(dfmt, dict, min_termfreq = 2, residual = 4)
+    tfm4 <- seededlda:::tfm(dfmt, dict, weight = 0.02)
     expect_s4_class(tfm4, "dgCMatrix")
-    expect_equal(rownames(tfm4),
+    expect_equal(tfm4["A",], c("a" = 2, "aa" = 8, "aaa" = 2, "abc" = 2,
+                               "b" = 0, "bb" = 0, "bcd" = 0))
+    expect_equal(tfm4["B",], c("a" = 0, "aa" = 0, "aaa" = 0, "abc" = 0,
+                               "b" = 4, "bb" = 4, "bcd" = 4))
+    expect_equal(tfm4["AB",], c("a" = 0, "aa" = 8, "aaa" = 0, "abc" = 0,
+                                "b" = 0, "bb" = 4, "bcd" = 0))
+    expect_equal(tfm4["other",], c("a" = 0, "aa" = 0, "aaa" = 0, "abc" = 0,
+                                   "b" = 0, "bb" = 0, "bcd" = 0))
+
+    tfm11 <- seededlda:::tfm(dfmt, dict, min_termfreq = 2, residual = 4)
+    expect_s4_class(tfm11, "dgCMatrix")
+    expect_equal(rownames(tfm11),
                  c("A", "B", "AB", "other1", "other2", "other3", "other4"))
 
     options(slda_residual_name = "topic")
-    tfm5 <- seededlda:::tfm(dfmt, dict, min_termfreq = 2, residual = 4)
-    expect_s4_class(tfm5, "dgCMatrix")
-    expect_equal(rownames(tfm5),
+    tfm12 <- seededlda:::tfm(dfmt, dict, min_termfreq = 2, residual = 4)
+    expect_s4_class(tfm12, "dgCMatrix")
+    expect_equal(rownames(tfm12),
                  c("A", "B", "AB", "topic1", "topic2", "topic3", "topic4"))
     options(slda_residual_name = "other") # reset
 
-    tfm6 <- seededlda:::tfm(dfmt, dict, residual = 0, uniform = TRUE)
-    expect_equal(rowSums(tfm6), c("A" = 7, "B" = 6, "AB" = 6))
+    tfm13 <- seededlda:::tfm(dfmt, dict, residual = 0, uniform = TRUE)
+    expect_equal(rowSums(tfm13), c("A" = 7, "B" = 6, "AB" = 6))
 
-    tfm7 <- seededlda:::tfm(dfmt, dict, residual = 1, uniform = TRUE)
-    expect_equal(rowSums(tfm7), c("A" = 7, "B" = 6, "AB" = 6, "other" = 0))
+    tfm14 <- seededlda:::tfm(dfmt, dict, residual = 1, uniform = TRUE)
+    expect_equal(rowSums(tfm14), c("A" = 7, "B" = 6, "AB" = 6, "other" = 0))
+})
 
-    # topics without matches
+test_that("tfm is working without matches", {
+
+    dict <- dictionary(list(A = c("a", "aa*", "abc"),
+                            B = c("b*", "bb*", "bcd"),
+                            AB = c("aa", "bb")))
+    txt <- c("a aa aa aaa abc", "b b bb bcd bcd")
+    dfmt <- dfm(tokens(txt))
 
     txt2 <- c("a aaa abc", "b b bcd bcd")
     dfmt2 <- dfm(tokens(txt2))
 
-    tfm8 <- seededlda:::tfm(dfmt2, dict, residual = 0, uniform = FALSE)
-    expect_equal(rowSums(tfm8), c("A" = 3.85, "B" = 6.85, "AB" = 0), tolerance = 0.01)
+    tfm1 <- seededlda:::tfm(dfmt2, dict, residual = 0, uniform = FALSE)
+    expect_equal(rowSums(tfm1), c("A" = 3.85, "B" = 6.85, "AB" = 0), tolerance = 0.01)
 
-    tfm9 <- seededlda:::tfm(dfmt2, dict, residual = 1, uniform = FALSE)
-    expect_equal(rowSums(tfm9), c("A" = 3.85, "B" = 6.85, "AB" = 0, "other" = 0), tolerance = 0.01)
+    tfm2 <- seededlda:::tfm(dfmt2, dict, residual = 1, uniform = FALSE)
+    expect_equal(rowSums(tfm2), c("A" = 3.85, "B" = 6.85, "AB" = 0, "other" = 0), tolerance = 0.01)
 
-    tfm10 <- seededlda:::tfm(dfmt2, dict, residual = 1, uniform = TRUE)
-    expect_equal(rowSums(tfm10),
+    tfm3 <- seededlda:::tfm(dfmt2, dict, residual = 1, uniform = TRUE)
+    expect_equal(rowSums(tfm3),
                  c("A" = 3, "B" = 4, "AB" = 0, "other" = 0), tolerance = 0.01)
 
     # no match
