@@ -10,8 +10,8 @@
 #'   default, but it can be changed via `base::options(slda_residual_name)`.
 #' @param weight pseudo count given to seed words as a proportion of total
 #'   number of words in `x`.
-#' @param balance if `TRUE`, gives the equal amount of weight to all the topics
-#'   even when the number of their seed words vary.
+#' @param uniform if `FALSE`, adjusts the weights of seed words to make their
+#'   total amount equal across topics.
 #' @param valuetype see [quanteda::valuetype]
 #' @param case_insensitive see [quanteda::valuetype]
 #' @param ... passed to [quanteda::dfm_trim] to restrict seed words based on
@@ -61,7 +61,7 @@ textmodel_seededlda <- function(
     x, dictionary,
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
-    residual = 0, weight = 1, balance = TRUE,
+    residual = 0, weight = 1, uniform = TRUE,
     max_iter = 2000, alpha = NULL, beta = NULL, gamma = 0,
     ..., verbose = quanteda_options("verbose")
 ) {
@@ -73,15 +73,15 @@ textmodel_seededlda.dfm <- function(
     x, dictionary,
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
-    residual = 0, weight = 1, balance = TRUE,
+    residual = 0, weight = 1, uniform = TRUE,
     max_iter = 2000, alpha = NULL, beta = NULL, gamma = 0,
     ..., verbose = quanteda_options("verbose")
 ) {
 
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
-    #weight <- check_double(weight, min_len = 1, max_len = length(dictionary), min = 0, max = 1)
+    weight <- check_double(weight, min_len = 1, max_len = 1, min = 0)
 
-    seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, balance = balance,
+    seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, uniform = uniform,
                    ..., verbose = verbose))
     if (!identical(colnames(x), rownames(seeds)))
         stop("seeds must have the same features")
@@ -177,7 +177,7 @@ tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
                 weight = 1, residual = 1,
-                balance = TRUE,
+                uniform = TRUE,
                 ...,
                 verbose = quanteda_options("verbose")) {
 
@@ -201,19 +201,12 @@ tfm <- function(x, dictionary,
         temp <- dfm_match(temp, features = feat)
         result <- rbind(result, as(temp, "dgCMatrix"))
     }
-    if (length(weight) == 1) {
-        weight <- rep(weight, ncol(result))
-    } else {
-        if (balance)
-            stop("The length of weight must be one when balance = TRUE")
-        if (length(weight) != length(key))
-            stop("The length of weight and dictionary keys must be the same")
-    }
 
+    weight <- rep(weight, ncol(result))
     s <- sum(result)
     if (s > 0) {
         # row profile
-        if (balance) {
+        if (uniform) {
             p <- rep(1, nrow(result))
         } else {
             p <- (rowSums(result) / s) * nrow(result)
