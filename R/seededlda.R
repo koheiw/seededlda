@@ -139,9 +139,8 @@ terms.textmodel_lda <- function(x, n = 10) {
 #' parameter.
 #' @export
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
-#' @param select if specified, returns one of the selected topic with the
-#'   highest probability; specify by either logical, numeric or character
-#'   indices of columns in `x$theta`.
+#' @param select returns the selected topic with the
+#'   highest probability; specify by the names of columns in `x$theta`.
 #' @details Users can access the original matrix `x$theta` for likelihood
 #'   scores; run `max.col(x$theta)` to obtain the same result as `topics(x)`.
 topics <- function(x, min_prob = 0, select = NULL) {
@@ -152,22 +151,20 @@ topics <- function(x, min_prob = 0, select = NULL) {
 topics.textmodel_lda <- function(x, min_prob = 0, select = NULL) {
 
     theta <- x$theta
-
-    if (is.null(select))
-        select <- rep(TRUE, ncol(theta))
-    if (is.numeric(select))
-        select <- colnames(theta)[select]
-    if (is.character(select))
-        select <- colnames(theta) %in% select
-    theta <- theta[, select, drop = FALSE]
-
-    j <- max.col(theta)
-    if (min_prob > 0) {
-        l <- theta[cbind(seq_along(j), j)] <= min_prob
+    if (is.null(select)) {
+        select <- colnames(theta)
     } else {
-        l <- rep(FALSE, length(j))
+        select <- check_character(select, min_len = 2, max_len = ncol(theta), strict = TRUE)
     }
-    result <- factor(j, labels = colnames(theta),
+    theta <- theta[, colnames(theta) %in% select, drop = FALSE]
+
+    k <- max.col(theta)
+    if (min_prob > 0) {
+        l <- theta[cbind(seq_along(k), k)] <= min_prob
+    } else {
+        l <- rep(FALSE, length(k))
+    }
+    result <- factor(k, labels = colnames(theta),
                      levels = seq_len(ncol(theta)))
     names(result) <- rownames(theta)
     result[rowSums(x$data) == 0 | l] <- NA

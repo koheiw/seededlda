@@ -4,15 +4,12 @@
 \alias{terms}
 \title{Extract most likely terms}
 \usage{
-terms(x, n = 10, residual = TRUE)
+terms(x, n = 10)
 }
 \arguments{
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}}
 
 \item{n}{number of terms to be extracted}
-
-\item{residual}{if \code{FALSE}, ignores residual topics; meaningful only when
-\code{x} is a seeded-LDA model.}
 }
 \description{
 \code{terms()} returns the most likely terms, or words, for topics based on the
