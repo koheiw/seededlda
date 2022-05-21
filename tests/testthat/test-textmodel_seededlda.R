@@ -84,6 +84,10 @@ test_that("seeded LDA is working", {
         textmodel_seededlda(dfmt, dict, weight = -0.1),
         "The value of weight must be between 0 and 1"
     )
+    expect_error(
+        textmodel_seededlda(dfmt, dict, weight = c(0.01, 0.02)),
+        "The length of weight must be 1"
+    )
     expect_output(
         print(lda),
         paste0("\nCall:\n",
@@ -108,11 +112,11 @@ test_that("seeded LDA is working", {
                             sifi = c("alien*", "star", "space", "dragon")))
 
     set.seed(1234)
-    lda1 <- textmodel_seededlda(dfmt, dict, residual = TRUE)
+    lda1 <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.1)
     expect_true("couples" %in% terms(lda1)[,1])
     expect_true("dragon" %in% terms(lda1)[,2])
 
-    lda2 <- textmodel_seededlda(dfmt, dict, residual = TRUE, min_termfreq = 10)
+    lda2 <- textmodel_seededlda(dfmt, dict, residual = TRUE, min_termfreq = 10, weight = 0.1)
     expect_false("couples" %in% terms(lda2)[,1])
     expect_false("dragon" %in% terms(lda2)[,2])
 })
@@ -201,5 +205,20 @@ test_that("divergence() is working", {
                                min_termfreq = 10)
 
     expect_equal(divergence(lda),
-                 3.78, tolerance = 0.1)
+                 3.01, tolerance = 0.1)
+})
+
+test_that("works similar way as before v0.9", {
+    skip_on_cran()
+
+    dict <- dictionary(list(romance = c("love*", "couple*"),
+                            sifi = c("alien*", "star", "space")))
+
+    set.seed(1234)
+    lda <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.1, uniform = TRUE)
+    set.seed(1234)
+    lda_old <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.01, old = TRUE)
+
+    tb <- table(topics(lda), topics(lda_old))
+    expect_true(all(diag(tb) / rowSums(tb) > 0.85))
 })

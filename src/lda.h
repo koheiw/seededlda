@@ -203,17 +203,20 @@ void LDA::estimate() {
 
         // for all z_i
         for (int m = 0; m < M; m++) {
-            if (z[m].size() == 0) continue;
-            int n = 0;
 
             // topic of the previous document
             for (int k = 0; k < K; k++) {
-                if (m == 0 || initial[m] || gamma == 0) {
-                    q[k] = 1;
+                if (gamma == 0 || initial[m] || m == 0) {
+                    q[k] = 1.0;
                 } else {
                     q[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + K * alpha), gamma);
                 }
             }
+            //Rcout << m << ":\n";
+            //Rcout << q << "\n";
+
+            if (z[m].size() == 0) continue;
+            int n = 0;
 
             arma::sp_mat::const_col_iterator it = data.begin_col(m);
             arma::sp_mat::const_col_iterator it_end = data.end_col(m);
