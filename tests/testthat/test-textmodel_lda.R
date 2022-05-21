@@ -23,15 +23,13 @@ test_that("LDA is working", {
     expect_equal(lda$theta, lda_v081$theta)
 
     expect_equal(dim(terms(lda, 10)), c(10, 5))
-    expect_equal(dim(terms(lda, 10, residual = FALSE)), c(10, 5))
     expect_equal(dim(terms(lda, 20)), c(20, 5))
-    expect_equal(dim(terms(lda, 20, residual = FALSE)), c(20, 5))
     expect_equal(
         colnames(terms(lda)),
         c("topic1", "topic2", "topic3", "topic4", "topic5")
     )
     expect_true(
-        sum(apply(terms(lda), 2, function(x)  all(sifi %in% x))) == 1 # there is a sifi topic
+        sum(apply(terms(lda), 2, function(x)  all(sifi %in% x))) == 1 # there is the sifi topic
     )
     expect_equal(
         names(topics(lda)),
@@ -41,16 +39,8 @@ test_that("LDA is working", {
        topics(lda),
        c("topic1", "topic2", "topic3", "topic4", "topic5")
     )
-    expect_setequal(
-        topics(lda, residual = FALSE),
-        c("topic1", "topic2", "topic3", "topic4", "topic5")
-    )
     expect_equal(
         levels(topics(lda)),
-        c("topic1", "topic2", "topic3", "topic4", "topic5")
-    )
-    expect_equal(
-        levels(topics(lda, residual = FALSE)),
         c("topic1", "topic2", "topic3", "topic4", "topic5")
     )
     expect_equal(
@@ -231,3 +221,55 @@ test_that("gamma is working", {
         "The value of gamma must be between 0 and 1"
     )
 })
+
+test_that("select and min_prob are working", {
+
+    set.seed(1234)
+    lda <- textmodel_lda(dfmt, k = 5)
+
+    expect_equal(
+        is.na(topics(lda, min_prob = 0.50)),
+        rowSums(lda$theta > 0.50) == 0
+    )
+    expect_equal(
+        is.na(topics(lda, min_prob = 0.25)),
+        rowSums(lda$theta > 0.25) == 0
+    )
+
+    expect_equal(
+        is.na(topics(lda, min_prob = 0.1, select = c(1, 2, 5))),
+        rowSums(lda$theta[, c(1, 2, 5)] > 0.1) == 0
+    )
+
+    expect_equal(
+        topics(lda)[1:10],
+        topics(lda, select = 1:5)[1:10]
+    )
+
+    # different indices work
+    expect_equal(
+        as.integer(topics(lda, select = c("topic1", "topic2", "topic5")))[1:10],
+        max.col(lda$theta[,c(1, 2, 5)])[1:10]
+    )
+
+    expect_equal(
+        as.integer(topics(lda, select = c("topic1", "topic2", "topic5")))[1:10],
+        max.col(lda$theta[,c(TRUE, TRUE, FALSE, FALSE, TRUE)])[1:10]
+    )
+
+    # the order does not affect
+    expect_identical(
+        topics(lda, select = c("topic3", "topic2"))[1:10],
+        topics(lda, select = c("topic2", "topic3"))[1:10]
+    )
+
+    # ignore non-existing topic
+    expect_identical(
+        topics(lda, select = c("topic2", "topic3", "xxxx"))[1:10],
+        topics(lda, select = c("topic2", "topic3"))[1:10]
+    )
+
+})
+
+
+
