@@ -140,25 +140,31 @@ terms.textmodel_lda <- function(x, n = 10) {
 #' @export
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
 #' @param select if specified, returns one of the selected topic with the highest
-#'   likelihood; specify either names or indices of topics in `x$theta`.
+#'   probability; specify either names or indices of topics in `x$theta`.
 #' @details Users can access the original matrix `x$theta` for likelihood
 #'   scores; run `max.col(x$theta)` to obtain the same result as `topics(x)`.
-topics <- function(x, select = NULL) {
+topics <- function(x, min_prob = 0, select = NULL) {
     UseMethod("topics")
 }
 #' @export
 #' @method topics textmodel_lda
-topics.textmodel_lda <- function(x, select = NULL) {
+topics.textmodel_lda <- function(x, min_prob = 0, select = NULL) {
 
     if (is.null(select)) {
         theta <- x$theta
     } else {
         theta <- x$theta[, select, drop = FALSE]
     }
-    result <- factor(max.col(theta), labels = colnames(theta),
+    j <- max.col(theta)
+    if (min_prob > 0) {
+        l <- theta[cbind(seq_along(j), j)] <= min_prob
+    } else {
+        l <- rep(FALSE, length(j))
+    }
+    result <- factor(j, labels = colnames(theta),
                      levels = seq_len(ncol(theta)))
     names(result) <- rownames(theta)
-    result[rowSums(x$data) == 0] <- NA
+    result[rowSums(x$data) == 0 | l] <- NA
     return(result)
 }
 
