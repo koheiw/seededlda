@@ -241,6 +241,16 @@ test_that("select and min_prob are working", {
         rowSums(lda$theta[, c(1, 2, 5)] > 0.1) == 0
     )
 
+    expect_error(
+        topics(lda, min_prob = -0.1),
+        "The value of min_prob must be between 0 and 1"
+    )
+
+    expect_error(
+        topics(lda, min_prob = c(0.1, 0.2)),
+        "The length of min_prob must be 1"
+    )
+
     expect_equal(
         topics(lda)[1:10],
         topics(lda, select = paste0("topic", 1:5))[1:10]
