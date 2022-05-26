@@ -22,7 +22,7 @@ textmodel_seededlda(
   valuetype = c("glob", "regex", "fixed"),
   case_insensitive = TRUE,
   residual = 0,
-  weight = 1,
+  weight = 0.01,
   uniform = TRUE,
   max_iter = 2000,
   alpha = NULL,

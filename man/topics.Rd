@@ -9,9 +9,10 @@ topics(x, min_prob = 0, select = NULL)
 \arguments{
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}}
 
-\item{select}{if specified, returns one of the selected topic with the
-highest probability; specify by either logical, numeric or character
-indices of columns in \code{x$theta}.}
+\item{min_prob}{ignores topics if their probability is lower than this value.}
+
+\item{select}{returns the selected topic with the
+highest probability; specify by the names of columns in \code{x$theta}.}
 }
 \description{
 \code{topics()} returns the most likely topics for documents based on the \code{theta}
