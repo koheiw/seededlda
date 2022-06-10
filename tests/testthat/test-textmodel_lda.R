@@ -164,8 +164,80 @@ test_that("divergence() is working", {
 
     set.seed(1234)
     lda <- textmodel_lda(dfmt, k = 5)
+    expect_equal(dim(divergence(lda)), c(5, 5))
 
-    expect_equal(divergence(lda),
-                 2.94, tolerance = 0.1)
+})
+
+test_that("select and min_prob are working", {
+
+    set.seed(1234)
+    lda <- textmodel_lda(dfmt, k = 5)
+
+    expect_equal(
+        is.na(topics(lda, min_prob = 0.50)),
+        rowSums(lda$theta > 0.50) == 0
+    )
+    expect_equal(
+        is.na(topics(lda, min_prob = 0.25)),
+        rowSums(lda$theta > 0.25) == 0
+    )
+
+    expect_equal(
+        is.na(topics(lda, min_prob = 0.1, select = c("topic1", "topic2", "topic5"))),
+        rowSums(lda$theta[, c(1, 2, 5)] > 0.1) == 0
+    )
+
+    expect_error(
+        topics(lda, min_prob = -0.1),
+        "The value of min_prob must be between 0 and 1"
+    )
+
+    expect_error(
+        topics(lda, min_prob = c(0.1, 0.2)),
+        "The length of min_prob must be 1"
+    )
+
+    expect_equal(
+        topics(lda)[1:10],
+        topics(lda, select = paste0("topic", 1:5))[1:10]
+    )
+
+    expect_equal(
+        as.integer(topics(lda, select = c("topic1", "topic2", "topic5")))[1:10],
+        max.col(lda$theta[,c(1, 2, 5)])[1:10]
+    )
+
+    # ignore non-existing or duplicated topics
+    expect_identical(
+        topics(lda, select = c("topic2", "topic3", "xxxx"))[1:10],
+        topics(lda, select = c("topic2", "topic3"))[1:10]
+    )
+
+    expect_identical(
+        topics(lda, select = c("topic2", "topic3", "topic2"))[1:10],
+        topics(lda, select = c("topic2", "topic3"))[1:10]
+    )
+
+    # keep the order of levels
+    expect_identical(
+        levels(topics(lda, select = c("topic3", "topic2"))[1:10]),
+        levels(topics(lda, select = c("topic2", "topic3"))[1:10])
+    )
+
+    # invalid input
+    expect_error(
+        topics(lda, select = 1:2),
+        "The type of select must be character"
+    )
+
+    expect_error(
+        topics(lda, select = c(TRUE, FALSE)),
+        "The type of select must be character"
+    )
+
+    expect_error(
+        topics(lda, select = character()),
+        "The length of select must be between 2 and 5"
+    )
 })
 

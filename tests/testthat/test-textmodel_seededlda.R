@@ -189,7 +189,6 @@ test_that("divergence() is working", {
     set.seed(1234)
     lda <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.02,
                                min_termfreq = 10)
+    expect_equal(dim(divergence(lda)), c(3, 3))
 
-    expect_equal(divergence(lda),
-                 3.78, tolerance = 0.1)
 })
