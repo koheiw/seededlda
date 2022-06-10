@@ -133,7 +133,7 @@ terms.textmodel_lda <- function(x, n = 10) {
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
 #' @param select returns the selected topic with the
 #'   highest probability; specify by the names of columns in `x$theta`.
-#' @param min_prob ignores topics if their probability is lower than this value.
+#' @param min_prob returns `NA` if the highest probability is lower than this value.
 #' @details Users can access the original matrix `x$theta` for likelihood
 #'   scores; run `max.col(x$theta)` to obtain the same result as `topics(x)`.
 topics <- function(x, min_prob = 0, select = NULL) {

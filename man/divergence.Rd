@@ -13,9 +13,10 @@ divergence(x)
 These functions help users to find the optimal number of topics for LDA.
 }
 \details{
-\code{divergence()} computes the average Kullback–Leibler distance between all the
-pairs of topic vectors in \code{x$phi}. The divergence score maximizes when the
-chosen number of topic \code{k} is optimal (Deveaud et al., 2014).
+\code{divergence()} computes the Kullback–Leibler distance between all
+the pairs of topic vectors in \code{x$phi}. The average divergence score should
+maximize when the chosen number of topic \code{k} is optimal (Deveaud et al.,
+2014).
 }
 \references{
 Deveaud, Romain et al. (2014). "Accurate and Effective Latent
