@@ -1,3 +1,8 @@
+## Changes in v0.8.2
+
+* Add `select` and `min_prob` to `topics()`.
+* Change `divergence()` to return the full distance matrix.
+
 ## Changes in v0.8.1
 
 * Change `textmodel_seededlda()` to set positive integer values to `residual`.
