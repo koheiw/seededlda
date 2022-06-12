@@ -24,7 +24,7 @@ predict.textmodel_lda <- function(object, newdata = NULL,
 
     data <- dfm_match(data, colnames(object$phi))
     label <- rownames(object$phi)
-    temp <- lda(data, object$k, label, max_iter, object$alpha,
+    temp <- lda(data, object$k, label, FALSE, max_iter, object$alpha,
                 object$beta, NULL, object$words, verbose)
     result <- topics(temp)
     names(result) <- docnames(data)

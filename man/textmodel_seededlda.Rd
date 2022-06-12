@@ -8,6 +8,7 @@
 textmodel_lda(
   x,
   k = 10,
+  sort = FALSE,
   max_iter = 2000,
   alpha = NULL,
   beta = NULL,
@@ -21,6 +22,7 @@ textmodel_seededlda(
   valuetype = c("glob", "regex", "fixed"),
   case_insensitive = TRUE,
   residual = 0,
+  sort = FALSE,
   weight = 0.01,
   max_iter = 2000,
   alpha = NULL,
@@ -34,6 +36,8 @@ textmodel_seededlda(
 
 \item{k}{the number of topics; determined automatically by the number of keys
 in \code{dictionary} in \code{textmodel_seededlda()}.}
+
+\item{sort}{if \code{TRUE}, sort unseeded topics in decreasing order by their prevalence.}
 
 \item{max_iter}{the maximum number of iteration in Gibbs sampling.}
 
@@ -128,6 +132,6 @@ Corpora: Semisupervised Topic Classification of the UN Speeches".
 doi:10.1177/0894439320907027. \emph{Social Science Computer Review}.
 }
 \seealso{
-\link[topicmodels:lda]{topicmodels}
+\link[topicmodels:LDA]{topicmodels}
 }
 \keyword{textmodel}

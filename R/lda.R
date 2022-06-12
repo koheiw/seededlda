@@ -2,6 +2,7 @@
 #' @param x the dfm on which the model will be fit
 #' @param k the number of topics; determined automatically by the number of keys
 #'   in `dictionary` in `textmodel_seededlda()`.
+#' @param sort if `TRUE`, sort unseeded topics in decreasing order by their prevalence.
 #' @param max_iter the maximum number of iteration in Gibbs sampling.
 #' @param verbose logical; if `TRUE` print diagnostic information during
 #'   fitting.
@@ -26,7 +27,7 @@
 #' @seealso [topicmodels][topicmodels::LDA]
 #' @export
 textmodel_lda <- function(
-    x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL,
+    x, k = 10, sort = FALSE, max_iter = 2000, alpha = NULL, beta = NULL,
     model = NULL, verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_lda")
@@ -34,7 +35,7 @@ textmodel_lda <- function(
 
 #' @export
 textmodel_lda.dfm <- function(
-    x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL,
+    x, k = 10, sort = FALSE, max_iter = 2000, alpha = NULL, beta = NULL,
     model = NULL, verbose = quanteda_options("verbose")
 ) {
 
@@ -52,15 +53,16 @@ textmodel_lda.dfm <- function(
         label <- paste0("topic", seq_len(k))
         words <- NULL
     }
-    lda(x, k, label, max_iter, alpha, beta, NULL, words, verbose)
+    lda(x, k, label, sort, max_iter, alpha, beta, NULL, words, verbose)
 }
 
 #' @importFrom methods as
 #' @import quanteda
 #' @useDynLib seededlda, .registration = TRUE
-lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose) {
+lda <- function(x, k, label, sort, max_iter, alpha, beta, seeds, words, verbose) {
 
     k <- as.integer(k)
+    sort <- as.logical(sort)
     max_iter <- as.integer(max_iter)
     if (is.null(alpha)) {
         alpha <- -1.0 # default value will be set in C++
@@ -84,6 +86,13 @@ lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose) {
 
     random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
     result <- cpp_lda(x, k, max_iter, alpha, beta, seeds, words, random, verbose)
+
+    if (sort) {
+        r <- order(colSums(seeds) > 0, colSums(result$words), decreasing = TRUE)
+        result$phi <- result$phi[r,,drop = FALSE]
+        result$theta <- result$theta[,r,drop = FALSE]
+        result$words <- result$words[,r,drop = FALSE]
+    }
 
     dimnames(result$phi) <- list(label, colnames(x))
     dimnames(result$theta) <- list(rownames(x), label)

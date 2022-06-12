@@ -169,3 +169,27 @@ test_that("divergence() is working", {
                  2.94, tolerance = 0.1)
 })
 
+test_that("sort is working", {
+    set.seed(1234)
+    lda1 <- textmodel_lda(dfmt, k = 5, sort = TRUE)
+    topic1 <- topics(lda1)[1:100]
+
+    s1 <- colSums(lda1$words)
+    expect_true(all(sort(s1, decreasing = TRUE) == s1))
+
+    set.seed(1234)
+    lda2 <- textmodel_lda(dfmt, k = 5, sort = FALSE)
+    topic2 <- topics(lda2)[1:100]
+
+    s2 <- colSums(lda2$words)
+    expect_false(all(sort(s2, decreasing = TRUE) == s2))
+
+    expect_equal(topic1 == "other5",
+                 topic2 == "other1")
+    expect_equal(topic1 == "other4",
+                 topic2 == "other2")
+    expect_equal(topic1 == "other4",
+                 topic2 == "other2")
+
+})
+

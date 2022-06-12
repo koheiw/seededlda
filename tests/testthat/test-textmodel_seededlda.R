@@ -193,3 +193,44 @@ test_that("divergence() is working", {
     expect_equal(divergence(lda),
                  3.78, tolerance = 0.1)
 })
+
+
+test_that("sort is working", {
+
+    dict <- dictionary(list(romance = c("love*", "couple*"),
+                            sifi = c("alien*", "star", "space")))
+
+    set.seed(1234)
+    lda1 <- textmodel_seededlda(dfmt, dict, residual = 3, sort = TRUE,
+                                min_termfreq = 10)
+    topic1 <- topics(lda1)[1:100]
+
+    expect_equal(
+        colnames(terms(lda1)),
+        c("romance", "sifi", "other1", "other2", "other3")
+    )
+    s1 <- colSums(lda1$words)[3:5]
+    expect_true(all(sort(s1, decreasing = TRUE) == s1))
+
+    set.seed(1234)
+    lda2 <- textmodel_seededlda(dfmt, dict, residual = 3, sort = FALSE,
+                                min_termfreq = 10)
+    topic2 <- topics(lda2)[1:100]
+
+    expect_equal(
+        colnames(terms(lda2)),
+        c("romance", "sifi", "other1", "other2", "other3")
+    )
+    s2 <- colSums(lda2$words)[3:5]
+    expect_false(all(sort(s2, decreasing = TRUE) == s2))
+
+    expect_equal(topic1 == "other1",
+                 topic2 == "other3")
+    expect_equal(topic1 == "other2",
+                 topic2 == "other2")
+    expect_equal(topic1 == "other3",
+                 topic2 == "other1")
+
+
+})
+
