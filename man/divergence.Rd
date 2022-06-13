@@ -2,12 +2,14 @@
 % Please edit documentation in R/utils.R
 \name{divergence}
 \alias{divergence}
-\title{Optimize the number of topics}
+\title{\link{experimental} Optimize the number of topics}
 \usage{
-divergence(x)
+divergence(x, ...)
 }
 \arguments{
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}}
+
+\item{...}{not used.}
 }
 \description{
 These functions help users to find the optimal number of topics for LDA.
