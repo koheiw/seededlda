@@ -9,7 +9,7 @@ topics(x, min_prob = 0, select = NULL)
 \arguments{
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}}
 
-\item{min_prob}{ignores topics if their probability is lower than this value.}
+\item{min_prob}{returns \code{NA} if the highest probability is lower than this value.}
 
 \item{select}{returns the selected topic with the
 highest probability; specify by the names of columns in \code{x$theta}.}
