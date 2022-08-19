@@ -22,5 +22,5 @@ Suggests:
     testthat,
     quanteda.textmodels,
     topicmodels
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 Roxygen: list(markdown = TRUE)
