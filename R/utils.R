@@ -1,4 +1,4 @@
-#' Optimize the number of topics
+#' [experimental] Optimize the number of topics
 #'
 #' These functions help users to find the optimal number of topics for LDA.
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
@@ -20,4 +20,20 @@ divergence.textmodel_lda <- function(x) {
     div <- proxyC::dist(x$phi, method = "kullback")
     diag(div) <- NA
     Matrix::mean(div, na.rm = TRUE)
+}
+
+
+#' [experimental] Compute the sizes of topics
+#'
+#' Compute the sizes of topics are in proportions of topic words in the corpus.
+#' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
+#' @export
+sizes <- function(x) {
+    UseMethod("sizes")
+}
+#' @export
+sizes.textmodel_lda <- function(x) {
+    p <- colSums(x$words) / sum(x$words)
+    names(p) <- rownames(x$phi) # TODO: consider set colnames to words
+    return(p)
 }
