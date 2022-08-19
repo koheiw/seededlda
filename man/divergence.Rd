@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{divergence}
 \alias{divergence}
-\title{Optimize the number of topics}
+\title{[experimental] Compute the divergence of topics}
 \usage{
 divergence(x)
 }
@@ -10,12 +10,14 @@ divergence(x)
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}}
 }
 \description{
-These functions help users to find the optimal number of topics for LDA.
+Compute the divergence of topics. This can be used to search the optimal number
+of topics for LDA.
 }
 \details{
-\code{divergence()} computes the average Kullback–Leibler distance between all the
-pairs of topic vectors in \code{x$phi}. The divergence score maximizes when the
-chosen number of topic \code{k} is optimal (Deveaud et al., 2014).
+\code{divergence()} computes the average Kullback–Leibler distance
+between all the pairs of topic vectors in \code{x$phi}. The divergence score
+maximizes when the chosen number of topic \code{k} is optimal (Deveaud et al.,
+2014).
 }
 \references{
 Deveaud, Romain et al. (2014). "Accurate and Effective Latent
