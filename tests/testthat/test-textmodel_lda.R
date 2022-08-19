@@ -166,6 +166,7 @@ test_that("model argument works with LDA", {
     )
 })
 
+
 test_that("divergence() is working", {
 
     set.seed(1234)
@@ -294,6 +295,5 @@ test_that("select and min_prob are working", {
         "The length of select must be between 2 and 5"
     )
 })
-
 
 
