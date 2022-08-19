@@ -30,11 +30,12 @@ test_that("divergence() is working", {
 })
 
 test_that("sizes() is working", {
-    expect_equal(sizes(lda),
-                 c("topic1" = 0.15, "topic2" = 0.14, "topic3" = 0.40,
-                   "topic4" = 0.14, "topic5" = 0.139),
-                 tolerance = 0.01)
-    expect_equal(sizes(slda),
-                 c("romance" = 0.33, "sifi" = 0.42, "other" = 0.24),
-                 tolerance = 0.01)
+
+    size1 <- sizes(lda)
+    expect_true(is.numeric(size1))
+    expect_equal(names(size1), c("topic1", "topic2", "topic3", "topic4", "topic5"))
+
+    size2 <- sizes(slda)
+    expect_true(is.numeric(size2))
+    expect_equal(names(size2), c("romance", "sifi", "other"))
 })
