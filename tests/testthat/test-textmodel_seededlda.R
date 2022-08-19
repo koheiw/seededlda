@@ -195,19 +195,6 @@ test_that("model argument works with seeded LDA", {
     )
 })
 
-test_that("divergence() is working", {
-
-    dict <- dictionary(list(romance = c("love*", "couple*"),
-                            sifi = c("alien*", "star", "space")))
-
-    set.seed(1234)
-    lda <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.02,
-                               min_termfreq = 10)
-
-    expect_equal(divergence(lda),
-                 3.01, tolerance = 0.1)
-})
-
 test_that("works similar way as before v0.9", {
     skip_on_cran()
 

@@ -166,16 +166,6 @@ test_that("model argument works with LDA", {
     )
 })
 
-
-test_that("divergence() is working", {
-
-    set.seed(1234)
-    lda <- textmodel_lda(dfmt, k = 5)
-
-    expect_equal(divergence(lda),
-                 2.94, tolerance = 0.1)
-})
-
 test_that("gamma is working", {
 
     corp <- corpus_reshape(data_corpus_moviereviews[1:100])
