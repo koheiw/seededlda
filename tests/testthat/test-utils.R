@@ -25,7 +25,7 @@ test_that("divergence() is working", {
                  2.94, tolerance = 0.1)
 
     expect_equal(divergence(slda),
-                 3.78, tolerance = 0.1)
+                 3.04, tolerance = 0.1)
 
 })
 
@@ -34,8 +34,10 @@ test_that("sizes() is working", {
     size1 <- sizes(lda)
     expect_true(is.numeric(size1))
     expect_equal(names(size1), c("topic1", "topic2", "topic3", "topic4", "topic5"))
+    expect_equal(sum(size1), 1)
 
     size2 <- sizes(slda)
     expect_true(is.numeric(size2))
     expect_equal(names(size2), c("romance", "sifi", "other"))
+    expect_equal(sum(size2), 1)
 })
