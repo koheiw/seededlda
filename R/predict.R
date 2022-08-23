@@ -4,8 +4,8 @@
 #' by a Gibbs sampling with words allocated to topics in the fitted LDA. The
 #' result becomes different from `topics()` even for the same documents because
 #' `predict()` triggers additional iterations.
-#' @param object a fitted LDA textmodel
-#' @param newdata dfm on which prediction should be made
+#' @param object a fitted LDA textmodel.
+#' @param newdata dfm on which prediction should be made.
 #' @param ... not used
 #' @inherit textmodel_seededlda
 #' @keywords internal

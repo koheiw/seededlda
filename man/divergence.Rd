@@ -2,19 +2,27 @@
 % Please edit documentation in R/utils.R
 \name{divergence}
 \alias{divergence}
-\title{[experimental] Compute the divergence of topics}
+\title{[Experimental] Compute the divergence of topics}
 \usage{
-divergence(x)
+divergence(x, weighted = TRUE, min_prop = 0.01, select = NULL)
 }
 \arguments{
-\item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}}
+\item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}.}
+
+\item{weighted}{if \code{TRUE} weight the divergence scores by the sizes of
+topics.}
+
+\item{min_prop}{the minimum size of topics that can increase the average
+divergence. Ignored when \code{weighted = FALSE}.}
+
+\item{select}{names of topics for which the divergence is computed.}
 }
 \description{
-Compute the divergence of topics. This can be used to search the optimal number
-of topics for LDA.
+Compute the divergence of topics. This can be used to search the optimal
+number of topics for LDA.
 }
 \details{
-\code{divergence()} computes the average Kullback–Leibler distance
+\code{divergence()} computes the average Jensen-Shannon divergence
 between all the pairs of topic vectors in \code{x$phi}. The divergence score
 maximizes when the chosen number of topic \code{k} is optimal (Deveaud et al.,
 2014).
