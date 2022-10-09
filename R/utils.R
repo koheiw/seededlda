@@ -26,13 +26,13 @@ divergence.textmodel_lda <- function(x, weighted = TRUE, min_prop = 0.01, select
 
     weighted <- check_logical(weighted)
     min_prop <- check_double(min_prop, min = 0, max = 1)
-    select <- check_character(select, strict = TRUE)
 
-    if (any(!select %in% rownames(x$phi)))
-        stop("Selected topics must be in the model", call. = FALSE)
     if (is.null(select)) {
         l <- rep(TRUE, nrow(x$phi))
     } else {
+        select <- check_character(select, max_len = ncol(x$phi), strict = TRUE)
+        if (any(!select %in% rownames(x$phi)))
+            stop("Selected topics must be in the model", call. = FALSE)
         l <- rownames(x$phi) %in% select
     }
     if (sum(l) < 2)
