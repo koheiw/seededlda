@@ -24,7 +24,7 @@ divergence.textmodel_lda <- function(x) {
 }
 
 
-#' \[experimental\] Compute the sizes of topics
+#' Compute the sizes of topics
 #'
 #' Compute the sizes of topics as the proportions of topic words in the corpus.
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
