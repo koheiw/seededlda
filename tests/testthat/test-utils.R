@@ -28,7 +28,7 @@ test_that("divergence() is working", {
               divergence(lda, weighted = TRUE))
 
     expect_gt(divergence(lda),
-              divergence(lda, min_prop = 0.1))
+              divergence(lda, min_size = 0.1))
 
     expect_equal(divergence(slda),
                  0.31, tolerance = 0.01)
@@ -51,7 +51,7 @@ test_that("divergence() is working", {
               divergence(slda, weighted = TRUE))
 
     expect_gt(divergence(slda),
-              divergence(slda, min_prop = 0.1))
+              divergence(slda, min_size = 0.1))
 
     expect_silent(divergence(slda, select = c("romance", "sifi")))
     expect_error(

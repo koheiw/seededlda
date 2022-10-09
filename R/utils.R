@@ -5,27 +5,29 @@
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()].
 #' @param weighted if `TRUE` weight the divergence scores by the sizes of
 #'   topics.
-#' @param min_prop the minimum size of topics that can increase the average
+#' @param min_size the minimum size of topics that can increase the average
 #'   divergence. Ignored when `weighted = FALSE`.
 #' @param select names of topics for which the divergence is computed.
 #' @details `divergence()` computes the average Jensen-Shannon divergence
 #'   between all the pairs of topic vectors in `x$phi`. The divergence score
 #'   maximizes when the chosen number of topic `k` is optimal (Deveaud et al.,
 #'   2014).
+#' @seealso [sizes]
 #' @references Deveaud, Romain et al. (2014). "Accurate and Effective Latent
 #'   Concept Modeling for Ad Hoc Information Retrieval".
 #'   doi:10.3166/DN.17.1.61-84. *Document Numérique*.
 #' @export
-divergence <- function(x, weighted = TRUE, min_prop = 0.01, select = NULL) {
+divergence <- function(x, weighted = TRUE, min_size = 0.01, select = NULL) {
     UseMethod("divergence")
 }
 
 #' @importFrom proxyC dist
 #' @export
-divergence.textmodel_lda <- function(x, weighted = TRUE, min_prop = 0.01, select = NULL) {
+divergence.textmodel_lda <- function(x, weighted = TRUE, min_size = 0.01,
+                                     select = NULL) {
 
     weighted <- check_logical(weighted)
-    min_prop <- check_double(min_prop, min = 0, max = 1)
+    min_size <- check_double(min_size, min = 0, max = 1)
 
     if (is.null(select)) {
         l <- rep(TRUE, nrow(x$phi))
@@ -41,11 +43,11 @@ divergence.textmodel_lda <- function(x, weighted = TRUE, min_prop = 0.01, select
     if (weighted) {
         p <- colSums(x$words) / sum(x$words)
     } else {
-        min_prop <- 0
+        min_size <- 0
         p <- rep(1 / ncol(x$word), ncol(x$word))
     }
-    w <- tcrossprod(p[l]) - (min_prop ^ 2)
-    sum(div[l, l] * w, na.rm = TRUE) + (min_prop ^ 2)
+    w <- tcrossprod(p[l]) - (min_size ^ 2)
+    sum(div[l, l] * w, na.rm = TRUE) + (min_size ^ 2)
 }
 
 
