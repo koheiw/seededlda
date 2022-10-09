@@ -126,21 +126,41 @@ terms.textmodel_lda <- function(x, n = 10) {
 
 #' Extract most likely topics
 #'
-#' `topics()` returns the most likely topics for documents based on the `theta` parameter.
+#' `topics()` returns the most likely topics for documents based on the `theta`
+#' parameter.
 #' @export
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
+#' @param select returns the selected topic with the
+#'   highest probability; specify by the names of columns in `x$theta`.
+#' @param min_prob ignores topics if their probability is lower than this value.
 #' @details Users can access the original matrix `x$theta` for likelihood
 #'   scores; run `max.col(x$theta)` to obtain the same result as `topics(x)`.
-topics <- function(x) {
+topics <- function(x, min_prob = 0, select = NULL) {
     UseMethod("topics")
 }
 #' @export
 #' @method topics textmodel_lda
-topics.textmodel_lda <- function(x) {
-    result <- factor(max.col(x$theta), labels = colnames(x$theta),
-                     levels = seq_len(ncol(x$theta)))
-    names(result) <- rownames(x$theta)
-    result[rowSums(x$data) == 0] <- NA
+topics.textmodel_lda <- function(x, min_prob = 0, select = NULL) {
+
+    theta <- x$theta
+    if (is.null(select)) {
+        select <- colnames(theta)
+    } else {
+        select <- check_character(select, min_len = 2, max_len = ncol(theta), strict = TRUE)
+    }
+    theta <- theta[, colnames(theta) %in% select, drop = FALSE]
+
+    min_prob <- check_double(min_prob, min = 0, max = 1)
+    k <- max.col(theta)
+    if (min_prob > 0) {
+        l <- theta[cbind(seq_along(k), k)] <= min_prob
+    } else {
+        l <- rep(FALSE, length(k))
+    }
+    result <- factor(k, labels = colnames(theta),
+                     levels = seq_len(ncol(theta)))
+    names(result) <- rownames(theta)
+    result[rowSums(x$data) == 0 | l] <- NA
     return(result)
 }
 
