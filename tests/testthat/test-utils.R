@@ -22,11 +22,50 @@ slda <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.02,
 test_that("divergence() is working", {
 
     expect_equal(divergence(lda),
-                 2.94, tolerance = 0.1)
+                 0.34, tolerance = 0.01)
+
+    expect_gt(divergence(lda, weighted = FALSE),
+              divergence(lda, weighted = TRUE))
+
+    expect_gt(divergence(lda),
+              divergence(lda, min_size = 0.1))
 
     expect_equal(divergence(slda),
-                 3.78, tolerance = 0.1)
+                 0.31, tolerance = 0.01)
 
+    expect_silent(divergence(lda, select = c("topic1", "topic2")))
+    expect_error(
+        divergence(lda, select = 1:3),
+        "The type of select must be character"
+    )
+    expect_error(
+        divergence(lda, select = c("topic1")),
+        "The length of select must be between 2 and 5"
+    )
+    expect_error(
+        divergence(lda, select = c("topic1", "topic2", "xxxx")),
+        "Selected topics must be in the model"
+    )
+
+    expect_gt(divergence(slda, weighted = FALSE),
+              divergence(slda, weighted = TRUE))
+
+    expect_gt(divergence(slda),
+              divergence(slda, min_size = 0.1))
+
+    expect_silent(divergence(slda, select = c("romance", "sifi")))
+    expect_error(
+        divergence(slda, select = 1:3),
+        "The type of select must be character"
+    )
+    expect_error(
+        divergence(slda, select = c("romance")),
+        "The length of select must be between 2 and 3"
+    )
+    expect_error(
+        divergence(slda, select = c("romance", "sifi", "xxxx")),
+        "Selected topics must be in the model"
+    )
 })
 
 test_that("sizes() is working", {
