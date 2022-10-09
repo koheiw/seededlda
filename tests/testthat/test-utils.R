@@ -40,7 +40,7 @@ test_that("divergence() is working", {
     )
     expect_error(
         divergence(lda, select = c("topic1")),
-        "At least two topics must be selected"
+        "The length of select must be between 2 and 5"
     )
     expect_error(
         divergence(lda, select = c("topic1", "topic2", "xxxx")),
@@ -60,7 +60,7 @@ test_that("divergence() is working", {
     )
     expect_error(
         divergence(slda, select = c("romance")),
-        "At least two topics must be selected"
+        "The length of select must be between 2 and 3"
     )
     expect_error(
         divergence(slda, select = c("romance", "sifi", "xxxx")),

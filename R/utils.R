@@ -30,13 +30,11 @@ divergence.textmodel_lda <- function(x, weighted = TRUE, min_prop = 0.01, select
     if (is.null(select)) {
         l <- rep(TRUE, nrow(x$phi))
     } else {
-        select <- check_character(select, max_len = ncol(x$phi), strict = TRUE)
+        select <- check_character(select, min_len = 2, max_len = nrow(x$phi), strict = TRUE)
         if (any(!select %in% rownames(x$phi)))
             stop("Selected topics must be in the model", call. = FALSE)
         l <- rownames(x$phi) %in% select
     }
-    if (sum(l) < 2)
-        stop("At least two topics must be selected", call. = FALSE)
 
     div <- proxyC::dist(x$phi, method = "jensen")
     diag(div) <- NA
