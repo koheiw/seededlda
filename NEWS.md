@@ -1,5 +1,6 @@
 ## Changes in v0.8.2
 
+* Add `min_prob` and `select` to `topics()` for greater flexibility
 * Change the divergence measure from Kullback-Leibler to Jensen-Shannon.
 * Add `weighted`, `min_size`, `select` to `divergence()` for regularized topic divergence scores.
 

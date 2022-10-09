@@ -4,13 +4,19 @@
 \alias{topics}
 \title{Extract most likely topics}
 \usage{
-topics(x)
+topics(x, min_prob = 0, select = NULL)
 }
 \arguments{
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}}
+
+\item{min_prob}{ignores topics if their probability is lower than this value.}
+
+\item{select}{returns the selected topic with the
+highest probability; specify by the names of columns in \code{x$theta}.}
 }
 \description{
-\code{topics()} returns the most likely topics for documents based on the \code{theta} parameter.
+\code{topics()} returns the most likely topics for documents based on the \code{theta}
+parameter.
 }
 \details{
 Users can access the original matrix \code{x$theta} for likelihood
