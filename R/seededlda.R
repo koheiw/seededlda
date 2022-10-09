@@ -142,15 +142,17 @@ topics <- function(x, min_prob = 0, select = NULL) {
 #' @method topics textmodel_lda
 topics.textmodel_lda <- function(x, min_prob = 0, select = NULL) {
 
-    theta <- x$theta
-    if (is.null(select)) {
-        select <- colnames(theta)
-    } else {
-        select <- check_character(select, min_len = 2, max_len = ncol(theta), strict = TRUE)
-    }
-    theta <- theta[, colnames(theta) %in% select, drop = FALSE]
-
     min_prob <- check_double(min_prob, min = 0, max = 1)
+    if (is.null(select)) {
+        j <- rep(TRUE, ncol(x$theta))
+    } else {
+        select <- check_character(select, min_len = 2, max_len = ncol(x$theta), strict = TRUE)
+        if (any(!select %in% colnames(x$theta)))
+            stop("Selected topics must be in the model", call. = FALSE)
+        j <- colnames(x$theta) %in% select
+    }
+
+    theta <- x$theta[, j, drop = FALSE]
     k <- max.col(theta)
     if (min_prob > 0) {
         l <- theta[cbind(seq_along(k), k)] <= min_prob
