@@ -25,7 +25,7 @@ test_that("divergence() is working", {
                  2.94, tolerance = 0.1)
 
     expect_equal(divergence(slda),
-                 3.78, tolerance = 0.1)
+                 3.04, tolerance = 0.1)
 
 })
 
