@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{sizes}
 \alias{sizes}
-\title{[Experimental] Compute the sizes of topics}
+\title{Compute the sizes of topics}
 \usage{
 sizes(x)
 }

@@ -252,17 +252,6 @@ test_that("select and min_prob are working", {
         max.col(lda$theta[,c(1, 2, 5)])[1:10]
     )
 
-    # ignore non-existing or duplicated topics
-    expect_identical(
-        topics(lda, select = c("topic2", "topic3", "xxxx"))[1:10],
-        topics(lda, select = c("topic2", "topic3"))[1:10]
-    )
-
-    expect_identical(
-        topics(lda, select = c("topic2", "topic3", "topic2"))[1:10],
-        topics(lda, select = c("topic2", "topic3"))[1:10]
-    )
-
     # keep the order of levels
     expect_identical(
         levels(topics(lda, select = c("topic3", "topic2"))[1:10]),
@@ -284,6 +273,10 @@ test_that("select and min_prob are working", {
         topics(lda, select = character()),
         "The length of select must be between 2 and 5"
     )
-})
 
+    expect_error(
+        topics(lda, select = c("topic2", "xxxxx")),
+        "Selected topics must be in the model"
+    )
+})
 

@@ -4,7 +4,7 @@
 \alias{divergence}
 \title{[Experimental] Compute the divergence of topics}
 \usage{
-divergence(x, weighted = TRUE, min_prop = 0.01, select = NULL)
+divergence(x, weighted = TRUE, min_size = 0.01, select = NULL)
 }
 \arguments{
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}.}
@@ -12,7 +12,7 @@ divergence(x, weighted = TRUE, min_prop = 0.01, select = NULL)
 \item{weighted}{if \code{TRUE} weight the divergence scores by the sizes of
 topics.}
 
-\item{min_prop}{the minimum size of topics that can increase the average
+\item{min_size}{the minimum size of topics that can increase the average
 divergence. Ignored when \code{weighted = FALSE}.}
 
 \item{select}{names of topics for which the divergence is computed.}
@@ -31,4 +31,7 @@ maximizes when the chosen number of topic \code{k} is optimal (Deveaud et al.,
 Deveaud, Romain et al. (2014). "Accurate and Effective Latent
 Concept Modeling for Ad Hoc Information Retrieval".
 doi:10.3166/DN.17.1.61-84. \emph{Document Numérique}.
+}
+\seealso{
+\link{sizes}
 }

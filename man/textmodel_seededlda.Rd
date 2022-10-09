@@ -138,6 +138,6 @@ Corpora: Semisupervised Topic Classification of the UN Speeches".
 doi:10.1177/0894439320907027. \emph{Social Science Computer Review}.
 }
 \seealso{
-\link[topicmodels:lda]{topicmodels}
+\link[topicmodels:LDA]{topicmodels}
 }
 \keyword{textmodel}
