@@ -92,6 +92,7 @@ textmodel_seededlda.dfm <- function(
     result$dictionary <- dictionary
     result$valuetype <- valuetype
     result$case_insensitive <- case_insensitive
+    result$seeds <- seeds
     result$residual <- residual
     result$weight <- weight
     return(result)

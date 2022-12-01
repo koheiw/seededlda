@@ -100,7 +100,8 @@ test_that("seeded LDA is working", {
         names(lda),
         c("k", "max_iter", "last_iter", "alpha", "beta", "gamma","phi", "theta",
           "words", "data", "call", "version",
-          "dictionary", "valuetype", "case_insensitive", "residual", "weight")
+          "dictionary", "valuetype", "case_insensitive", "seeds",
+          "residual", "weight")
     )
     expect_equivalent(class(lda$words), "dgCMatrix")
 })
