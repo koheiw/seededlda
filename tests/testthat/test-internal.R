@@ -45,6 +45,17 @@ test_that("tfm is working", {
     expect_equal(tfm4["other",], c("a" = 0, "aa" = 0, "aaa" = 0, "abc" = 0,
                                    "b" = 0, "bb" = 0, "bcd" = 0))
 
+    tfm5 <- seededlda:::tfm(dfmt, dict, weight = c(0.01, 0.01, 0.02))
+    expect_s4_class(tfm4, "dgCMatrix")
+    expect_equal(tfm5["A",], c("a" = 1, "aa" = 4, "aaa" = 1, "abc" = 1,
+                               "b" = 0, "bb" = 0, "bcd" = 0))
+    expect_equal(tfm5["B",], c("a" = 0, "aa" = 0, "aaa" = 0, "abc" = 0,
+                               "b" = 2, "bb" = 2, "bcd" = 2))
+    expect_equal(tfm5["AB",], c("a" = 0, "aa" = 8, "aaa" = 0, "abc" = 0,
+                                "b" = 0, "bb" = 4, "bcd" = 0))
+    expect_equal(tfm5["other",], c("a" = 0, "aa" = 0, "aaa" = 0, "abc" = 0,
+                                   "b" = 0, "bb" = 0, "bcd" = 0))
+
     tfm11 <- seededlda:::tfm(dfmt, dict, min_termfreq = 2, residual = 4)
     expect_s4_class(tfm11, "dgCMatrix")
     expect_equal(rownames(tfm11),

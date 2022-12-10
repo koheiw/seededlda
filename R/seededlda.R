@@ -205,9 +205,9 @@ tfm <- function(x, dictionary,
     }
 
     if (length(weight) == 1) {
-        weight <- rep(as.double(weight, ncol(result)))
+        weight <- rep(as.double(weight), nrow(result))
     } else {
-        weight <- check_double(weight, min_len = ncol(result), max_len = ncol(result),
+        weight <- check_double(weight, min_len = nrow(result), max_len = nrow(result),
                                min = 0, max = 1)
     }
     s <- sum(result)
