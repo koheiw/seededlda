@@ -65,8 +65,7 @@ topics.}
 \item{residual}{the number of undefined topics. They are named "other" by
 default, but it can be changed via \code{base::options(slda_residual_name)}.}
 
-\item{weight}{pseudo count given to seed words as a proportion of total
-number of words in \code{x}.}
+\item{weight}{determines the size of pseudo counts given to matched seed words.}
 
 \item{uniform}{if \code{FALSE}, adjusts the weights of seed words to make their
 total amount equal across topics.}

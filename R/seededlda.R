@@ -8,8 +8,7 @@
 #'   topics.
 #' @param residual the number of undefined topics. They are named "other" by
 #'   default, but it can be changed via `base::options(slda_residual_name)`.
-#' @param weight pseudo count given to seed words as a proportion of total
-#'   number of words in `x`.
+#' @param weight determines the size of pseudo counts given to matched seed words.
 #' @param uniform if `FALSE`, adjusts the weights of seed words to make their
 #'   total amount equal across topics.
 #' @param valuetype see [quanteda::valuetype]
@@ -79,8 +78,6 @@ textmodel_seededlda.dfm <- function(
 ) {
 
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
-    weight <- check_double(weight, min_len = 1, max_len = 1, min = 0, max = 1)
-
     seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, uniform = uniform,
                    ..., verbose = verbose))
     if (!identical(colnames(x), rownames(seeds)))
@@ -197,8 +194,6 @@ tfm <- function(x, dictionary,
     key <- names(dictionary)
     feat <- featnames(x)
 
-    weight <- as.double(weight)
-
     x <- dfm_trim(x, ..., verbose = verbose)
     x <- dfm_group(x, rep("text", ndoc(x)))
     result <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
@@ -208,7 +203,12 @@ tfm <- function(x, dictionary,
         result <- rbind(result, as(temp, "dgCMatrix"))
     }
 
-    weight <- rep(weight, ncol(result))
+    if (length(weight) == 1)
+        weight <- rep(weight, nrow(result))
+
+    weight <- check_double(weight, min_len = nrow(result), max_len = nrow(result),
+                           min = 0, max = 1)
+
     s <- sum(result)
     if (!old) {
         if (s > 0) {
