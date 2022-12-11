@@ -204,12 +204,12 @@ tfm <- function(x, dictionary,
         result <- rbind(result, as(temp, "dgCMatrix"))
     }
 
-    if (length(weight) == 1) {
-        weight <- rep(as.double(weight), nrow(result))
-    } else {
-        weight <- check_double(weight, min_len = nrow(result), max_len = nrow(result),
-                               min = 0, max = 1)
-    }
+    if (length(weight) == 1)
+        weight <- rep(weight, nrow(result))
+
+    weight <- check_double(weight, min_len = nrow(result), max_len = nrow(result),
+                           min = 0, max = 1)
+
     s <- sum(result)
     if (!old) {
         if (s > 0) {
