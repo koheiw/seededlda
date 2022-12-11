@@ -8,8 +8,7 @@
 #'   topics.
 #' @param residual the number of undefined topics. They are named "other" by
 #'   default, but it can be changed via `base::options(slda_residual_name)`.
-#' @param weight pseudo count given to seed words as a proportion of total
-#'   number of words in `x`.
+#' @param weight determines the size of pseudo counts given to seed words.
 #' @param uniform if `FALSE`, adjusts the weights of seed words to make their
 #'   total amount equal across topics.
 #' @param valuetype see [quanteda::valuetype]
