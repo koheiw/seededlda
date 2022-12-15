@@ -80,3 +80,14 @@ test_that("sizes() is working", {
     expect_equal(names(size2), c("romance", "sifi", "other"))
     expect_equal(sum(size2), 1)
 })
+
+test_that("get_weight() is working", {
+
+    dfmt_seed <- dfm_select(dfmt, dict)
+    dfmt_dict <- dfm_lookup(dfmt, dict)
+    w <- seededlda:::get_weight(dfmt_seed, dfmt_dict)
+
+    expect_equal(names(w), featnames(dfmt_seed))
+    expect_lte(max(w), 1)
+    expect_gte(min(w), 0)
+})

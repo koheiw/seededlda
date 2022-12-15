@@ -180,8 +180,9 @@ tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
                 weight = 0.01, residual = 1,
-                uniform = TRUE,
+                uniform = FALSE,
                 old = FALSE,
+                entropy = FALSE,
                 ...,
                 verbose = quanteda_options("verbose")) {
 
@@ -212,12 +213,12 @@ tfm <- function(x, dictionary,
     s <- sum(result)
     if (!old) {
         if (s > 0) {
+            p <- rep(1, nrow(result))
             if (uniform) {
-                p <- rep(1, nrow(result))
+                q <- rep(1 / ncol(result), ncol(result))
             } else {
-                p <- (rowSums(result) / s) * nrow(result) # row profile
+                q <- colSums(result) / s # column profile
             }
-            q <- colSums(result) / s # column profile
             w <- tcrossprod(p, q)
             weight <- weight * 100 # for compatibility with pre v0.9
             result <- (result > 0) * w * s * weight
@@ -225,6 +226,15 @@ tfm <- function(x, dictionary,
     } else {
         result <- (result > 0) * s * weight
     }
+
+    if (entropy) {
+        ent <- rep(1.0, length(feat))
+        names(ent) <- feat
+        w <- get_weight(dfm_select(x, dictionary), dfm_lookup(x, dictionary))
+        ent[names(w)] <- w
+        result <- result %*% Matrix::Diagonal(x = ent)
+    }
+
     # s <- colSums(result)
     # result <- result > 0
     # result <- t(t(result) * (s * weight))

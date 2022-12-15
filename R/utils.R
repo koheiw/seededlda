@@ -65,3 +65,23 @@ sizes.textmodel_lda <- function(x) {
     names(p) <- rownames(x$phi) # TODO: consider set colnames to words
     return(p)
 }
+
+#' @importFrom quanteda dfm_weight as.dfm
+get_entropy <- function(x, base = 2) {
+    #x <- t(x)
+    x <- dfm_weight(as.dfm(x), "prop")
+    x <- as(x, "dgTMatrix")
+    result <- sapply(split(x@x, factor(x@i + 1L, levels = seq_len(nrow(x)))),
+                            function(y) sum(y * log(y, base)) * -1)
+    names(result) <- rownames(x)
+    return(result)
+}
+
+#' @importFrom quanteda is.dfm
+get_weight <- function(x, y) {
+    if (!is.dfm(x) || !is.dfm(y))
+        stop('x and y have to be dfm')
+    y <- dfm_weight(y, scheme = "boolean")
+    cp <- Matrix::crossprod(x, y)
+    return(1 - get_entropy(cp, nrow(cp)))
+}

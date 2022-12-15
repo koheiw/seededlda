@@ -69,10 +69,12 @@ test_that("tfm is working", {
     options(slda_residual_name = "other") # reset
 
     tfm13 <- seededlda:::tfm(dfmt, dict, residual = 0, uniform = TRUE)
-    expect_equal(rowSums(tfm13), c("A" = 7, "B" = 6, "AB" = 6))
+    expect_equal(rowSums(tfm13),
+                 c("A" = 7.42, "B" = 5.57, "AB" = 3.71), tolerance = 0.01)
 
     tfm14 <- seededlda:::tfm(dfmt, dict, residual = 1, uniform = TRUE)
-    expect_equal(rowSums(tfm14), c("A" = 7, "B" = 6, "AB" = 6, "other" = 0))
+    expect_equal(rowSums(tfm14),
+                 c("A" = 7.42, "B" = 5.57, "AB" = 3.71, "other" = 0), tolerance = 0.01)
 })
 
 test_that("tfm is working without matches", {
@@ -87,14 +89,14 @@ test_that("tfm is working without matches", {
     dfmt2 <- dfm(tokens(txt2))
 
     tfm1 <- seededlda:::tfm(dfmt2, dict, residual = 0, uniform = FALSE)
-    expect_equal(rowSums(tfm1), c("A" = 3.85, "B" = 6.85, "AB" = 0), tolerance = 0.01)
+    expect_equal(rowSums(tfm1), c("A" = 3, "B" = 4, "AB" = 0), tolerance = 0.01)
 
     tfm2 <- seededlda:::tfm(dfmt2, dict, residual = 1, uniform = FALSE)
-    expect_equal(rowSums(tfm2), c("A" = 3.85, "B" = 6.85, "AB" = 0, "other" = 0), tolerance = 0.01)
+    expect_equal(rowSums(tfm2), c("A" = 3, "B" = 4, "AB" = 0, "other" = 0), tolerance = 0.01)
 
     tfm3 <- seededlda:::tfm(dfmt2, dict, residual = 1, uniform = TRUE)
     expect_equal(rowSums(tfm3),
-                 c("A" = 3, "B" = 4, "AB" = 0, "other" = 0), tolerance = 0.01)
+                 c("A" = 4.2, "B" = 2.8, "AB" = 0, "other" = 0), tolerance = 0.01)
 
     # no match
     tfm11 <- seededlda:::tfm(dfmt, dictionary(list(X = "x", Y = "y")),
