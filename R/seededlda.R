@@ -175,7 +175,7 @@ topics.textmodel_lda <- function(x, min_prob = 0, select = NULL) {
 
 #' Internal function to construct topic-feature matrix
 #' @noRd
-#' @importFrom Matrix Matrix rowSums
+#' @importFrom Matrix Matrix
 tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
@@ -193,6 +193,14 @@ tfm <- function(x, dictionary,
 
     key <- names(dictionary)
     feat <- featnames(x)
+    len <- length(key)
+
+    if (length(weight) == 1) {
+        weight <- rep(weight, len)
+    } else {
+        if (length(weight) != len)
+            stop("The length of weight must be 1 or equal to dictionary")
+    }
 
     x <- dfm_trim(x, ..., verbose = verbose)
     x <- dfm_group(x, rep("text", ndoc(x)))
@@ -202,22 +210,19 @@ tfm <- function(x, dictionary,
         temp <- dfm_match(temp, features = feat)
         result <- rbind(result, as(temp, "dgCMatrix"))
     }
-
-    if (length(weight) == 1)
-        weight <- rep(weight, nrow(result))
-
-    weight <- check_double(weight, min_len = nrow(result), max_len = nrow(result),
-                           min = 0, max = 1)
+    rownames(result) <- key
 
     s <- sum(result)
     if (!old) {
         if (s > 0) {
-            if (uniform) {
-                p <- rep(1, nrow(result))
-            } else {
-                p <- (rowSums(result) / s) * nrow(result) # row profile
-            }
+            p <- rep(1, nrow(result))
             q <- colSums(result) / s # column profile
+            if (!uniform) {
+                d <- colSums(result > 0)
+                d[d == 0] <- 1
+                # q <- q / sqrt(d)
+                q <- q / d
+            }
             w <- tcrossprod(p, q)
             weight <- weight * 100 # for compatibility with pre v0.9
             result <- (result > 0) * w * s * weight
@@ -225,10 +230,6 @@ tfm <- function(x, dictionary,
     } else {
         result <- (result > 0) * s * weight
     }
-    # s <- colSums(result)
-    # result <- result > 0
-    # result <- t(t(result) * (s * weight))
-    #result <- result * weight
 
     if (residual > 0) {
         label <- getOption("slda_residual_name", "other")
