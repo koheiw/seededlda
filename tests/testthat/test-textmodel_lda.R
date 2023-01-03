@@ -74,6 +74,8 @@ test_that("LDA is working", {
           "words", "data", "call", "version")
     )
     expect_equivalent(class(lda$words), "dgCMatrix")
+    expect_equal(rownames(lda$words), colnames(lda$phi))
+    expect_equal(colnames(lda$words), rownames(lda$phi))
 })
 
 test_that("verbose works", {
