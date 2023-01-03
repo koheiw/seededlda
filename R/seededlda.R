@@ -180,7 +180,7 @@ tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
                 weight = 0.01, residual = 1,
-                uniform = TRUE,
+                uniform = TRUE, exclude = NULL,
                 old = FALSE,
                 ...,
                 verbose = quanteda_options("verbose")) {
@@ -201,8 +201,12 @@ tfm <- function(x, dictionary,
         if (length(weight) != len)
             stop("The length of weight must be 1 or equal to dictionary")
     }
-
-    x <- dfm_trim(x, ..., verbose = verbose)
+    nf <- nfeat(x)
+    x <- dfm_trim(x, ..., verbose = FALSE)
+    x <- dfm_remove(x, exclude, valuetype = valuetype,
+                    case_insensitive = case_insensitive, verbose = FALSE)
+    if (verbose)
+        message(nf - nfeat(x), " features excluded from tfm.\n")
     x <- dfm_group(x, rep("text", ndoc(x)))
     result <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
     for (i in seq_along(dictionary)) {
