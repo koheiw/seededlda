@@ -85,11 +85,15 @@ test_that("seeded LDA is working", {
         "The value of weight must be between 0 and 1"
     )
     expect_error(
-        textmodel_seededlda(dfmt, dict, weight = c(0.01, 0.02, 0.01, 0.01)),
+        textmodel_seededlda(dfmt, dict, weight = numeric()),
+        "The length of weight must be 1 or equal to dictionary"
+    )
+    expect_error(
+        textmodel_seededlda(dfmt, dict, weight = c(0.01, 0.02, 0.01)),
         "The length of weight must be 1 or equal to dictionary"
     )
     expect_silent(
-        textmodel_seededlda(dfmt, dict, weight = c(0.01, 0.02, 0.01))
+        textmodel_seededlda(dfmt, dict, weight = c(0.01, 0.02))
     )
     expect_output(
         print(lda),
@@ -107,6 +111,8 @@ test_that("seeded LDA is working", {
           "residual", "weight")
     )
     expect_equivalent(class(lda$words), "dgCMatrix")
+    expect_equal(rownames(lda$words), colnames(lda$phi))
+    expect_equal(colnames(lda$words), rownames(lda$phi))
 })
 
 test_that("seeded LDA is working", {
