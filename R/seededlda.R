@@ -78,14 +78,15 @@ textmodel_seededlda.dfm <- function(
 ) {
 
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
-    seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, uniform = uniform,
-                   ..., verbose = verbose))
-    if (!identical(colnames(x), rownames(seeds)))
+    weight <- check_double(weight, min_len = 0, max_len = Inf, min = 0, max = 1)
+    seeds <- tfm(x, dictionary, weight = weight, residual = residual, uniform = uniform,
+                 ..., verbose = verbose)
+    if (!identical(colnames(x), colnames(seeds)))
         stop("seeds must have the same features")
-    k <- ncol(seeds)
-    label <- colnames(seeds)
+    k <- nrow(seeds)
+    label <- rownames(seeds)
 
-    result <- lda(x, k, label, max_iter, alpha, beta, gamma, seeds, NULL, verbose)
+    result <- lda(x, k, label, max_iter, alpha, beta, gamma, t(seeds), NULL, verbose)
     result$dictionary <- dictionary
     result$valuetype <- valuetype
     result$case_insensitive <- case_insensitive
