@@ -189,7 +189,7 @@ tfm <- function(x, dictionary,
     residual <- as.integer(residual)
 
     if (!quanteda::is.dictionary(dictionary))
-        stop("dictionary must be a dictionary object")
+        stop("dictionary must be a dictionary object", call. = FALSE)
 
     key <- names(dictionary)
     feat <- featnames(x)
@@ -199,7 +199,7 @@ tfm <- function(x, dictionary,
         weight <- rep(weight, len)
     } else {
         if (length(weight) != len)
-            stop("The length of weight must be 1 or equal to dictionary")
+            stop("The length of weight must be 1 or equal to dictionary", call. = FALSE)
     }
 
     x <- dfm_trim(x, ..., verbose = verbose)

@@ -85,11 +85,11 @@ test_that("seeded LDA is working", {
         "The value of weight must be between 0 and 1"
     )
     expect_error(
-        textmodel_seededlda(dfmt, dict, weight = c(0.01, 0.02, 0.01)),
-        "The length of weight must be 2"
+        textmodel_seededlda(dfmt, dict, weight = c(0.01, 0.02, 0.01, 0.01)),
+        "The length of weight must be 1 or equal to dictionary"
     )
     expect_silent(
-        textmodel_seededlda(dfmt, dict, weight = c(0.01, 0.02))
+        textmodel_seededlda(dfmt, dict, weight = c(0.01, 0.02, 0.01))
     )
     expect_output(
         print(lda),
