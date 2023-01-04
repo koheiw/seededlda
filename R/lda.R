@@ -98,6 +98,7 @@ lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, verbose
                       as(seeds, "dgCMatrix"), as(words, "dgCMatrix"),
                       initial, random, verbose)
 
+    dimnames(result$words) <- list(colnames(x), label)
     dimnames(result$phi) <- list(label, colnames(x))
     dimnames(result$theta) <- list(rownames(x), label)
     result$data <- x

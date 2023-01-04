@@ -53,5 +53,5 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, d
                         Rcpp::Named("gamma") = lda.gamma,
                         Rcpp::Named("phi") = wrap(lda.phi),
                         Rcpp::Named("theta") = wrap(lda.theta),
-                        Rcpp::Named("words") = wrap(arma::sp_umat(lda.nw)));
+                        Rcpp::Named("words") = wrap(arma::sp_umat(lda.nw))); // TODO: change to zeta?
 }

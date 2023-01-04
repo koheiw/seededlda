@@ -78,18 +78,19 @@ textmodel_seededlda.dfm <- function(
 ) {
 
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
-    seeds <- t(tfm(x, dictionary, weight = weight, residual = residual, uniform = uniform,
-                   ..., verbose = verbose))
-    if (!identical(colnames(x), rownames(seeds)))
+    weight <- check_double(weight, min_len = 0, max_len = Inf, min = 0, max = 1)
+    seeds <- tfm(x, dictionary, weight = weight, residual = residual, uniform = uniform,
+                 ..., verbose = verbose)
+    if (!identical(colnames(x), colnames(seeds)))
         stop("seeds must have the same features")
-    k <- ncol(seeds)
-    label <- colnames(seeds)
+    k <- nrow(seeds)
+    label <- rownames(seeds)
 
-    result <- lda(x, k, label, max_iter, alpha, beta, gamma, seeds, NULL, verbose)
+    result <- lda(x, k, label, max_iter, alpha, beta, gamma, t(seeds), NULL, verbose)
     result$dictionary <- dictionary
     result$valuetype <- valuetype
     result$case_insensitive <- case_insensitive
-    result$seeds <- seeds
+    result$seeds <- seeds # TODO: change to omega?
     result$residual <- residual
     result$weight <- weight
     return(result)
@@ -175,7 +176,7 @@ topics.textmodel_lda <- function(x, min_prob = 0, select = NULL) {
 
 #' Internal function to construct topic-feature matrix
 #' @noRd
-#' @importFrom Matrix Matrix rowSums
+#' @importFrom Matrix Matrix
 tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
@@ -189,10 +190,18 @@ tfm <- function(x, dictionary,
     residual <- as.integer(residual)
 
     if (!quanteda::is.dictionary(dictionary))
-        stop("dictionary must be a dictionary object")
+        stop("dictionary must be a dictionary object", call. = FALSE)
 
     key <- names(dictionary)
     feat <- featnames(x)
+    len <- length(key)
+
+    if (length(weight) == 1) {
+        weight <- rep(weight, len)
+    } else {
+        if (length(weight) != len)
+            stop("The length of weight must be 1 or equal to dictionary", call. = FALSE)
+    }
 
     x <- dfm_trim(x, ..., verbose = verbose)
     x <- dfm_group(x, rep("text", ndoc(x)))
@@ -202,22 +211,19 @@ tfm <- function(x, dictionary,
         temp <- dfm_match(temp, features = feat)
         result <- rbind(result, as(temp, "dgCMatrix"))
     }
-
-    if (length(weight) == 1)
-        weight <- rep(weight, nrow(result))
-
-    weight <- check_double(weight, min_len = nrow(result), max_len = nrow(result),
-                           min = 0, max = 1)
+    rownames(result) <- key
 
     s <- sum(result)
     if (!old) {
         if (s > 0) {
-            if (uniform) {
-                p <- rep(1, nrow(result))
-            } else {
-                p <- (rowSums(result) / s) * nrow(result) # row profile
-            }
+            p <- rep(1, nrow(result))
             q <- colSums(result) / s # column profile
+            if (!uniform) {
+                d <- colSums(result > 0)
+                d[d == 0] <- 1
+                # q <- q / sqrt(d)
+                q <- q / d
+            }
             w <- tcrossprod(p, q)
             weight <- weight * 100 # for compatibility with pre v0.9
             result <- (result > 0) * w * s * weight
@@ -225,10 +231,6 @@ tfm <- function(x, dictionary,
     } else {
         result <- (result > 0) * s * weight
     }
-    # s <- colSums(result)
-    # result <- result > 0
-    # result <- t(t(result) * (s * weight))
-    #result <- result * weight
 
     if (residual > 0) {
         label <- getOption("slda_residual_name", "other")
