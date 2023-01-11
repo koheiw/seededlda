@@ -74,12 +74,12 @@ lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, verbose
     if (is.null(alpha)) {
         alpha <- -1.0 # default value will be set in C++
     } else {
-        alpha <- check_double(alpha, min = 0, max = 1)
+        alpha <- check_double(alpha, min = 0)
     }
     if (is.null(beta)) {
         beta <- -1.0 # default value will be set in C++
     } else {
-        beta <- check_double(beta, min = 0, max = 1)
+        beta <- check_double(beta, min = 0)
     }
     verbose <- check_logical(verbose)
     gamma <- check_double(gamma, min = 0, max = 1)
