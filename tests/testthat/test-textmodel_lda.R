@@ -63,6 +63,17 @@ test_that("LDA is working", {
         textmodel_lda(dfmt, k = 0),
         "The value of k must be between 1 and 1000"
     )
+
+    expect_error(
+        textmodel_lda(dfmt, alpha = -0.1),
+        "The value of alpha must be between 0 and Inf"
+    )
+
+    expect_error(
+        textmodel_lda(dfmt, beta = -0.1),
+        "The value of beta must be between 0 and Inf"
+    )
+
     expect_output(
         print(lda),
         paste0("\nCall:\n",
