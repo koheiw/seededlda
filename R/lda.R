@@ -5,10 +5,8 @@
 #' @param max_iter the maximum number of iteration in Gibbs sampling.
 #' @param verbose logical; if `TRUE` print diagnostic information during
 #'   fitting.
-#' @param alpha the value to smooth topic-document distribution; defaults to
-#'   `alpha = 50 / k`.
-#' @param beta the value to smooth topic-word distribution; defaults to `beta =
-#'   0.1`.
+#' @param alpha the value to smooth topic-document distribution.
+#' @param beta the value to smooth topic-word distribution.
 #' @param gamma a parameter to determine change of topics between sentences or
 #'   paragraphs. When `gamma > 0`, Gibbs sampling of topics for the current
 #'   document is affected by the previous document's topics.
@@ -29,7 +27,7 @@
 #' @seealso [topicmodels][topicmodels::LDA]
 #' @export
 textmodel_lda <- function(
-    x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL, gamma = 0,
+    x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
     model = NULL, verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_lda")
@@ -37,7 +35,7 @@ textmodel_lda <- function(
 
 #' @export
 textmodel_lda.dfm <- function(
-    x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL, gamma = 0,
+    x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
     model = NULL, verbose = quanteda_options("verbose")
 ) {
 
@@ -70,17 +68,9 @@ lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, verbose
 
     k <- check_integer(k)
     max_iter <- check_integer(max_iter)
+    alpha <- check_double(alpha, min = 0)
+    beta <- check_double(beta, min = 0)
 
-    if (is.null(alpha)) {
-        alpha <- -1.0 # default value will be set in C++
-    } else {
-        alpha <- check_double(alpha, min = 0)
-    }
-    if (is.null(beta)) {
-        beta <- -1.0 # default value will be set in C++
-    } else {
-        beta <- check_double(beta, min = 0)
-    }
     verbose <- check_logical(verbose)
     gamma <- check_double(gamma, min = 0, max = 1)
     k <- check_integer(k, min = 1, max = 1000)

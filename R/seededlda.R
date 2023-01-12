@@ -61,7 +61,7 @@ textmodel_seededlda <- function(
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
     residual = 0, weight = 0.01, uniform = TRUE,
-    max_iter = 2000, alpha = NULL, beta = NULL, gamma = 0,
+    max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
     ..., verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_seededlda")
@@ -73,7 +73,7 @@ textmodel_seededlda.dfm <- function(
     valuetype = c("glob", "regex", "fixed"),
     case_insensitive = TRUE,
     residual = 0, weight = 0.01, uniform = TRUE,
-    max_iter = 2000, alpha = NULL, beta = NULL, gamma = 0,
+    max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
     ..., verbose = quanteda_options("verbose")
 ) {
 
