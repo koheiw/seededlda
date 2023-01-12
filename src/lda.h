@@ -80,13 +80,27 @@ class LDA {
 
         // --------------------------------------
 
-        LDA() {
-    	    set_default_values();
+        LDA(int k, double alpha, double beta, double gamma, int max_iter,
+            int random, bool verbose) {
+
+            set_default_values();
+
+            K = k;
+            if(alpha > 0)
+                alpha = alpha;
+            if (beta > 0)
+                beta = beta;
+            if (gamma > 0)
+                gamma = gamma;
+            if (max_iter > 0)
+                niters = max_iter;
+            random = random;
+            verbose = verbose;
         }
 
         // set default values for variables
         void set_default_values();
-        void set_data(arma::sp_mat mt);
+        void set_data(arma::sp_mat mt, std::vector<bool> initial);
         void set_fitted(arma::sp_mat mt);
 
         // init for estimation
@@ -105,7 +119,7 @@ void LDA::set_default_values() {
     M = 0;
     V = 0;
     K = 100;
-    alpha = 50.0 / K;
+    alpha = 0.5;
     beta = 0.1;
     niters = 2000;
     liter = 0;
@@ -113,13 +127,15 @@ void LDA::set_default_values() {
     random = 1234;
     gamma = 0;
     initial = std::vector<bool>(M);
+
 }
 
-void LDA::set_data(arma::sp_mat mt) {
+void LDA::set_data(arma::sp_mat mt, std::vector<bool> initial) {
 
     data = mt.t();
     M = data.n_cols;
     V = data.n_rows;
+    initial = initial;
     //printf("M = %d, V = %d\n", M, V);
 }
 

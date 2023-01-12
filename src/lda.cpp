@@ -12,22 +12,11 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, d
              arma::sp_mat &seeds, arma::sp_mat &words,
              std::vector<bool> &initial,
              int random, bool verbose) {
-    LDA lda;
-    lda.K = k;
-    lda.set_data(mt);
+
+    LDA lda(k, alpha, beta, gamma, max_iter, random, verbose);
+    lda.set_data(mt, initial);
     lda.set_fitted(words);
-    lda.random = random;
-    lda.initial = initial;
-    if (max_iter > 0)
-        lda.niters = max_iter;
-    if (alpha > 0)
-        lda.alpha = alpha;
-    if (beta > 0)
-        lda.beta = beta;
-    if (gamma > 0)
-        lda.gamma = gamma;
-    if (verbose)
-        lda.verbose = verbose;
+
     if (lda.init_est() == 0) {
         bool seeded = arma::accu(seeds) > 0;
         arma::umat s;
