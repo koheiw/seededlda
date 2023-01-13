@@ -49,8 +49,8 @@ class LDA {
         int V; // vocabulary size
         int K; // number of topics
         double alpha, beta; // parameters for smoothing
-        int niters; // number of Gibbs sampling iterations
-        int liter; // the iteration at which the model was saved
+        int max_iter; // number of Gibbs sampling iterations
+        int iter; // the iteration at which the model was saved
         int random; // seed for random number generation
         bool verbose; // print progress messages
 
@@ -81,7 +81,7 @@ class LDA {
         // --------------------------------------
 
         // constructor
-        LDA(int k, double alpha, double beta, double gamma, int max_iter,
+        LDA(int K, double alpha, double beta, double gamma, int max_iter,
             int random, bool verbose);
 
         // set default values for variables
@@ -100,22 +100,22 @@ class LDA {
 
 };
 
-LDA::LDA(int k, double alpha, double beta, double gamma, int max_iter,
+LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter,
          int random, bool verbose) {
 
     set_default_values();
-
-    K = k;
+    this->K = K;
     if(alpha > 0)
-        alpha = alpha;
+        this->alpha = alpha;
     if (beta > 0)
-        beta = beta;
+        this->beta = beta;
     if (gamma > 0)
-        gamma = gamma;
+        this->gamma = gamma;
     if (max_iter > 0)
-        niters = max_iter;
-    random = random;
-    verbose = verbose;
+        this->max_iter = max_iter;
+    this->random = random;
+    this->verbose = verbose;
+
 }
 
 void LDA::set_default_values() {
@@ -125,8 +125,8 @@ void LDA::set_default_values() {
     K = 100;
     alpha = 0.5;
     beta = 0.1;
-    niters = 2000;
-    liter = 0;
+    max_iter = 2000;
+    iter = 0;
     verbose = false;
     random = 1234;
     gamma = 0;
@@ -210,15 +210,15 @@ int LDA::init_est() {
 void LDA::estimate() {
 
     if (verbose)
-        Rprintf("   ...Gibbs sampling in %d itterations\n", niters);
+        Rprintf("   ...Gibbs sampling in %d itterations\n", max_iter);
 
-    int last_iter = liter;
-    for (liter = last_iter + 1; liter <= niters + last_iter; liter++) {
+    int last_iter = iter;
+    for (iter = last_iter + 1; iter <= max_iter + last_iter; iter++) {
 
-        if (liter % 100 == 0) {
+        if (iter % 100 == 0) {
             checkUserInterrupt();
             if (verbose)
-                Rprintf("   ...iteration %d\n", liter);
+                Rprintf("   ...iteration %d\n", iter);
         }
 
         // for all z_i
@@ -243,7 +243,7 @@ void LDA::estimate() {
             for(; it != it_end; ++it) {
                 int w = it.row();
                 int F = *it;
-                //printf("Sampling %d %d %d %d\n", liter, m, w, F);
+                //printf("Sampling %d %d %d %d\n", iter, m, w, F);
                 for (int f = 0; f < F; f++) {
                     z[m][n] = sampling(m, n, w);
                     n++;
@@ -256,7 +256,7 @@ void LDA::estimate() {
         Rprintf("   ...computing theta and phi\n");
     //compute_theta();
     //compute_phi();
-    liter--;
+    iter--;
     if (verbose)
         Rprintf("   ...complete\n");
 }

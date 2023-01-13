@@ -35,8 +35,8 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, d
     lda.compute_phi();
 
     return List::create(Rcpp::Named("k") = lda.K,
-                        Rcpp::Named("max_iter") = lda.niters,
-                        Rcpp::Named("last_iter") = lda.liter,
+                        Rcpp::Named("max_iter") = lda.max_iter,
+                        Rcpp::Named("last_iter") = lda.iter,
                         Rcpp::Named("alpha") = lda.alpha,
                         Rcpp::Named("beta") = lda.beta,
                         Rcpp::Named("gamma") = lda.gamma,
