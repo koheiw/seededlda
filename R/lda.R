@@ -66,14 +66,12 @@ textmodel_lda.dfm <- function(
 #' @useDynLib seededlda, .registration = TRUE
 lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, verbose) {
 
-    k <- check_integer(k)
-    max_iter <- check_integer(max_iter)
+    k <- check_integer(k, min = 1, max = 1000)
     alpha <- check_double(alpha, min = 0)
     beta <- check_double(beta, min = 0)
-
-    verbose <- check_logical(verbose)
     gamma <- check_double(gamma, min = 0, max = 1)
-    k <- check_integer(k, min = 1, max = 1000)
+    verbose <- check_logical(verbose)
+    max_iter <- check_integer(max_iter)
 
     if (is.null(seeds))
         seeds <- Matrix::Matrix(0, nrow = nfeat(x), ncol = k)
