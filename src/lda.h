@@ -80,23 +80,9 @@ class LDA {
 
         // --------------------------------------
 
+        // constructor
         LDA(int k, double alpha, double beta, double gamma, int max_iter,
-            int random, bool verbose) {
-
-            set_default_values();
-
-            K = k;
-            if(alpha > 0)
-                alpha = alpha;
-            if (beta > 0)
-                beta = beta;
-            if (gamma > 0)
-                gamma = gamma;
-            if (max_iter > 0)
-                niters = max_iter;
-            random = random;
-            verbose = verbose;
-        }
+            int random, bool verbose);
 
         // set default values for variables
         void set_default_values();
@@ -113,6 +99,24 @@ class LDA {
         void compute_phi();
 
 };
+
+LDA::LDA(int k, double alpha, double beta, double gamma, int max_iter,
+         int random, bool verbose) {
+
+    set_default_values();
+
+    K = k;
+    if(alpha > 0)
+        alpha = alpha;
+    if (beta > 0)
+        beta = beta;
+    if (gamma > 0)
+        gamma = gamma;
+    if (max_iter > 0)
+        niters = max_iter;
+    random = random;
+    verbose = verbose;
+}
 
 void LDA::set_default_values() {
 
