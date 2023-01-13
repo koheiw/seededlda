@@ -64,16 +64,6 @@ test_that("LDA is working", {
         "The value of k must be between 1 and 1000"
     )
 
-    expect_error(
-        textmodel_lda(dfmt, alpha = -0.1),
-        "The value of alpha must be between 0 and Inf"
-    )
-
-    expect_error(
-        textmodel_lda(dfmt, beta = -0.1),
-        "The value of beta must be between 0 and Inf"
-    )
-
     expect_output(
         print(lda),
         paste0("\nCall:\n",
@@ -89,6 +79,28 @@ test_that("LDA is working", {
     expect_equivalent(class(lda$words), "dgCMatrix")
     expect_equal(rownames(lda$words), colnames(lda$phi))
     expect_equal(colnames(lda$words), rownames(lda$phi))
+})
+
+test_that("alpha and beta work", {
+
+    lda <- textmodel_lda(dfmt, max_iter = 100)
+    expect_equal(lda$alpha, 0.5)
+    expect_equal(lda$beta, 0.1)
+
+    lda2 <- textmodel_lda(dfmt, alpha = 0.7, beta = 0.2, max_iter = 100)
+    expect_equal(lda2$alpha, 0.7)
+    expect_equal(lda2$beta, 0.2)
+
+    expect_error(
+        textmodel_lda(dfmt, alpha = -0.1),
+        "The value of alpha must be between 0 and Inf"
+    )
+
+    expect_error(
+        textmodel_lda(dfmt, beta = -0.1),
+        "The value of beta must be between 0 and Inf"
+    )
+
 })
 
 test_that("verbose works", {
@@ -200,9 +212,10 @@ test_that("gamma is working", {
     lda1 <- textmodel_lda(dfmt, k = 5, gamma = 0)
 
     set.seed(1234)
-    expect_warning({
-        lda2 <- textmodel_lda(dfmt2, k = 5, gamma = 0.5)
-    }, "gamma has no effect when docid are all unique")
+    expect_warning(
+        lda2 <- textmodel_lda(dfmt2, k = 5, gamma = 0.5),
+        "gamma has no effect when docid are all unique"
+    )
 
     expect_equal(lda1$phi, lda2$phi)
     expect_equal(lda1$theta, lda2$theta)

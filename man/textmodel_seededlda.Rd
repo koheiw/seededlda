@@ -9,8 +9,8 @@ textmodel_lda(
   x,
   k = 10,
   max_iter = 2000,
-  alpha = NULL,
-  beta = NULL,
+  alpha = 0.5,
+  beta = 0.1,
   gamma = 0,
   model = NULL,
   verbose = quanteda_options("verbose")
@@ -25,8 +25,8 @@ textmodel_seededlda(
   weight = 0.01,
   uniform = TRUE,
   max_iter = 2000,
-  alpha = NULL,
-  beta = NULL,
+  alpha = 0.5,
+  beta = 0.1,
   gamma = 0,
   ...,
   verbose = quanteda_options("verbose")
@@ -40,10 +40,9 @@ in \code{dictionary} in \code{textmodel_seededlda()}.}
 
 \item{max_iter}{the maximum number of iteration in Gibbs sampling.}
 
-\item{alpha}{the value to smooth topic-document distribution; defaults to
-\code{alpha = 50 / k}.}
+\item{alpha}{the value to smooth topic-document distribution.}
 
-\item{beta}{the value to smooth topic-word distribution; defaults to \code{beta = 0.1}.}
+\item{beta}{the value to smooth topic-word distribution.}
 
 \item{gamma}{a parameter to determine change of topics between sentences or
 paragraphs. When \code{gamma > 0}, Gibbs sampling of topics for the current

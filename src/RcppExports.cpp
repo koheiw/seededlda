@@ -12,8 +12,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // cpp_lda
-List cpp_lda(arma::sp_mat& mt, int k, int max_iter, double alpha, double beta, double gamma, arma::sp_mat& seeds, arma::sp_mat& words, std::vector<bool>& initial, int random, bool verbose);
-RcppExport SEXP _seededlda_cpp_lda(SEXP mtSEXP, SEXP kSEXP, SEXP max_iterSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP seedsSEXP, SEXP wordsSEXP, SEXP initialSEXP, SEXP randomSEXP, SEXP verboseSEXP) {
+List cpp_lda(arma::sp_mat& mt, int k, int max_iter, double alpha, double beta, double gamma, arma::sp_mat& seeds, arma::sp_mat& words, std::vector<bool>& first, int random, bool verbose);
+RcppExport SEXP _seededlda_cpp_lda(SEXP mtSEXP, SEXP kSEXP, SEXP max_iterSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP seedsSEXP, SEXP wordsSEXP, SEXP firstSEXP, SEXP randomSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -25,10 +25,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type gamma(gammaSEXP);
     Rcpp::traits::input_parameter< arma::sp_mat& >::type seeds(seedsSEXP);
     Rcpp::traits::input_parameter< arma::sp_mat& >::type words(wordsSEXP);
-    Rcpp::traits::input_parameter< std::vector<bool>& >::type initial(initialSEXP);
+    Rcpp::traits::input_parameter< std::vector<bool>& >::type first(firstSEXP);
     Rcpp::traits::input_parameter< int >::type random(randomSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_lda(mt, k, max_iter, alpha, beta, gamma, seeds, words, initial, random, verbose));
+    rcpp_result_gen = Rcpp::wrap(cpp_lda(mt, k, max_iter, alpha, beta, gamma, seeds, words, first, random, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
