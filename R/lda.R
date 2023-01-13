@@ -80,10 +80,11 @@ lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, verbose
     if (is.null(words))
         words <- Matrix::Matrix(0, nrow = nfeat(x), ncol = k)
 
-    random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
     first <- !duplicated(docid(x))
     if (all(first) && gamma)
         warning("gamma has no effect when docid are all unique.", call. = FALSE, immediate. = TRUE)
+
+    random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
     result <- cpp_lda(x, k, max_iter, alpha, beta, gamma,
                       as(seeds, "dgCMatrix"), as(words, "dgCMatrix"),
                       first, random, verbose)
