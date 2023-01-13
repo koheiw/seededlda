@@ -54,6 +54,11 @@ class LDA {
         int random; // seed for random number generation
         bool verbose; // print progress messages
 
+        // topic transition
+        double gamma; // parameter for topic transition
+        std::vector<bool> first; // first[i], documents i are first sentence, size M
+        arma::vec q; // temp variable for previous document
+
         arma::sp_mat data; // transposed document-feature matrix
         arma::vec p; // temp variable for sampling
         Texts z; // topic assignments for words, size M x doc.size()
@@ -63,11 +68,6 @@ class LDA {
         arma::ucolvec ndsum; // nasum[i]: total number of words in document i, size M
         arma::mat theta; // theta: document-topic distributions, size M x K
         arma::mat phi; // phi: topic-word distributions, size K x V
-
-        // topic transition
-        double gamma; // parameter for topic transition
-        std::vector<bool> first; // first[i], documents i are first sentence, size M
-        arma::vec q; // temp variable for previous document
 
         // prediction with fitted model
         arma::umat nw_ft;
