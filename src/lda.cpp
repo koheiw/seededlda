@@ -10,11 +10,11 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, double gamma,
              arma::sp_mat &seeds, arma::sp_mat &words,
-             std::vector<bool> &initial,
+              std::vector<bool> &first,
              int random, bool verbose) {
 
     LDA lda(k, alpha, beta, gamma, max_iter, random, verbose);
-    lda.set_data(mt, initial);
+    lda.set_data(mt, first);
     lda.set_fitted(words);
 
     if (lda.init_est() == 0) {

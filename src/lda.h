@@ -66,7 +66,7 @@ class LDA {
 
         // topic transition
         double gamma; // parameter for topic transition
-        std::vector<bool> initial; // initial[i], documents i are first sentence, size M
+        std::vector<bool> first; // first[i], documents i are first sentence, size M
         arma::vec q; // temp variable for previous document
 
         // prediction with fitted model
@@ -100,7 +100,7 @@ class LDA {
 
         // set default values for variables
         void set_default_values();
-        void set_data(arma::sp_mat mt, std::vector<bool> initial);
+        void set_data(arma::sp_mat mt, std::vector<bool> first);
         void set_fitted(arma::sp_mat mt);
 
         // init for estimation
@@ -126,16 +126,16 @@ void LDA::set_default_values() {
     verbose = false;
     random = 1234;
     gamma = 0;
-    initial = std::vector<bool>(M);
+    first = std::vector<bool>(M);
 
 }
 
-void LDA::set_data(arma::sp_mat mt, std::vector<bool> initial) {
+void LDA::set_data(arma::sp_mat mt, std::vector<bool> first) {
 
     data = mt.t();
     M = data.n_cols;
     V = data.n_rows;
-    initial = initial;
+    first = first;
     //printf("M = %d, V = %d\n", M, V);
 }
 
@@ -222,7 +222,7 @@ void LDA::estimate() {
 
             // topic of the previous document
             for (int k = 0; k < K; k++) {
-                if (gamma == 0 || initial[m] || m == 0) {
+                if (gamma == 0 || first[m] || m == 0) {
                     q[k] = 1.0;
                 } else {
                     q[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + K * alpha), gamma);
