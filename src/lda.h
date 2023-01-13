@@ -139,7 +139,8 @@ void LDA::set_data(arma::sp_mat mt, std::vector<bool> first) {
     data = mt.t();
     M = data.n_cols;
     V = data.n_rows;
-    first = first;
+    this->first = first;
+
     //printf("M = %d, V = %d\n", M, V);
 }
 

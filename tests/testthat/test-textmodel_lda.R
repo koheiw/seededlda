@@ -212,9 +212,10 @@ test_that("gamma is working", {
     lda1 <- textmodel_lda(dfmt, k = 5, gamma = 0)
 
     set.seed(1234)
-    expect_warning({
-        lda2 <- textmodel_lda(dfmt2, k = 5, gamma = 0.5)
-    }, "gamma has no effect when docid are all unique")
+    expect_warning(
+        lda2 <- textmodel_lda(dfmt2, k = 5, gamma = 0.5),
+        "gamma has no effect when docid are all unique"
+    )
 
     expect_equal(lda1$phi, lda2$phi)
     expect_equal(lda1$theta, lda2$theta)
