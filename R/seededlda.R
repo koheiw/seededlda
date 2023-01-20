@@ -154,7 +154,7 @@ topics.textmodel_lda <- function(x, min_prob = 0, select = NULL) {
     if (is.null(select)) {
         j <- rep(TRUE, ncol(x$theta))
     } else {
-        select <- check_character(select, min_len = 2, max_len = ncol(x$theta), strict = TRUE)
+        select <- check_character(select, min_len = 1, max_len = ncol(x$theta), strict = TRUE)
         if (any(!select %in% colnames(x$theta)))
             stop("Selected topics must be in the model", call. = FALSE)
         j <- colnames(x$theta) %in% select

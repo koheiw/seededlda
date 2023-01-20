@@ -299,7 +299,7 @@ test_that("select and min_prob are working", {
 
     expect_error(
         topics(lda, select = character()),
-        "The length of select must be between 2 and 5"
+        "The length of select must be between 1 and 5"
     )
 
     expect_error(
