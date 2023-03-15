@@ -50,10 +50,9 @@ argument takes objects created either by \code{textmodel_lda()} or
 require(seededlda)
 require(quanteda)
 
-data("data_corpus_moviereviews", package = "quanteda.textmodels")
-corp <- head(data_corpus_moviereviews, 500)
+corp <- readRDS("tests/data/data_corpus_moviereviews.RDS")
 toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE)
-dfmt <- dfm(toks) \%>\%
+dfmt <- dfm(head(toks, 500)) \%>\%
     dfm_remove(stopwords('en'), min_nchar = 2) \%>\%
     dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile",
              max_docfreq = 0.1, docfreq_type = "prop")
@@ -87,6 +86,6 @@ Corpora: Semisupervised Topic Classification of the UN Speeches".
 doi:10.1177/0894439320907027. \emph{Social Science Computer Review}.
 }
 \seealso{
-\link[topicmodels:LDA]{topicmodels}
+\link[topicmodels:lda]{topicmodels}
 }
 \keyword{internal}

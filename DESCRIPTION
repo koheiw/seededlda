@@ -20,7 +20,6 @@ Imports:
 LinkingTo: Rcpp, RcppParallel, RcppArmadillo (>= 0.7.600.1.0), quanteda
 Suggests:
     testthat,
-    quanteda.textmodels,
     topicmodels
 RoxygenNote: 7.2.1
 Roxygen: list(markdown = TRUE)
