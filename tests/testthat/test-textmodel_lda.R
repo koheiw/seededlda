@@ -1,7 +1,6 @@
 require(quanteda)
 
-corp <- readRDS("../data/data_corpus_moviereviews.RDS")
-toks <- tokens(corp[1:500],
+toks <- tokens(data_corpus_moviereviews[1:500],
                remove_punct = TRUE,
                remove_symbols = TRUE,
                remove_number = TRUE)
