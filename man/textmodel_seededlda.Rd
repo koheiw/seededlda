@@ -91,9 +91,9 @@ argument takes objects created either by \code{textmodel_lda()} or
 require(seededlda)
 require(quanteda)
 
-corp <- readRDS("tests/data/data_corpus_moviereviews.RDS")
+corp <- head(data_corpus_moviereviews, 500)
 toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE)
-dfmt <- dfm(head(toks, 500)) \%>\%
+dfmt <- dfm(toks) \%>\%
     dfm_remove(stopwords('en'), min_nchar = 2) \%>\%
     dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile",
              max_docfreq = 0.1, docfreq_type = "prop")
