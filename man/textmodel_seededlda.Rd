@@ -60,14 +60,6 @@ dfmt <- dfm(toks) \%>\%
     dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile",
              max_docfreq = 0.1, docfreq_type = "prop")
 
-# unsupervised LDA
-lda <- textmodel_lda(head(dfmt, 450), 6)
-terms(lda)
-topics(lda)
-lda2 <- textmodel_lda(tail(dfmt, 50), model = lda) # new documents
-topics(lda2)
-
-# semisupervised LDA
 dict <- dictionary(list(people = c("family", "couple", "kids"),
                         space = c("alien", "planet", "space"),
                         moster = c("monster*", "ghost*", "zombie*"),
