@@ -1,14 +1,17 @@
 #' Semisupervised Latent Dirichlet allocation
 #'
 #' `textmodel_seededlda()` implements semisupervised Latent Dirichlet allocation
-#' (seeded-LDA). The estimator's code adopted from the GibbsLDA++ library
+#' (Seeded LDA). The estimator's code adopted from the GibbsLDA++ library
 #' (Xuan-Hieu Phan, 2007). `textmodel_seededlda()` allows users to specify
-#' topics using a seed word dictionary.
+#' topics using a seed word dictionary. Users can run Seed Sequential LDA by
+#' setting `gamma > 0`.
+#'
 #' @param dictionary a [quanteda::dictionary()] with seed words that define
 #'   topics.
 #' @param residual the number of undefined topics. They are named "other" by
 #'   default, but it can be changed via `base::options(slda_residual_name)`.
-#' @param weight determines the size of pseudo counts given to matched seed words.
+#' @param weight determines the size of pseudo counts given to matched seed
+#'   words.
 #' @param uniform if `FALSE`, adjusts the weights of seed words to make their
 #'   total amount equal across topics.
 #' @param valuetype see [quanteda::valuetype]
@@ -24,6 +27,9 @@
 #'   Corpora: Semisupervised Topic Classification of the UN Speeches".
 #'   doi:10.1177/0894439320907027. *Social Science Computer Review*.
 #'
+#'   Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA:
+#'   A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+#'   *Social Science Computer Review*.
 #' @examples
 #' \donttest{
 #' require(seededlda)

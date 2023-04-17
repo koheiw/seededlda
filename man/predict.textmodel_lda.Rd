@@ -17,33 +17,13 @@
 
 \item{newdata}{dfm on which prediction should be made.}
 
-\item{max_iter}{the maximum number of iteration in Gibbs sampling.}
-
-\item{verbose}{logical; if \code{TRUE} print diagnostic information during
-fitting.}
-
 \item{...}{not used}
-}
-\value{
-\code{textmodel_seededlda()} and \code{textmodel_lda()} returns a list of model
-parameters. \code{theta} is the distribution of topics over documents; \code{phi} is
-the distribution of words over topics. \code{alpha} and \code{beta} are the small
-constant added to the frequency of words to estimate \code{theta} and \code{phi},
-respectively, in Gibbs sampling. Other elements in the list subject to
-change.
 }
 \description{
 Predicts topics of documents with a fitted LDA model. Prediction is performed
 by a Gibbs sampling with words allocated to topics in the fitted LDA. The
 result becomes different from \code{topics()} even for the same documents because
 \code{predict()} triggers additional iterations.
-}
-\details{
-To predict topics of new documents (i.e. out-of-sample), first,
-create a new LDA model from a existing LDA model passed to \code{model} in
-\code{textmodel_lda()}; second, apply \code{\link[=topics]{topics()}} to the new model. The \code{model}
-argument takes objects created either by \code{textmodel_lda()} or
-\code{textmodel_seededlda()}.
 }
 \examples{
 \donttest{
@@ -84,8 +64,9 @@ Topic Models". doi:10.5555/2117693.2119585. \emph{Proceedings of the 2011 IEEE
 Watanabe, Kohei & Zhou, Yuan (2020). "Theory-Driven Analysis of Large
 Corpora: Semisupervised Topic Classification of the UN Speeches".
 doi:10.1177/0894439320907027. \emph{Social Science Computer Review}.
-}
-\seealso{
-\link[topicmodels:lda]{topicmodels}
+
+Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA:
+A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+\emph{Social Science Computer Review}.
 }
 \keyword{internal}

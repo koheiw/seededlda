@@ -1,7 +1,11 @@
-#' @rdname textmodel_seededlda
+#' Unsupervised Latent Dirichlet allocation
+#'
+#' `textmodel_lda()` implements unsupervised Latent Dirichlet allocation
+#' (LDA). The estimator's code adopted from the GibbsLDA++ library
+#' (Xuan-Hieu Phan, 2007).
+#'
 #' @param x the dfm on which the model will be fit
-#' @param k the number of topics; determined automatically by the number of keys
-#'   in `dictionary` in `textmodel_seededlda()`.
+#' @param k the number of topics.
 #' @param max_iter the maximum number of iteration in Gibbs sampling.
 #' @param verbose logical; if `TRUE` print diagnostic information during
 #'   fitting.
@@ -95,6 +99,26 @@ lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, verbose
     result$version <- utils::packageVersion("seededlda")
     class(result) <- c("textmodel_lda", "textmodel", "list")
     return(result)
+}
+
+#' Unsupervised Sequential Latent Dirichlet allocation
+#'
+#' `textmodel_sequentiallda()` is a shortcut function for
+#' Sequential LDA, equivalent to `textmodel_lda(gamma = 0.5)`.
+#' @export
+textmodel_sequentiallda <- function(
+        x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1,
+        model = NULL, verbose = quanteda_options("verbose")
+) {
+    UseMethod("textmodel_sequentiallda")
+}
+#' @export
+textmodel_sequentiallda.dfm <- function(
+        x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1,
+        model = NULL, verbose = quanteda_options("verbose")
+) {
+    textmodel_lda(x, k = k, max_iter = max_iter, alpha = alpha, beta = beta,
+                  gamma = 0.5, model = model, verbose = verbose)
 }
 
 is.textmodel_lda <- function(x) {
