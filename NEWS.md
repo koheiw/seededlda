@@ -1,3 +1,8 @@
+## Changes in v0.9.0
+
+* Add the gamma parameter for sequential classification.
+* Improve the calculation of weights for seed words.
+
 ## Changes in v0.8.4
 
 * Fix for deprecation in Matrix 1.5-4.
