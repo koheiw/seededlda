@@ -1,5 +1,5 @@
 
-# Seeded-LDA for semisupervised topic modeling
+# seededlda: LDA for semisupervised topic modeling
 
 <!-- badges: start -->
 

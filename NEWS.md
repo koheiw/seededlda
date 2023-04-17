@@ -1,3 +1,11 @@
+## Changes in v0.8.4
+
+* Fix for deprecation in Matrix 1.5-4.
+
+## Changes in v0.8.3
+
+* Add `data_corpus_moviereviews` to the package to reduce dependency.
+
 ## Changes in v0.8.2
 
 * Add `min_prob` and `select` to `topics()` for greater flexibility

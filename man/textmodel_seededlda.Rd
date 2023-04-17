@@ -99,7 +99,6 @@ argument takes objects created either by \code{textmodel_lda()} or
 require(seededlda)
 require(quanteda)
 
-data("data_corpus_moviereviews", package = "quanteda.textmodels")
 corp <- head(data_corpus_moviereviews, 500)
 toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE)
 dfmt <- dfm(toks) \%>\%

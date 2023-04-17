@@ -1,7 +1,6 @@
 require(quanteda)
 
 options(slda_residual_name = "other")
-data(data_corpus_moviereviews, package = "quanteda.textmodels")
 
 toks <- tokens(data_corpus_moviereviews[1:500],
                remove_punct = TRUE,

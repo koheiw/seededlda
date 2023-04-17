@@ -47,7 +47,7 @@ divergence.textmodel_lda <- function(x, weighted = TRUE, min_size = 0.01,
         p <- rep(1 / ncol(x$word), ncol(x$word))
     }
     w <- tcrossprod(p[l]) - (min_size ^ 2)
-    sum(div[l, l] * w, na.rm = TRUE) + (min_size ^ 2)
+    sum(as.matrix(div[l, l]) * w, na.rm = TRUE) + (min_size ^ 2)
 }
 
 
