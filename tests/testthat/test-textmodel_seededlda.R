@@ -1,5 +1,7 @@
 require(quanteda)
 
+options(slda_residual_name = "other")
+
 toks <- tokens(data_corpus_moviereviews[1:500],
                remove_punct = TRUE,
                remove_symbols = TRUE,
@@ -50,9 +52,17 @@ test_that("seeded LDA is working", {
         topics(lda),
         c("romance", "sifi", "other")
     )
+    expect_setequal(
+        topics(lda, select = c("romance", "sifi")),
+        c("romance", "sifi")
+    )
     expect_equal(
         levels(topics(lda)),
         c("romance", "sifi", "other")
+    )
+    expect_equal(
+        levels(topics(lda, select = c("romance", "sifi"))),
+        c("romance", "sifi")
     )
     expect_equal(
         rowSums(lda$phi),
@@ -71,7 +81,18 @@ test_that("seeded LDA is working", {
     )
     expect_error(
         textmodel_seededlda(dfmt, dict, weight = -0.1),
-        "weight must be pisitive a value"
+        "The value of weight must be between 0 and 1"
+    )
+    expect_error(
+        textmodel_seededlda(dfmt, dict, weight = numeric()),
+        "The length of weight must be 1 or equal to dictionary"
+    )
+    expect_error(
+        textmodel_seededlda(dfmt, dict, weight = c(0.01, 0.02, 0.01)),
+        "The length of weight must be 1 or equal to dictionary"
+    )
+    expect_silent(
+        textmodel_seededlda(dfmt, dict, weight = c(0.01, 0.02))
     )
     expect_output(
         print(lda),
@@ -83,11 +104,14 @@ test_that("seeded LDA is working", {
     )
     expect_equal(
         names(lda),
-        c("k", "max_iter", "last_iter", "alpha", "beta", "phi", "theta",
+        c("k", "max_iter", "last_iter", "alpha", "beta", "gamma","phi", "theta",
           "words", "data", "call", "version",
-          "dictionary", "valuetype", "case_insensitive", "residual", "weight")
+          "dictionary", "valuetype", "case_insensitive", "seeds",
+          "residual", "weight")
     )
     expect_equivalent(class(lda$words), "dgCMatrix")
+    expect_equal(rownames(lda$words), colnames(lda$phi))
+    expect_equal(colnames(lda$words), rownames(lda$phi))
 })
 
 test_that("seeded LDA is working", {
@@ -97,11 +121,11 @@ test_that("seeded LDA is working", {
                             sifi = c("alien*", "star", "space", "dragon")))
 
     set.seed(1234)
-    lda1 <- textmodel_seededlda(dfmt, dict, residual = TRUE)
+    lda1 <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.1)
     expect_true("couples" %in% terms(lda1)[,1])
     expect_true("dragon" %in% terms(lda1)[,2])
 
-    lda2 <- textmodel_seededlda(dfmt, dict, residual = TRUE, min_termfreq = 10)
+    lda2 <- textmodel_seededlda(dfmt, dict, residual = TRUE, min_termfreq = 10, weight = 0.1)
     expect_false("couples" %in% terms(lda2)[,1])
     expect_false("dragon" %in% terms(lda2)[,2])
 })
@@ -179,3 +203,19 @@ test_that("model argument works with seeded LDA", {
         c("romance", "sifi", "other")
     )
 })
+
+test_that("works similar way as before v0.9", {
+    skip_on_cran()
+
+    dict <- dictionary(list(romance = c("love*", "couple*"),
+                            sifi = c("alien*", "star", "space")))
+
+    set.seed(1234)
+    lda <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.1, uniform = TRUE)
+    set.seed(1234)
+    lda_old <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.01, old = TRUE)
+
+    tb <- table(topics(lda), topics(lda_old))
+    expect_true(all(diag(tb) / rowSums(tb) > 0.85))
+})
+

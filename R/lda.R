@@ -5,10 +5,11 @@
 #' @param max_iter the maximum number of iteration in Gibbs sampling.
 #' @param verbose logical; if `TRUE` print diagnostic information during
 #'   fitting.
-#' @param alpha the value to smooth topic-document distribution; defaults to
-#'   `alpha = 50 / k`.
-#' @param beta the value to smooth topic-word distribution; defaults to `beta =
-#'   0.1`.
+#' @param alpha the value to smooth topic-document distribution.
+#' @param beta the value to smooth topic-word distribution.
+#' @param gamma a parameter to determine change of topics between sentences or
+#'   paragraphs. When `gamma > 0`, Gibbs sampling of topics for the current
+#'   document is affected by the previous document's topics.
 #' @param model a fitted LDA model; if provided, `textmodel_lda()` inherits
 #'   parameters from an existing model. See details.
 #' @details To predict topics of new documents (i.e. out-of-sample), first,
@@ -26,7 +27,7 @@
 #' @seealso [topicmodels][topicmodels::LDA]
 #' @export
 textmodel_lda <- function(
-    x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL,
+    x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
     model = NULL, verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_lda")
@@ -34,7 +35,7 @@ textmodel_lda <- function(
 
 #' @export
 textmodel_lda.dfm <- function(
-    x, k = 10, max_iter = 2000, alpha = NULL, beta = NULL,
+    x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
     model = NULL, verbose = quanteda_options("verbose")
 ) {
 
@@ -46,45 +47,47 @@ textmodel_lda.dfm <- function(
         label <- rownames(model$phi)
         alpha <- model$alpha
         beta <- model$beta
+        if (!is.null(model$gamma)) {
+            gamma <- model$gamma
+        } else {
+            gamma <- 0
+        }
         words <- model$words
         warning("k, alpha and beta values are overwriten by the fitted model", call. = FALSE)
     } else {
         label <- paste0("topic", seq_len(k))
         words <- NULL
     }
-    lda(x, k, label, max_iter, alpha, beta, NULL, words, verbose)
+    lda(x, k, label, max_iter, alpha, beta, gamma, NULL, words, verbose)
 }
 
 #' @importFrom methods as
 #' @import quanteda
 #' @useDynLib seededlda, .registration = TRUE
-lda <- function(x, k, label, max_iter, alpha, beta, seeds, words, verbose) {
+lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, verbose) {
 
-    k <- as.integer(k)
-    max_iter <- as.integer(max_iter)
-    if (is.null(alpha)) {
-        alpha <- -1.0 # default value will be set in C++
-    } else {
-        alpha <- as.double(alpha)
-    }
-    if (is.null(beta)) {
-        beta <- -1.0 # default value will be set in C++
-    } else {
-        beta <- as.double(beta)
-    }
-    verbose <- as.logical(verbose)
-
-    if (k < 1)
-        stop("k must be larger than zero")
+    k <- check_integer(k, min = 1, max = 1000)
+    alpha <- check_double(alpha, min = 0)
+    beta <- check_double(beta, min = 0)
+    gamma <- check_double(gamma, min = 0, max = 1)
+    verbose <- check_logical(verbose)
+    max_iter <- check_integer(max_iter)
 
     if (is.null(seeds))
-        seeds <- as(Matrix::Matrix(0, nrow = nfeat(x), ncol = k), "dgCMatrix")
+        seeds <- Matrix::Matrix(0, nrow = nfeat(x), ncol = k)
     if (is.null(words))
-        words <- as(Matrix::Matrix(0, nrow = nfeat(x), ncol = k), "dgCMatrix")
+        words <- Matrix::Matrix(0, nrow = nfeat(x), ncol = k)
+
+    first <- !duplicated(docid(x))
+    if (all(first) && gamma)
+        warning("gamma has no effect when docid are all unique.", call. = FALSE, immediate. = TRUE)
 
     random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
-    result <- cpp_lda(x, k, max_iter, alpha, beta, seeds, words, random, verbose)
+    result <- cpp_lda(x, k, max_iter, alpha, beta, gamma,
+                      as(seeds, "dgCMatrix"), as(words, "dgCMatrix"),
+                      first, random, verbose)
 
+    dimnames(result$words) <- list(colnames(x), label)
     dimnames(result$phi) <- list(label, colnames(x))
     dimnames(result$theta) <- list(rownames(x), label)
     result$data <- x

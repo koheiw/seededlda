@@ -48,17 +48,22 @@ class LDA {
         int M; // dataset size (i.e., number of docs)
         int V; // vocabulary size
         int K; // number of topics
-        double alpha, beta; // LDA hyperparameters
-        int niters; // number of Gibbs sampling iterations
-        int liter; // the iteration at which the model was saved
+        double alpha, beta; // parameters for smoothing
+        int max_iter; // number of Gibbs sampling iterations
+        int iter; // the iteration at which the model was saved
         int random; // seed for random number generation
         bool verbose; // print progress messages
+
+        // topic transition
+        double gamma; // parameter for topic transition
+        std::vector<bool> first; // first[i], documents i are first sentence, size M
+        arma::vec q; // temp variable for previous document
 
         arma::sp_mat data; // transposed document-feature matrix
         arma::vec p; // temp variable for sampling
         Texts z; // topic assignments for words, size M x doc.size()
-        arma::umat nw; // cwt[i][j]: number of instances of word/term i assigned to topic j, size V x K
-        arma::umat nd; // na[i][j]: number of words in document i assigned to topic j, size M x K
+        arma::umat nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
+        arma::umat nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
         arma::urowvec nwsum; // nwsum[j]: total number of words assigned to topic j, size K
         arma::ucolvec ndsum; // nasum[i]: total number of words in document i, size M
         arma::mat theta; // theta: document-topic distributions, size M x K
@@ -75,13 +80,13 @@ class LDA {
 
         // --------------------------------------
 
-        LDA() {
-    	    set_default_values();
-        }
+        // constructor
+        LDA(int K, double alpha, double beta, double gamma, int max_iter,
+            int random, bool verbose);
 
         // set default values for variables
         void set_default_values();
-        void set_data(arma::sp_mat mt);
+        void set_data(arma::sp_mat mt, std::vector<bool> first);
         void set_fitted(arma::sp_mat mt);
 
         // init for estimation
@@ -95,24 +100,47 @@ class LDA {
 
 };
 
+LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter,
+         int random, bool verbose) {
+
+    set_default_values();
+    this->K = K;
+    if(alpha > 0)
+        this->alpha = alpha;
+    if (beta > 0)
+        this->beta = beta;
+    if (gamma > 0)
+        this->gamma = gamma;
+    if (max_iter > 0)
+        this->max_iter = max_iter;
+    this->random = random;
+    this->verbose = verbose;
+
+}
+
 void LDA::set_default_values() {
 
     M = 0;
     V = 0;
     K = 100;
-    alpha = 50.0 / K;
+    alpha = 0.5;
     beta = 0.1;
-    niters = 2000;
-    liter = 0;
+    max_iter = 2000;
+    iter = 0;
     verbose = false;
     random = 1234;
+    gamma = 0;
+    first = std::vector<bool>(M);
+
 }
 
-void LDA::set_data(arma::sp_mat mt) {
+void LDA::set_data(arma::sp_mat mt, std::vector<bool> first) {
 
     data = mt.t();
     M = data.n_cols;
     V = data.n_rows;
+    this->first = first;
+
     //printf("M = %d, V = %d\n", M, V);
 }
 
@@ -146,6 +174,8 @@ int LDA::init_est() {
     nd = arma::umat(M, K, arma::fill::zeros);
     nwsum = arma::urowvec(K, arma::fill::zeros);
     ndsum = arma::conv_to<arma::ucolvec>::from(arma::mat(arma::sum(data, 0)));
+
+    q = arma::vec(K);
 
     //dev::Timer timer;
     //dev::start_timer("Set z", timer);
@@ -181,19 +211,31 @@ int LDA::init_est() {
 void LDA::estimate() {
 
     if (verbose)
-        Rprintf("   ...Gibbs sampling in %d itterations\n", niters);
+        Rprintf("   ...Gibbs sampling in %d itterations\n", max_iter);
 
-    int last_iter = liter;
-    for (liter = last_iter + 1; liter <= niters + last_iter; liter++) {
+    int last_iter = iter;
+    for (iter = last_iter + 1; iter <= max_iter + last_iter; iter++) {
 
-        if (liter % 100 == 0) {
+        if (iter % 100 == 0) {
             checkUserInterrupt();
             if (verbose)
-                Rprintf("   ...iteration %d\n", liter);
+                Rprintf("   ...iteration %d\n", iter);
         }
 
         // for all z_i
         for (int m = 0; m < M; m++) {
+
+            // topic of the previous document
+            for (int k = 0; k < K; k++) {
+                if (gamma == 0 || first[m] || m == 0) {
+                    q[k] = 1.0;
+                } else {
+                    q[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + K * alpha), gamma);
+                }
+            }
+            //Rcout << m << ":\n";
+            //Rcout << q << "\n";
+
             if (z[m].size() == 0) continue;
             int n = 0;
 
@@ -202,7 +244,7 @@ void LDA::estimate() {
             for(; it != it_end; ++it) {
                 int w = it.row();
                 int F = *it;
-                //printf("Sampling %d %d %d %d\n", liter, m, w, F);
+                //printf("Sampling %d %d %d %d\n", iter, m, w, F);
                 for (int f = 0; f < F; f++) {
                     z[m][n] = sampling(m, n, w);
                     n++;
@@ -215,7 +257,7 @@ void LDA::estimate() {
         Rprintf("   ...computing theta and phi\n");
     //compute_theta();
     //compute_phi();
-    liter--;
+    iter--;
     if (verbose)
         Rprintf("   ...complete\n");
 }
@@ -234,7 +276,7 @@ int LDA::sampling(int m, int n, int w) {
     // do multinomial sampling via cumulative method
     for (int k = 0; k < K; k++) {
         p[k] = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + Vbeta) *
-               (nd.at(m, k) + alpha) / (ndsum[m] + Kalpha);
+               ((nd.at(m, k) + alpha) / (ndsum[m] + Kalpha)) * q[k];
     }
     // cumulate multinomial parameters
     for (int k = 1; k < K; k++) {

@@ -13,9 +13,9 @@
 )
 }
 \arguments{
-\item{object}{a fitted LDA textmodel}
+\item{object}{a fitted LDA textmodel.}
 
-\item{newdata}{dfm on which prediction should be made}
+\item{newdata}{dfm on which prediction should be made.}
 
 \item{max_iter}{the maximum number of iteration in Gibbs sampling.}
 

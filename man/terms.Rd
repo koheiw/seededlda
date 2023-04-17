@@ -12,7 +12,8 @@ terms(x, n = 10)
 \item{n}{number of terms to be extracted}
 }
 \description{
-\code{terms()} returns the most likely terms, or words, for topics based on the \code{phi} parameter.
+\code{terms()} returns the most likely terms, or words, for topics based on the
+\code{phi} parameter.
 }
 \details{
 Users can access the original matrix \code{x$phi} for likelihood scores.
