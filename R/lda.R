@@ -1,8 +1,8 @@
 #' Unsupervised Latent Dirichlet allocation
 #'
-#' `textmodel_lda()` implements unsupervised Latent Dirichlet allocation
-#' (LDA). The estimator's code adopted from the GibbsLDA++ library
-#' (Xuan-Hieu Phan, 2007).
+#' `textmodel_lda()` implements unsupervised Latent Dirichlet allocation (LDA).
+#' The estimator's code adopted from the GibbsLDA++ library (Xuan-Hieu Phan,
+#' 2007).
 #'
 #' @param x the dfm on which the model will be fit
 #' @param k the number of topics.
@@ -48,6 +48,11 @@
 #' lda2 <- textmodel_lda(tail(dfmt, 50), model = lda) # new documents
 #' topics(lda2)
 #' }
+#' @references
+#'
+#' Du, Lan et al. (2012). “Sequential Latent Dirichlet Allocation”.
+#' doi.org/10.1007/s10115-011-0425-1. *Knowledge and Information Systems*.
+#'
 textmodel_lda <- function(
     x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
     model = NULL, verbose = quanteda_options("verbose")
