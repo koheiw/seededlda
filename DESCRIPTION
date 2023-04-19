@@ -6,7 +6,6 @@ Authors@R: c(person("Kohei", "Watanabe", email = "watanabe.kohei@gmail.com", rol
              person("Phan", "Xuan-Hieu", email = "pxhieu@gmail.com", role = c("aut", "cph"), comment = "GibbsLDA++"))
 Description: Seeded Sequential LDA can classify sentences of texts into pre-define topics with a small number of seed words (Watanabe & Baturo, forthcoming).
     Implements Seeded LDA (Lu et. al., 2010) <doi:10.1109/ICDMW.2011.125> and Sequential LDA (Du et al., 2012) <doi:10.1007/s10115-011-0425-1> algorithms based on the GibbsLDA++ library. 
-    
 License: GPL-3
 LazyData: TRUE
 URL: https://github.com/koheiw/seededlda
