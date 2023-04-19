@@ -48,7 +48,7 @@ class LDA {
         int M; // dataset size (i.e., number of docs)
         int V; // vocabulary size
         int K; // number of topics
-        double alpha, beta; // parameters for smoothing
+        double alpha, beta, Vbeta, Kalpha; // parameters for smoothing
         int max_iter; // number of Gibbs sampling iterations
         int iter; // the iteration at which the model was saved
         int random; // seed for random number generation
@@ -61,7 +61,6 @@ class LDA {
         arma::vec q; // temp variable for previous document
 
         arma::sp_mat data; // transposed document-feature matrix
-        arma::vec p; // temp variable for sampling
         Texts z; // topic assignments for words, size M x doc.size()
         arma::mat nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
         arma::mat nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
@@ -167,8 +166,6 @@ int LDA::init_est() {
     std::uniform_int_distribution< int > random_topic(0, K - 1);
 
     z = Texts(M);
-
-    p = arma::vec(K);
     theta = arma::mat(M, K, arma::fill::zeros);
     phi = arma::mat(K, V, arma::fill::zeros);
 
@@ -178,6 +175,8 @@ int LDA::init_est() {
     ndsum = arma::conv_to<arma::colvec>::from(arma::mat(arma::sum(data, 0)));
 
     q = arma::vec(K);
+    Vbeta = V * beta;
+    Kalpha = K * alpha;
 
     //dev::Timer timer;
     //dev::start_timer("Set z", timer);
@@ -233,12 +232,13 @@ void LDA::estimate() {
 
             //tbb::arena limited_arena(4);
             //arena.execute([]{
-            Rcout << "Batch size: " << batch << "\n";
+            dev::Timer timer;
+            dev::start_timer("Process batch", timer);
             tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
-            //tbb::parallel_for(tbb::blocked_range<int>(0, M), [&](tbb::blocked_range<int> r) {
+
                 arma::mat nw_tp = arma::mat(size(nw), arma::fill::zeros);
                 arma::colvec nwsum_tp = arma::colvec(size(nwsum), arma::fill::zeros);
-
+                dev::start_timer("Iter", timer);
                 for (int i = 0; i < 100; i++) {
                     //for (int m = 0; m < M; m++) {
                     for (int m = r.begin(); m < r.end(); ++m) {
@@ -271,7 +271,7 @@ void LDA::estimate() {
                     }
                 }
                 mutex.lock();
-                Rcout << "Merge " << r.begin() << " to " << r.end() << "\n";
+                dev::stop_timer("Iter", timer);
                 nw += nw_tp;
                 nwsum += nwsum_tp;
                 mutex.unlock();
@@ -280,8 +280,7 @@ void LDA::estimate() {
                 //Rcout << "sum(nwsum): " << arma::accu(nwsum) << "\n";
                 // local -------------------- end
             }, tbb::auto_partitioner());
-                //});
-            //}
+            dev::stop_timer("Process batch", timer);
         }
     }
 
@@ -303,10 +302,8 @@ int LDA::sampling(int m, int n, int w,
     nw_tp.at(w, topic) -= 1;
     nwsum_tp[topic] -= 1;
     nd.at(m, topic) -= 1;
-    //ndsum[m] -= 1;
+    arma::vec p(K);
 
-    double Vbeta = V * beta;
-    double Kalpha = K * alpha;
     // do multinomial sampling via cumulative method
     for (int k = 0; k < K; k++) {
         p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta) /
@@ -335,7 +332,6 @@ int LDA::sampling(int m, int n, int w,
     nw_tp.at(w, topic) += 1;
     nwsum_tp[topic] += 1;
     nd.at(m, topic) += 1;
-    //ndsum[m] += 1;
 
     return topic;
 }
