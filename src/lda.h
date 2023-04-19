@@ -224,43 +224,48 @@ void LDA::estimate() {
 
             // parallel_for
             // local ------------------------- start
-            arma::mat nw_tp = arma::mat(size(nw));
-            arma::colvec nwsum_tp = arma::colvec(size(nwsum));
+            //tbb::parallel_for(tbb::blocked_range<int>(0, M), [&](tbb::blocked_range<int> r) {
+                arma::mat nw_tp = arma::mat(size(nw), arma::fill::zeros);
+                arma::colvec nwsum_tp = arma::colvec(size(nwsum), arma::fill::zeros);
 
-            for (int i = 0; i < 100; i++) {
-                // for all z_i
-                for (int m = 0; m < M; m++) {
+                for (int i = 0; i < 100; i++) {
+                    for (int m = 0; m < M; m++) {
+                    //for (int m = r.begin(); m < r.end(); ++m) {
 
-                    // topic of the previous document
-                    for (int k = 0; k < K; k++) {
-                        if (gamma == 0 || first[m] || m == 0) {
-                            q[k] = 1.0;
-                        } else {
-                            q[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + K * alpha), gamma);
+                        // topic of the previous document
+                        for (int k = 0; k < K; k++) {
+                            if (gamma == 0 || first[m] || m == 0) {
+                                q[k] = 1.0;
+                            } else {
+                                q[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + K * alpha), gamma);
+                            }
                         }
-                    }
-                    //Rcout << m << ":\n";
-                    //Rcout << q << "\n";
+                        //Rcout << m << ":\n";
+                        //Rcout << q << "\n";
 
-                    if (z[m].size() == 0) continue;
-                    int n = 0;
+                        if (z[m].size() == 0) continue;
+                        int n = 0;
 
-                    arma::sp_mat::const_col_iterator it = data.begin_col(m);
-                    arma::sp_mat::const_col_iterator it_end = data.end_col(m);
-                    for(; it != it_end; ++it) {
-                        int w = it.row();
-                        int F = *it;
-                        //printf("Sampling %d %d %d %d\n", iter, m, w, F);
-                        for (int f = 0; f < F; f++) {
-                            z[m][n] = sampling(m, n, w, nw_tp, nwsum_tp);
-                            n++;
+                        arma::sp_mat::const_col_iterator it = data.begin_col(m);
+                        arma::sp_mat::const_col_iterator it_end = data.end_col(m);
+                        for(; it != it_end; ++it) {
+                            int w = it.row();
+                            int F = *it;
+                            //printf("Sampling %d %d %d %d\n", iter, m, w, F);
+                            for (int f = 0; f < F; f++) {
+                                z[m][n] = sampling(m, n, w, nw_tp, nwsum_tp);
+                                n++;
+                            }
                         }
                     }
                 }
-            }
-            nw = nw + nw_tp;
-            nwsum = nwsum + nwsum_tp;
-            // local -------------------- end
+                nw += nw_tp;
+                nwsum += nwsum_tp;
+                //Rcout << "nwsum_tp:" << nwsum_tp << "\n";
+                //Rcout << "sum(nw): " << arma::accu(nw) << "\n";
+                //Rcout << "sum(nwsum): " << arma::accu(nwsum) << "\n";
+                // local -------------------- end
+            //}
         }
     }
 
@@ -280,10 +285,9 @@ int LDA::sampling(int m, int n, int w,
     // remove z_i from the count variables
     int topic = z[m][n];
     nw_tp.at(w, topic) -= 1;
-    nd.at(m, topic) -= 1;
-    //nwsum[topic] -= 1;
     nwsum_tp[topic] -= 1;
-    ndsum[m] -= 1;
+    nd.at(m, topic) -= 1;
+    //ndsum[m] -= 1;
 
     double Vbeta = V * beta;
     double Kalpha = K * alpha;
@@ -310,10 +314,9 @@ int LDA::sampling(int m, int n, int w,
 
     // add newly estimated z_i to count variables
     nw_tp.at(w, topic) += 1;
-    nd.at(m, topic) += 1;
-    //nwsum[topic] += 1;
     nwsum_tp[topic] += 1;
-    ndsum[m] += 1;
+    nd.at(m, topic) += 1;
+    //ndsum[m] += 1;
 
     return topic;
 }
