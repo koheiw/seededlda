@@ -1,7 +1,7 @@
 #' Unsupervised Latent Dirichlet allocation
 #'
 #' `textmodel_lda()` implements unsupervised Latent Dirichlet allocation (LDA).
-#' The estimator's code adopted from the GibbsLDA++ library (Xuan-Hieu Phan,
+#' The estimator's code adopted from the GibbsLDA++ library (Phan & Nguyen,
 #' 2007).
 #'
 #' @param x the dfm on which the model will be fit

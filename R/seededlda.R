@@ -2,7 +2,7 @@
 #'
 #' `textmodel_seededlda()` implements semisupervised Latent Dirichlet allocation
 #' (Seeded LDA). The estimator's code adopted from the GibbsLDA++ library
-#' (Xuan-Hieu Phan, 2007). `textmodel_seededlda()` allows users to specify
+#' (Phan & Nguyen, 2007). `textmodel_seededlda()` allows users to specify
 #' topics using a seed word dictionary. Users can run Seed Sequential LDA by
 #' setting `gamma > 0`.
 #'
