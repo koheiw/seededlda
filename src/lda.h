@@ -224,6 +224,7 @@ void LDA::estimate() {
 
             // parallel_for
             // local ------------------------- start
+            Mutex mutex;
             //tbb::parallel_for(tbb::blocked_range<int>(0, M), [&](tbb::blocked_range<int> r) {
                 arma::mat nw_tp = arma::mat(size(nw), arma::fill::zeros);
                 arma::colvec nwsum_tp = arma::colvec(size(nwsum), arma::fill::zeros);
@@ -259,13 +260,15 @@ void LDA::estimate() {
                         }
                     }
                 }
+                mutex.lock();
                 nw += nw_tp;
                 nwsum += nwsum_tp;
+                mutex.unlock();
                 //Rcout << "nwsum_tp:" << nwsum_tp << "\n";
                 //Rcout << "sum(nw): " << arma::accu(nw) << "\n";
                 //Rcout << "sum(nwsum): " << arma::accu(nwsum) << "\n";
                 // local -------------------- end
-            //}
+            //});
         }
     }
 
