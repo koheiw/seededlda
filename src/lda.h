@@ -52,6 +52,7 @@ class LDA {
         int max_iter; // number of Gibbs sampling iterations
         int iter; // the iteration at which the model was saved
         int random; // seed for random number generation
+        int batch; // size of subsets to distribute
         bool verbose; // print progress messages
 
         // topic transition
@@ -82,7 +83,7 @@ class LDA {
 
         // constructor
         LDA(int K, double alpha, double beta, double gamma, int max_iter,
-            int random, bool verbose);
+            int random, int batch, bool verbose);
 
         // set default values for variables
         void set_default_values();
@@ -101,7 +102,7 @@ class LDA {
 };
 
 LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter,
-         int random, bool verbose) {
+         int random, int batch, bool verbose) {
 
     set_default_values();
     this->K = K;
@@ -114,6 +115,7 @@ LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter,
     if (max_iter > 0)
         this->max_iter = max_iter;
     this->random = random;
+    this->batch = batch;
     this->verbose = verbose;
 
 }
@@ -225,13 +227,21 @@ void LDA::estimate() {
             // parallel_for
             // local ------------------------- start
             Mutex mutex;
+            //int g = 1;
+            //if (iter > 100)
+            //tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, 2);
+
+            //tbb::arena limited_arena(4);
+            //arena.execute([]{
+            Rcout << "Batch size: " << batch << "\n";
+            tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
             //tbb::parallel_for(tbb::blocked_range<int>(0, M), [&](tbb::blocked_range<int> r) {
                 arma::mat nw_tp = arma::mat(size(nw), arma::fill::zeros);
                 arma::colvec nwsum_tp = arma::colvec(size(nwsum), arma::fill::zeros);
 
                 for (int i = 0; i < 100; i++) {
-                    for (int m = 0; m < M; m++) {
-                    //for (int m = r.begin(); m < r.end(); ++m) {
+                    //for (int m = 0; m < M; m++) {
+                    for (int m = r.begin(); m < r.end(); ++m) {
 
                         // topic of the previous document
                         for (int k = 0; k < K; k++) {
@@ -261,6 +271,7 @@ void LDA::estimate() {
                     }
                 }
                 mutex.lock();
+                Rcout << "Merge " << r.begin() << " to " << r.end() << "\n";
                 nw += nw_tp;
                 nwsum += nwsum_tp;
                 mutex.unlock();
@@ -268,7 +279,9 @@ void LDA::estimate() {
                 //Rcout << "sum(nw): " << arma::accu(nw) << "\n";
                 //Rcout << "sum(nwsum): " << arma::accu(nwsum) << "\n";
                 // local -------------------- end
-            //});
+            }, tbb::auto_partitioner());
+                //});
+            //}
         }
     }
 
@@ -296,9 +309,12 @@ int LDA::sampling(int m, int n, int w,
     double Kalpha = K * alpha;
     // do multinomial sampling via cumulative method
     for (int k = 0; k < K; k++) {
-        p[k] = (nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta) /
-               (nwsum[k] + nwsum_tp[k]+ nwsum_ft[k] + Vbeta) *
+        p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta) /
+                (nwsum[k] + nwsum_tp[k]+ nwsum_ft[k] + Vbeta)) *
                ((nd.at(m, k) + alpha) / (ndsum[m] + Kalpha)) * q[k];
+        // p[k] = ((nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + Vbeta)) *
+        //        ((nw_tp.at(w, k) + beta) / (nwsum_tp[k] + Vbeta)) *
+        //        ((nd.at(m, k) + alpha) / (ndsum[m] + Kalpha)) * q[k];
     }
     // cumulate multinomial parameters
     for (int k = 1; k < K; k++) {

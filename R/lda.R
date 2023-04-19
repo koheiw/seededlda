@@ -83,9 +83,10 @@ lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, verbose
         warning("gamma has no effect when docid are all unique.", call. = FALSE, immediate. = TRUE)
 
     random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
+    batch <- check_integer(getOption("seededlda_batch_size", ndoc(x)))
     result <- cpp_lda(x, k, max_iter, alpha, beta, gamma,
                       as(seeds, "dgCMatrix"), as(words, "dgCMatrix"),
-                      first, random, verbose)
+                      first, random, batch, verbose)
 
     dimnames(result$words) <- list(colnames(x), label)
     dimnames(result$phi) <- list(label, colnames(x))

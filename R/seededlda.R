@@ -7,7 +7,7 @@
 #' @param dictionary a [quanteda::dictionary()] with seed words that define
 #'   topics.
 #' @param residual the number of undefined topics. They are named "other" by
-#'   default, but it can be changed via `base::options(slda_residual_name)`.
+#'   default, but it can be changed via `base::options(seededlda_residual_name)`.
 #' @param weight determines the size of pseudo counts given to matched seed words.
 #' @param uniform if `FALSE`, adjusts the weights of seed words to make their
 #'   total amount equal across topics.
@@ -232,7 +232,7 @@ tfm <- function(x, dictionary,
     }
 
     if (residual > 0) {
-        label <- getOption("slda_residual_name", "other")
+        label <- getOption("seededlda_residual_name", "other")
         if (residual == 1) {
             key <- c(key, label)
         } else {
