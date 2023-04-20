@@ -29,6 +29,7 @@ textmodel_seededlda(
   alpha = 0.5,
   beta = 0.1,
   gamma = 0,
+  batch_size = NULL,
   ...,
   verbose = quanteda_options("verbose")
 )

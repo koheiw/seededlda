@@ -57,10 +57,9 @@
 #' @export
 textmodel_seededlda <- function(
     x, dictionary,
-    valuetype = c("glob", "regex", "fixed"),
-    case_insensitive = TRUE,
-    residual = 0, weight = 0.01, uniform = TRUE,
-    max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
+    valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
+    residual = 0, weight = 0.01, uniform = TRUE, max_iter = 2000,
+    alpha = 0.5, beta = 0.1, gamma = 0, batch_size = NULL,
     ..., verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_seededlda")
@@ -69,11 +68,10 @@ textmodel_seededlda <- function(
 #' @export
 textmodel_seededlda.dfm <- function(
     x, dictionary,
-    valuetype = c("glob", "regex", "fixed"),
-    case_insensitive = TRUE,
-    residual = 0, weight = 0.01, uniform = TRUE,
-    max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
-    ..., batch_size= NULL, verbose = quanteda_options("verbose")
+    valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
+    residual = 0, weight = 0.01, uniform = TRUE, max_iter = 2000,
+    alpha = 0.5, beta = 0.1, gamma = 0, batch_size = NULL,
+    ..., verbose = quanteda_options("verbose")
 ) {
 
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
