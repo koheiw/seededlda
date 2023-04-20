@@ -97,6 +97,7 @@ lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, batch_s
     dimnames(result$phi) <- list(label, colnames(x))
     dimnames(result$theta) <- list(rownames(x), label)
     result$data <- x
+    result$batch_size <- batch_size
     result$call <- match.call(sys.function(-2), call = sys.call(-2))
     result$version <- utils::packageVersion("seededlda")
     class(result) <- c("textmodel_lda", "textmodel", "list")
