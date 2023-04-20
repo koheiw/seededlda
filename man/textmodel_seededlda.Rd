@@ -13,6 +13,7 @@ textmodel_lda(
   beta = 0.1,
   gamma = 0,
   model = NULL,
+  batch_size = NULL,
   verbose = quanteda_options("verbose")
 )
 
@@ -51,6 +52,8 @@ document is affected by the previous document's topics.}
 \item{model}{a fitted LDA model; if provided, \code{textmodel_lda()} inherits
 parameters from an existing model. See details.}
 
+\item{batch_size}{split the corpus into the specified size for distributed computing.}
+
 \item{verbose}{logical; if \code{TRUE} print diagnostic information during
 fitting.}
 
@@ -62,7 +65,7 @@ topics.}
 \item{case_insensitive}{see \link[quanteda:valuetype]{quanteda::valuetype}}
 
 \item{residual}{the number of undefined topics. They are named "other" by
-default, but it can be changed via \code{base::options(slda_residual_name)}.}
+default, but it can be changed via \code{base::options(seededlda_residual_name)}.}
 
 \item{weight}{determines the size of pseudo counts given to matched seed words.}
 
@@ -135,6 +138,6 @@ Corpora: Semisupervised Topic Classification of the UN Speeches".
 doi:10.1177/0894439320907027. \emph{Social Science Computer Review}.
 }
 \seealso{
-\link[topicmodels:lda]{topicmodels}
+\link[topicmodels:LDA]{topicmodels}
 }
 \keyword{textmodel}
