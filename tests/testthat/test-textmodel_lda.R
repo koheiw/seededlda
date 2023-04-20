@@ -73,7 +73,7 @@ test_that("LDA is working", {
     expect_equal(
         names(lda),
         c("k", "max_iter", "last_iter", "alpha", "beta", "gamma", "phi", "theta",
-          "words", "data", "call", "version")
+          "words", "data", "batch_size", "call", "version")
     )
     expect_equivalent(class(lda$words), "dgCMatrix")
     expect_equal(rownames(lda$words), colnames(lda$phi))
@@ -106,12 +106,12 @@ test_that("verbose works", {
 
     expect_output(textmodel_lda(dfmt, k = 5, verbose = TRUE, max_iter = 200),
                   paste("Fitting LDA with 5 topics\n",
-                        "   ...initializing\n",
-                        "   ...Gibbs sampling in 200 itterations\n",
-                        "   ...iteration 100\n",
-                        "   ...iteration 200\n",
-                        "   ...computing theta and phi\n",
-                        "   ...complete", sep = ""), fixed = TRUE)
+                        "[ .]{4}initializing\n",
+                        "[ .]{4}Gibbs sampling in 200 itterations\n",
+                        "[ .]{4}iteration 100 finished in .*\n",
+                        "[ .]{4}iteration 200 finished in .*\n",
+                        "[ .]{4}computing theta and phi\n",
+                        "[ .]{4}complete", sep = ""))
 
 })
 
@@ -305,5 +305,29 @@ test_that("select and min_prob are working", {
         topics(lda, select = c("topic2", "xxxxx")),
         "Selected topics must be in the model"
     )
+
 })
 
+test_that("distributed LDA works", {
+
+    options("seededlda_threads" = "a")
+    expect_error(
+        lda1 <- textmodel_lda(dfmt, k = 5, batch_size = 100, max_iter = 200, verbose = FALSE)
+    )
+
+    options("seededlda_threads" = -1)
+    expect_silent(
+        lda1 <- textmodel_lda(dfmt, k = 5, batch_size = 100, max_iter = 200, verbose = FALSE)
+    )
+    expect_equal(lda1$batch_size, 100)
+
+    options("seededlda_threads" = 2)
+    expect_output(
+        lda2 <- textmodel_lda(dfmt, k = 5,  batch_size = 200, max_iter = 200, verbose = TRUE),
+        ".*using up to 2 threads for distributed computing.*"
+    )
+    expect_equal(lda2$batch_size, 200)
+
+    # reset
+    options("seededlda_threads" = NULL)
+})
