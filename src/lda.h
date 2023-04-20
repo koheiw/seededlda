@@ -55,7 +55,7 @@ class LDA {
         int random; // seed for random number generation
         int batch; // size of subsets to distribute
         bool verbose; // print progress messages
-        int threads; // numebr of threads in parallel processing
+        int thread; // numebr of thread in parallel processing
 
         // topic transition
         double gamma; // parameter for topic transition
@@ -85,7 +85,7 @@ class LDA {
 
         // constructor
         LDA(int K, double alpha, double beta, double gamma, int max_iter,
-            int random, int batch, bool verbose, int threads);
+            int random, int batch, bool verbose, int thread);
 
         // set default values for variables
         void set_default_values();
@@ -104,7 +104,7 @@ class LDA {
 };
 
 LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter,
-         int random, int batch, bool verbose, int threads) {
+         int random, int batch, bool verbose, int thread) {
 
     set_default_values();
     this->K = K;
@@ -116,11 +116,8 @@ LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter,
         this->gamma = gamma;
     if (max_iter > 0)
         this->max_iter = max_iter;
-    if (threads > 0) {
-        this->threads = threads;
-    } else {
-        this->threads = tbb::task_arena::automatic;
-    }
+    if (thread > 0)
+        this->thread = thread;
     this->random = random;
     this->batch = batch;
     this->verbose = verbose;
@@ -140,7 +137,7 @@ void LDA::set_default_values() {
     random = 1234;
     gamma = 0;
     first = std::vector<bool>(M);
-    threads = -1;
+    thread = tbb::this_task_arena::max_concurrency();
 
 }
 
@@ -205,7 +202,7 @@ int LDA::init_est() {
         }
     }
 
-    tbb::task_arena arena(threads);
+    tbb::task_arena arena(thread);
     arena.execute([&]{
         tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
             //for (int m = 0; m < M; m++) {
@@ -231,8 +228,9 @@ int LDA::init_est() {
 
 void LDA::estimate() {
 
-    if (verbose && threads > 1) {
-        Rprintf(" ...distributing %d documents to %d threads\n", batch, threads);
+    if (verbose && thread > 1 && batch != M) {
+        Rprintf(" ...using up to %d threads for distributed computing\n", thread);
+        Rprintf(" ...%d documents in a batch\n", batch);
     }
     if (verbose)
         Rprintf(" ...Gibbs sampling in %d itterations\n", max_iter);
@@ -249,7 +247,7 @@ void LDA::estimate() {
         Mutex mutex;
         //dev::Timer timer;
         //dev::start_timer("Process batch", timer);
-        tbb::task_arena arena(threads);
+        tbb::task_arena arena(thread);
         arena.execute([&]{
             tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
 
