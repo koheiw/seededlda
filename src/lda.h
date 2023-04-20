@@ -140,7 +140,7 @@ void LDA::set_default_values() {
     random = 1234;
     gamma = 0;
     first = std::vector<bool>(M);
-    threads = 0;
+    threads = -1;
 
 }
 

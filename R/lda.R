@@ -84,11 +84,14 @@ lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, verbose
 
     random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
 
-    seededlda_batch_size <- getOption("seededlda_batch_size", ndoc(x))
-    batch <- check_integer(seededlda_batch_size)
-
-    seededlda_threads <- getOption("seededlda_threads", 0)
+    seededlda_threads <- getOption("seededlda_threads", 1)
     threads <- check_integer(seededlda_threads)
+    if (threads == 1) {
+        batch <- ndoc(x)
+    } else {
+        seededlda_batch_size <- getOption("seededlda_batch_size", ceiling(ndoc(x) / threads))
+        batch <- check_integer(seededlda_batch_size)
+    }
 
     result <- cpp_lda(x, k, max_iter, alpha, beta, gamma,
                       as(seeds, "dgCMatrix"), as(words, "dgCMatrix"),
