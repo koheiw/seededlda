@@ -201,7 +201,7 @@ int LDA::init_est() {
         //for (int m = 0; m < M; m++) {
         for (int m = r.begin(); m < r.end(); ++m) {
             if (texts[m].size() == 0) continue;
-            for (int i = 0; i < texts[m].size(); i++) {
+            for (std::size_t i = 0; i < texts[m].size(); i++) {
                 int topic = random_topic(generator);
                 int w = texts[m][i];
                 z[m][i] = topic;
@@ -221,13 +221,14 @@ int LDA::init_est() {
 
 void LDA::estimate() {
 
-    if (verbose & batch != M)
+    if (verbose && batch != (int)M)
         Rprintf("   ...distributing %d documents to each thread\n", batch);
     if (verbose)
         Rprintf("   ...Gibbs sampling in %d itterations\n", max_iter);
 
+    int iter_inc = 100;
     int last_iter = iter;
-    for (iter = last_iter + 1; iter <= max_iter + last_iter; iter += 100) {
+    for (iter = last_iter + iter_inc; iter <= max_iter + last_iter; iter += iter_inc) {
 
          checkUserInterrupt();
         if (verbose)
@@ -241,8 +242,7 @@ void LDA::estimate() {
             arma::mat nw_tp = arma::mat(size(nw), arma::fill::zeros);
             arma::colvec nwsum_tp = arma::colvec(size(nwsum), arma::fill::zeros);
             //dev::start_timer("Iter", timer);
-            for (int i = 0; i < 100; i++) {
-                //for (int m = 0; m < M; m++) {
+            for (int i = 0; i < iter_inc; i++) {
                 for (int m = r.begin(); m < r.end(); ++m) {
 
                     // topic of the previous document
@@ -254,7 +254,7 @@ void LDA::estimate() {
                         }
                     }
                     if (texts[m].size() == 0) continue;
-                    for (int i = 0; i < texts[m].size(); i++) {
+                    for (std::size_t i = 0; i < texts[m].size(); i++) {
                         int w = texts[m][i];
                         z[m][i] = sampling(m, i, w, nw_tp, nwsum_tp);
                     }
