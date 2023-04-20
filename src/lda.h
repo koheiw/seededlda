@@ -61,6 +61,7 @@ class LDA {
         arma::vec q; // temp variable for previous document
 
         arma::sp_mat data; // transposed document-feature matrix
+        Texts texts; // individual words
         Texts z; // topic assignments for words, size M x doc.size()
         arma::mat nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
         arma::mat nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
@@ -165,7 +166,6 @@ int LDA::init_est() {
     std::uniform_real_distribution< double > random_prob(0, 1);
     std::uniform_int_distribution< int > random_topic(0, K - 1);
 
-    z = Texts(M);
     theta = arma::mat(M, K, arma::fill::zeros);
     phi = arma::mat(K, V, arma::fill::zeros);
 
@@ -178,32 +178,42 @@ int LDA::init_est() {
     Vbeta = V * beta;
     Kalpha = K * alpha;
 
-    //dev::Timer timer;
-    //dev::start_timer("Set z", timer);
+    // initialize z and texts
+    z = Texts(M);
+    texts = Texts(M);
     for (int m = 0; m < M; m++) {
-
         z[m] = Text(ndsum[m]);
-        if (z[m].size() == 0) continue;
-        int n = 0;
-
+        texts[m] = Text(ndsum[m]);
         arma::sp_mat::const_col_iterator it = data.begin_col(m);
         arma::sp_mat::const_col_iterator it_end = data.end_col(m);
+        int i = 0;
         for(; it != it_end; ++it) {
             int w = it.row();
             int F = *it;
             for (int f = 0; f < F; f++) {
+                texts[m][i] = w;
+                i++;
+            }
+        }
+    }
+
+    tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
+        //for (int m = 0; m < M; m++) {
+        for (int m = r.begin(); m < r.end(); ++m) {
+            if (texts[m].size() == 0) continue;
+            for (int i = 0; i < texts[m].size(); i++) {
                 int topic = random_topic(generator);
-                z[m][n] = topic;
+                int w = texts[m][i];
+                z[m][i] = topic;
                 // number of instances of word i assigned to topic j
                 nw.at(w, topic) += 1;
                 // number of words in document i assigned to topic j
                 nd.at(m, topic) += 1;
                 // total number of words assigned to topic j
                 nwsum[topic] += 1;
-                n++;
             }
         }
-    }
+    }, tbb::auto_partitioner());
     //dev::stop_timer("Set z", timer);
 
     return 0;
@@ -238,7 +248,7 @@ void LDA::estimate() {
 
                 arma::mat nw_tp = arma::mat(size(nw), arma::fill::zeros);
                 arma::colvec nwsum_tp = arma::colvec(size(nwsum), arma::fill::zeros);
-                dev::start_timer("Iter", timer);
+                //dev::start_timer("Iter", timer);
                 for (int i = 0; i < 100; i++) {
                     //for (int m = 0; m < M; m++) {
                     for (int m = r.begin(); m < r.end(); ++m) {
@@ -251,34 +261,18 @@ void LDA::estimate() {
                                 q[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + K * alpha), gamma);
                             }
                         }
-                        //Rcout << m << ":\n";
-                        //Rcout << q << "\n";
-
-                        if (z[m].size() == 0) continue;
-                        int n = 0;
-
-                        arma::sp_mat::const_col_iterator it = data.begin_col(m);
-                        arma::sp_mat::const_col_iterator it_end = data.end_col(m);
-                        for(; it != it_end; ++it) {
-                            int w = it.row();
-                            int F = *it;
-                            //printf("Sampling %d %d %d %d\n", iter, m, w, F);
-                            for (int f = 0; f < F; f++) {
-                                z[m][n] = sampling(m, n, w, nw_tp, nwsum_tp);
-                                n++;
-                            }
+                        if (texts[m].size() == 0) continue;
+                        for (int i = 0; i < texts[m].size(); i++) {
+                            int w = texts[m][i];
+                            z[m][i] = sampling(m, i, w, nw_tp, nwsum_tp);
                         }
                     }
                 }
                 mutex.lock();
-                dev::stop_timer("Iter", timer);
+                //dev::stop_timer("Iter", timer);
                 nw += nw_tp;
                 nwsum += nwsum_tp;
                 mutex.unlock();
-                //Rcout << "nwsum_tp:" << nwsum_tp << "\n";
-                //Rcout << "sum(nw): " << arma::accu(nw) << "\n";
-                //Rcout << "sum(nwsum): " << arma::accu(nwsum) << "\n";
-                // local -------------------- end
             }, tbb::auto_partitioner());
             dev::stop_timer("Process batch", timer);
         }
@@ -293,12 +287,12 @@ void LDA::estimate() {
         Rprintf("   ...complete\n");
 }
 
-int LDA::sampling(int m, int n, int w,
+int LDA::sampling(int m, int i, int w,
                   arma::mat &nw_tp,
                   arma::colvec &nwsum_tp) {
 
     // remove z_i from the count variables
-    int topic = z[m][n];
+    int topic = z[m][i];
     nw_tp.at(w, topic) -= 1;
     nwsum_tp[topic] -= 1;
     nd.at(m, topic) -= 1;
