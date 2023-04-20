@@ -312,7 +312,13 @@ test_that("distributed LDA works", {
 
     options(seededlda_threads = "a")
     expect_error(
-        lda1 <- textmodel_lda(dfmt, k = 5, batch_size = 100, max_iter = 200, verbose = FALSE)
+        textmodel_lda(dfmt, k = 5, batch_size = 100, max_iter = 200, verbose = FALSE),
+        'getOption("seededlda_threads", -1) must be coercible to integer'
+    )
+    options(seededlda_threads = -1)
+    expect_error(
+        textmodel_lda(dfmt, k = 5, batch_size = -10, max_iter = 200, verbose = FALSE),
+        "The value of batch_size must be between 1 and Inf"
     )
 
     options(seededlda_threads = -1)
