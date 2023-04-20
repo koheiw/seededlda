@@ -36,6 +36,7 @@
 
 #include "lib.h"
 #include "dev.h"
+#include <chrono>
 
 using namespace std;
 using namespace Rcpp;
@@ -159,7 +160,7 @@ int LDA::init_est() {
 
     if (verbose) {
         Rprintf("Fitting LDA with %d topics\n", K);
-        Rprintf("   ...initializing\n");
+        Rprintf(" ...initializing\n");
     }
 
     std::default_random_engine generator(random);
@@ -222,21 +223,22 @@ int LDA::init_est() {
 void LDA::estimate() {
 
     if (verbose && batch != (int)M)
-        Rprintf("   ...distributing %d documents to each thread\n", batch);
+        Rprintf(" ...distributing %d documents to each thread\n", batch);
     if (verbose)
-        Rprintf("   ...Gibbs sampling in %d itterations\n", max_iter);
+        Rprintf(" ...Gibbs sampling in %d itterations\n", max_iter);
 
     int iter_inc = 100;
     int last_iter = iter;
     for (iter = last_iter + iter_inc; iter <= max_iter + last_iter; iter += iter_inc) {
 
-         checkUserInterrupt();
+        auto start = std::chrono::high_resolution_clock::now();
+        checkUserInterrupt();
         if (verbose)
-            Rprintf("   ...iteration %d\n", iter);
+            Rprintf(" ...iteration %d: ", iter);
 
         Mutex mutex;
-        dev::Timer timer;
-        dev::start_timer("Process batch", timer);
+        //dev::Timer timer;
+        //dev::start_timer("Process batch", timer);
         tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
 
             arma::mat nw_tp = arma::mat(size(nw), arma::fill::zeros);
@@ -266,13 +268,18 @@ void LDA::estimate() {
             nwsum += nwsum_tp;
             mutex.unlock();
         }, tbb::auto_partitioner());
-        dev::stop_timer("Process batch", timer);
+        //dev::stop_timer("Process batch", timer);
+
+        auto now = std::chrono::high_resolution_clock::now();
+        auto sec = std::chrono::duration<double, std::milli>(now - start);
+        if (verbose)
+            Rcout << (sec.count() / 1000) << " seconds\n";
     }
 
     if (verbose)
-        Rprintf("   ...computing theta and phi\n");
+        Rprintf(" ...computing theta and phi\n");
     if (verbose)
-        Rprintf("   ...complete\n");
+        Rprintf(" ...complete\n");
 }
 
 int LDA::sampling(int m, int i, int w,
