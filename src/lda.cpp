@@ -11,9 +11,9 @@ using namespace Rcpp;
 List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, double gamma,
              arma::sp_mat &seeds, arma::sp_mat &words,
              std::vector<bool> &first,
-             int random, int batch, bool verbose) {
+             int random, int batch, bool verbose= false, int threads = 0) {
 
-    LDA lda(k, alpha, beta, gamma, max_iter, random, batch, verbose);
+    LDA lda(k, alpha, beta, gamma, max_iter, random, batch, verbose, threads);
     lda.set_data(mt, first);
     lda.set_fitted(words);
 
@@ -44,3 +44,5 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, d
                         Rcpp::Named("theta") = wrap(lda.theta),
                         Rcpp::Named("words") = wrap(arma::sp_mat(lda.nw))); // TODO: change to zeta?
 }
+
+

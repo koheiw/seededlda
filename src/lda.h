@@ -55,6 +55,7 @@ class LDA {
         int random; // seed for random number generation
         int batch; // size of subsets to distribute
         bool verbose; // print progress messages
+        int threads; // numebr of threads in parallel processing
 
         // topic transition
         double gamma; // parameter for topic transition
@@ -84,7 +85,7 @@ class LDA {
 
         // constructor
         LDA(int K, double alpha, double beta, double gamma, int max_iter,
-            int random, int batch, bool verbose);
+            int random, int batch, bool verbose, int threads);
 
         // set default values for variables
         void set_default_values();
@@ -103,7 +104,7 @@ class LDA {
 };
 
 LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter,
-         int random, int batch, bool verbose) {
+         int random, int batch, bool verbose, int threads) {
 
     set_default_values();
     this->K = K;
@@ -115,6 +116,11 @@ LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter,
         this->gamma = gamma;
     if (max_iter > 0)
         this->max_iter = max_iter;
+    if (threads > 0) {
+        this->threads = threads;
+    } else {
+        this->threads = tbb::task_arena::automatic;
+    }
     this->random = random;
     this->batch = batch;
     this->verbose = verbose;
@@ -134,6 +140,7 @@ void LDA::set_default_values() {
     random = 1234;
     gamma = 0;
     first = std::vector<bool>(M);
+    threads = 0;
 
 }
 
@@ -198,32 +205,35 @@ int LDA::init_est() {
         }
     }
 
-    tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
-        //for (int m = 0; m < M; m++) {
-        for (int m = r.begin(); m < r.end(); ++m) {
-            if (texts[m].size() == 0) continue;
-            for (std::size_t i = 0; i < texts[m].size(); i++) {
-                int topic = random_topic(generator);
-                int w = texts[m][i];
-                z[m][i] = topic;
-                // number of instances of word i assigned to topic j
-                nw.at(w, topic) += 1;
-                // number of words in document i assigned to topic j
-                nd.at(m, topic) += 1;
-                // total number of words assigned to topic j
-                nwsum[topic] += 1;
+    tbb::task_arena arena(threads);
+    arena.execute([&]{
+        tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
+            //for (int m = 0; m < M; m++) {
+            for (int m = r.begin(); m < r.end(); ++m) {
+                if (texts[m].size() == 0) continue;
+                for (std::size_t i = 0; i < texts[m].size(); i++) {
+                    int topic = random_topic(generator);
+                    int w = texts[m][i];
+                    z[m][i] = topic;
+                    // number of instances of word i assigned to topic j
+                    nw.at(w, topic) += 1;
+                    // number of words in document i assigned to topic j
+                    nd.at(m, topic) += 1;
+                    // total number of words assigned to topic j
+                    nwsum[topic] += 1;
+                }
             }
-        }
-    }, tbb::auto_partitioner());
-    //dev::stop_timer("Set z", timer);
-
+        }, tbb::auto_partitioner());
+        //dev::stop_timer("Set z", timer);
+    });
     return 0;
 }
 
 void LDA::estimate() {
 
-    if (verbose && batch != (int)M)
-        Rprintf(" ...distributing %d documents to each thread\n", batch);
+    if (verbose && threads > 1) {
+        Rprintf(" ...distributing %d documents to %d threads\n", batch, threads);
+    }
     if (verbose)
         Rprintf(" ...Gibbs sampling in %d itterations\n", max_iter);
 
@@ -239,37 +249,39 @@ void LDA::estimate() {
         Mutex mutex;
         //dev::Timer timer;
         //dev::start_timer("Process batch", timer);
-        tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
+        tbb::task_arena arena(threads);
+        arena.execute([&]{
+            tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
 
-            arma::mat nw_tp = arma::mat(size(nw), arma::fill::zeros);
-            arma::colvec nwsum_tp = arma::colvec(size(nwsum), arma::fill::zeros);
-            //dev::start_timer("Iter", timer);
-            for (int i = 0; i < iter_inc; i++) {
-                for (int m = r.begin(); m < r.end(); ++m) {
+                arma::mat nw_tp = arma::mat(size(nw), arma::fill::zeros);
+                arma::colvec nwsum_tp = arma::colvec(size(nwsum), arma::fill::zeros);
+                //dev::start_timer("Iter", timer);
+                for (int i = 0; i < iter_inc; i++) {
+                    for (int m = r.begin(); m < r.end(); ++m) {
 
-                    // topic of the previous document
-                    for (int k = 0; k < K; k++) {
-                        if (gamma == 0 || first[m] || m == 0) {
-                            q[k] = 1.0;
-                        } else {
-                            q[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + K * alpha), gamma);
+                        // topic of the previous document
+                        for (int k = 0; k < K; k++) {
+                            if (gamma == 0 || first[m] || m == 0) {
+                                q[k] = 1.0;
+                            } else {
+                                q[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + K * alpha), gamma);
+                            }
+                        }
+                        if (texts[m].size() == 0) continue;
+                        for (std::size_t i = 0; i < texts[m].size(); i++) {
+                            int w = texts[m][i];
+                            z[m][i] = sampling(m, i, w, nw_tp, nwsum_tp);
                         }
                     }
-                    if (texts[m].size() == 0) continue;
-                    for (std::size_t i = 0; i < texts[m].size(); i++) {
-                        int w = texts[m][i];
-                        z[m][i] = sampling(m, i, w, nw_tp, nwsum_tp);
-                    }
                 }
-            }
-            mutex.lock();
-            //dev::stop_timer("Iter", timer);
-            nw += nw_tp;
-            nwsum += nwsum_tp;
-            mutex.unlock();
-        }, tbb::auto_partitioner());
-        //dev::stop_timer("Process batch", timer);
-
+                mutex.lock();
+                //dev::stop_timer("Iter", timer);
+                nw += nw_tp;
+                nwsum += nwsum_tp;
+                mutex.unlock();
+            }, tbb::auto_partitioner());
+            //dev::stop_timer("Process batch", timer);
+        });
         auto now = std::chrono::high_resolution_clock::now();
         auto sec = std::chrono::duration<double, std::milli>(now - start);
         if (verbose)
