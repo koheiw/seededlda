@@ -73,7 +73,7 @@ textmodel_seededlda.dfm <- function(
     case_insensitive = TRUE,
     residual = 0, weight = 0.01, uniform = TRUE,
     max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
-    ..., verbose = quanteda_options("verbose")
+    ..., batch_size= NULL, verbose = quanteda_options("verbose")
 ) {
 
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
@@ -85,7 +85,7 @@ textmodel_seededlda.dfm <- function(
     k <- nrow(seeds)
     label <- rownames(seeds)
 
-    result <- lda(x, k, label, max_iter, alpha, beta, gamma, t(seeds), NULL, verbose)
+    result <- lda(x, k, label, max_iter, alpha, beta, gamma, t(seeds), NULL, batch_size, verbose)
     result$dictionary <- dictionary
     result$valuetype <- valuetype
     result$case_insensitive <- case_insensitive
