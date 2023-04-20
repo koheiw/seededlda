@@ -1,6 +1,6 @@
 require(quanteda)
 
-options(slda_residual_name = "other")
+options(seededlda_residual_name = "other")
 
 toks <- tokens(data_corpus_moviereviews[1:500],
                remove_punct = TRUE,
@@ -310,18 +310,18 @@ test_that("select and min_prob are working", {
 
 test_that("distributed LDA works", {
 
-    options("seededlda_threads" = "a")
+    options(seededlda_threads = "a")
     expect_error(
         lda1 <- textmodel_lda(dfmt, k = 5, batch_size = 100, max_iter = 200, verbose = FALSE)
     )
 
-    options("seededlda_threads" = -1)
+    options(seededlda_threads = -1)
     expect_silent(
         lda1 <- textmodel_lda(dfmt, k = 5, batch_size = 100, max_iter = 200, verbose = FALSE)
     )
     expect_equal(lda1$batch_size, 100)
 
-    options("seededlda_threads" = 2)
+    options(seededlda_threads = 2)
     expect_output(
         lda2 <- textmodel_lda(dfmt, k = 5,  batch_size = 200, max_iter = 200, verbose = TRUE),
         ".*using up to 2 threads for distributed computing.*"
@@ -329,5 +329,5 @@ test_that("distributed LDA works", {
     expect_equal(lda2$batch_size, 200)
 
     # reset
-    options("seededlda_threads" = NULL)
+    options(seededlda_threads = NULL)
 })
