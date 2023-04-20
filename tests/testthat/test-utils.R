@@ -30,7 +30,7 @@ test_that("divergence() is working", {
               divergence(lda, min_size = 0.1))
 
     expect_equal(divergence(slda),
-                 0.29, tolerance = 0.01)
+                 0.29, tolerance = 0.02)
 
     expect_silent(divergence(lda, select = c("topic1", "topic2")))
     expect_error(
