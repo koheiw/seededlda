@@ -234,7 +234,7 @@ void LDA::estimate() {
         auto start = std::chrono::high_resolution_clock::now();
         checkUserInterrupt();
         if (verbose)
-            Rprintf(" ...iteration %d: ", iter);
+            Rprintf(" ...iteration %d", iter);
 
         Mutex mutex;
         //dev::Timer timer;
@@ -273,7 +273,7 @@ void LDA::estimate() {
         auto now = std::chrono::high_resolution_clock::now();
         auto sec = std::chrono::duration<double, std::milli>(now - start);
         if (verbose)
-            Rcout << (sec.count() / 1000) << " seconds\n";
+            Rcout << " ended in " << (sec.count() / 1000) << " seconds\n";
     }
 
     if (verbose)
