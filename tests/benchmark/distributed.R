@@ -12,10 +12,7 @@ dfmt <- dfm(toks) %>%
     dfm_remove(stopwords(), min_nchar = 2) %>%
     dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
 
-quanteda_options(threads = 1)
-
 options(seededlda_batch_size = 1000)
-options(seededlda_threads = 6)
 lda1 <- textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 200)
 
 options(seededlda_batch_size = NULL)
