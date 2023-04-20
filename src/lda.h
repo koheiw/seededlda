@@ -221,68 +221,56 @@ int LDA::init_est() {
 
 void LDA::estimate() {
 
+    if (verbose & batch != M)
+        Rprintf("   ...distributing %d documents to each thread\n", batch);
     if (verbose)
         Rprintf("   ...Gibbs sampling in %d itterations\n", max_iter);
 
     int last_iter = iter;
-    for (iter = last_iter + 1; iter <= max_iter + last_iter; iter++) {
+    for (iter = last_iter + 1; iter <= max_iter + last_iter; iter += 100) {
 
-        if (iter % 100 == 0) {
+         checkUserInterrupt();
+        if (verbose)
+            Rprintf("   ...iteration %d\n", iter);
 
-            checkUserInterrupt();
-            if (verbose)
-                Rprintf("   ...iteration %d\n", iter);
+        Mutex mutex;
+        dev::Timer timer;
+        dev::start_timer("Process batch", timer);
+        tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
 
-            // parallel_for
-            // local ------------------------- start
-            Mutex mutex;
-            //int g = 1;
-            //if (iter > 100)
-            //tbb::global_control global_limit(tbb::global_control::max_allowed_parallelism, 2);
+            arma::mat nw_tp = arma::mat(size(nw), arma::fill::zeros);
+            arma::colvec nwsum_tp = arma::colvec(size(nwsum), arma::fill::zeros);
+            //dev::start_timer("Iter", timer);
+            for (int i = 0; i < 100; i++) {
+                //for (int m = 0; m < M; m++) {
+                for (int m = r.begin(); m < r.end(); ++m) {
 
-            //tbb::arena limited_arena(4);
-            //arena.execute([]{
-            dev::Timer timer;
-            dev::start_timer("Process batch", timer);
-            tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
-
-                arma::mat nw_tp = arma::mat(size(nw), arma::fill::zeros);
-                arma::colvec nwsum_tp = arma::colvec(size(nwsum), arma::fill::zeros);
-                //dev::start_timer("Iter", timer);
-                for (int i = 0; i < 100; i++) {
-                    //for (int m = 0; m < M; m++) {
-                    for (int m = r.begin(); m < r.end(); ++m) {
-
-                        // topic of the previous document
-                        for (int k = 0; k < K; k++) {
-                            if (gamma == 0 || first[m] || m == 0) {
-                                q[k] = 1.0;
-                            } else {
-                                q[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + K * alpha), gamma);
-                            }
-                        }
-                        if (texts[m].size() == 0) continue;
-                        for (int i = 0; i < texts[m].size(); i++) {
-                            int w = texts[m][i];
-                            z[m][i] = sampling(m, i, w, nw_tp, nwsum_tp);
+                    // topic of the previous document
+                    for (int k = 0; k < K; k++) {
+                        if (gamma == 0 || first[m] || m == 0) {
+                            q[k] = 1.0;
+                        } else {
+                            q[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + K * alpha), gamma);
                         }
                     }
+                    if (texts[m].size() == 0) continue;
+                    for (int i = 0; i < texts[m].size(); i++) {
+                        int w = texts[m][i];
+                        z[m][i] = sampling(m, i, w, nw_tp, nwsum_tp);
+                    }
                 }
-                mutex.lock();
-                //dev::stop_timer("Iter", timer);
-                nw += nw_tp;
-                nwsum += nwsum_tp;
-                mutex.unlock();
-            }, tbb::auto_partitioner());
-            dev::stop_timer("Process batch", timer);
-        }
+            }
+            mutex.lock();
+            //dev::stop_timer("Iter", timer);
+            nw += nw_tp;
+            nwsum += nwsum_tp;
+            mutex.unlock();
+        }, tbb::auto_partitioner());
+        dev::stop_timer("Process batch", timer);
     }
 
     if (verbose)
         Rprintf("   ...computing theta and phi\n");
-    //compute_theta();
-    //compute_phi();
-    iter--;
     if (verbose)
         Rprintf("   ...complete\n");
 }
