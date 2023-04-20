@@ -108,15 +108,15 @@ LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter,
 
     set_default_values();
     this->K = K;
-    if(alpha > 0)
+    if (0 < alpha)
         this->alpha = alpha;
-    if (beta > 0)
+    if (0 < beta)
         this->beta = beta;
-    if (gamma > 0)
+    if (0 < gamma)
         this->gamma = gamma;
-    if (max_iter > 0)
+    if (0 < max_iter)
         this->max_iter = max_iter;
-    if (thread > 0)
+    if (0 < thread && thread <= tbb::this_task_arena::max_concurrency())
         this->thread = thread;
     this->random = random;
     this->batch = batch;
@@ -230,7 +230,7 @@ void LDA::estimate() {
 
     if (verbose && thread > 1 && batch != M) {
         Rprintf(" ...using up to %d threads for distributed computing\n", thread);
-        Rprintf(" ...%d documents in a batch\n", batch);
+        Rprintf(" ...allocating %d documents to each thread\n", batch);
     }
     if (verbose)
         Rprintf(" ...Gibbs sampling in %d itterations\n", max_iter);
@@ -283,7 +283,7 @@ void LDA::estimate() {
         auto now = std::chrono::high_resolution_clock::now();
         auto sec = std::chrono::duration<double, std::milli>(now - start);
         if (verbose)
-            Rcout << " ended in " << (sec.count() / 1000) << " seconds\n";
+            Rcout << " finished in " << (sec.count() / 1000) << " seconds\n";
     }
 
     if (verbose)
