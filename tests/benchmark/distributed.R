@@ -18,10 +18,8 @@ lda2 <- textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 200, batch_size =
 lda3 <- textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 200)
 
 microbenchmark::microbenchmark(
-    para = {options(seededlda_batch_size = 2000)
-            textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 1000)},
-    seri = {options(seededlda_batch_size = NULL)
-            textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 1000)},
+    para = textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 1000, batch_size = 2000),
+    seri = textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 1000),
     times = 10
 )
 
