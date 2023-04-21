@@ -7,7 +7,7 @@
 #' @param dictionary a [quanteda::dictionary()] with seed words that define
 #'   topics.
 #' @param residual the number of undefined topics. They are named "other" by
-#'   default, but it can be changed via `base::options(slda_residual_name)`.
+#'   default, but it can be changed via `base::options(seededlda_residual_name)`.
 #' @param weight determines the size of pseudo counts given to matched seed words.
 #' @param uniform if `FALSE`, adjusts the weights of seed words to make their
 #'   total amount equal across topics.
@@ -57,10 +57,9 @@
 #' @export
 textmodel_seededlda <- function(
     x, dictionary,
-    valuetype = c("glob", "regex", "fixed"),
-    case_insensitive = TRUE,
-    residual = 0, weight = 0.01, uniform = TRUE,
-    max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
+    valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
+    residual = 0, weight = 0.01, uniform = TRUE, max_iter = 2000,
+    alpha = 0.5, beta = 0.1, gamma = 0, batch_size = NULL,
     ..., verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_seededlda")
@@ -69,10 +68,9 @@ textmodel_seededlda <- function(
 #' @export
 textmodel_seededlda.dfm <- function(
     x, dictionary,
-    valuetype = c("glob", "regex", "fixed"),
-    case_insensitive = TRUE,
-    residual = 0, weight = 0.01, uniform = TRUE,
-    max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
+    valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
+    residual = 0, weight = 0.01, uniform = TRUE, max_iter = 2000,
+    alpha = 0.5, beta = 0.1, gamma = 0, batch_size = NULL,
     ..., verbose = quanteda_options("verbose")
 ) {
 
@@ -85,7 +83,7 @@ textmodel_seededlda.dfm <- function(
     k <- nrow(seeds)
     label <- rownames(seeds)
 
-    result <- lda(x, k, label, max_iter, alpha, beta, gamma, t(seeds), NULL, verbose)
+    result <- lda(x, k, label, max_iter, alpha, beta, gamma, t(seeds), NULL, batch_size, verbose)
     result$dictionary <- dictionary
     result$valuetype <- valuetype
     result$case_insensitive <- case_insensitive
@@ -232,7 +230,7 @@ tfm <- function(x, dictionary,
     }
 
     if (residual > 0) {
-        label <- getOption("slda_residual_name", "other")
+        label <- getOption("seededlda_residual_name", "other")
         if (residual == 1) {
             key <- c(key, label)
         } else {

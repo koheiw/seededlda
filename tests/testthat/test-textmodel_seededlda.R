@@ -1,6 +1,6 @@
 require(quanteda)
 
-options(slda_residual_name = "other")
+options(seededlda_residual_name = "other")
 
 toks <- tokens(data_corpus_moviereviews[1:500],
                remove_punct = TRUE,
@@ -105,7 +105,7 @@ test_that("seeded LDA is working", {
     expect_equal(
         names(lda),
         c("k", "max_iter", "last_iter", "alpha", "beta", "gamma","phi", "theta",
-          "words", "data", "call", "version",
+          "words", "data", "batch_size", "call", "version",
           "dictionary", "valuetype", "case_insensitive", "seeds",
           "residual", "weight")
     )
@@ -218,4 +218,39 @@ test_that("works similar way as before v0.9", {
     tb <- table(topics(lda), topics(lda_old))
     expect_true(all(diag(tb) / rowSums(tb) > 0.85))
 })
+
+
+test_that("distributed LDA works", {
+
+    skip_on_cran()
+
+    dict <- dictionary(list(romance = c("love*", "couple*"),
+                            sifi = c("alien*", "star", "space")))
+
+    set.seed(1234)
+    lda_seri <- textmodel_seededlda(dfmt, dict, residual = TRUE)
+    set.seed(1234)
+    lda_para <- textmodel_seededlda(dfmt, dict, residual = TRUE, batch_size = 100)
+
+    # names of elements
+    expect_equal(lda_seri$batch_size, 500)
+    expect_equal(lda_para$batch_size, 100)
+    expect_identical(
+        dimnames(lda_seri$phi), dimnames(lda_para$phi)
+    )
+    expect_identical(
+        dimnames(lda_seri$theta), dimnames(lda_para$theta)
+    )
+
+    # parameters
+    dist_theta <- proxyC::dist(lda_seri$theta + 0.001, lda_para$theta + 0.001,
+                               1, method = "jensen", diag = TRUE)
+    expect_lt(median(Matrix::diag(dist_theta)), 0.1)
+
+    dist_phi <- proxyC::dist(lda_seri$phi + 0.001, lda_para$phi + 0.001,
+                             2, method = "jensen", diag = TRUE)
+    expect_lt(median(Matrix::diag(dist_phi)), 0.1)
+
+})
+
 

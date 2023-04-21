@@ -11,19 +11,19 @@ using namespace Rcpp;
 List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, double gamma,
              arma::sp_mat &seeds, arma::sp_mat &words,
              std::vector<bool> &first,
-             int random, bool verbose) {
+             int random, int batch, bool verbose= false, int threads = -1) {
 
-    LDA lda(k, alpha, beta, gamma, max_iter, random, verbose);
+    LDA lda(k, alpha, beta, gamma, max_iter, random, batch, verbose, threads);
     lda.set_data(mt, first);
     lda.set_fitted(words);
 
     if (lda.init_est() == 0) {
         bool seeded = arma::accu(seeds) > 0;
-        arma::umat s;
+        arma::mat s;
         if (seeded) {
             if (arma::size(seeds) != arma::size(lda.nw))
                 throw std::invalid_argument("Invalid seed matrix");
-            s = arma::conv_to<arma::umat>::from(arma::mat(seeds));
+            s = arma::conv_to<arma::mat>::from(arma::mat(seeds));
             lda.nw = lda.nw + s; // set pseudo count
             //lda.nwsum = lda.nwsum + arma::sum(s, 0);
         }
@@ -42,5 +42,7 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, d
                         Rcpp::Named("gamma") = lda.gamma,
                         Rcpp::Named("phi") = wrap(lda.phi),
                         Rcpp::Named("theta") = wrap(lda.theta),
-                        Rcpp::Named("words") = wrap(arma::sp_umat(lda.nw))); // TODO: change to zeta?
+                        Rcpp::Named("words") = wrap(arma::sp_mat(lda.nw))); // TODO: change to zeta?
 }
+
+

@@ -61,12 +61,12 @@ test_that("tfm is working", {
     expect_equal(rownames(tfm11),
                  c("A", "B", "AB", "other1", "other2", "other3", "other4"))
 
-    options(slda_residual_name = "topic")
+    options(seededlda_residual_name = "topic")
     tfm12 <- seededlda:::tfm(dfmt, dict, min_termfreq = 2, residual = 4)
     expect_s4_class(tfm12, "dgCMatrix")
     expect_equal(rownames(tfm12),
                  c("A", "B", "AB", "topic1", "topic2", "topic3", "topic4"))
-    options(slda_residual_name = "other") # reset
+    options(seededlda_residual_name = "other") # reset
 
     tfm13 <- seededlda:::tfm(dfmt, dict, residual = 0, uniform = TRUE)
     expect_equal(rowSums(tfm13), c("A" = 7, "B" = 6, "AB" = 6))
