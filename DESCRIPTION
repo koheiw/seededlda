@@ -1,7 +1,7 @@
 Package: seededlda
 Type: Package
 Title: Seeded Sequential LDA for Topic Modeling
-Version: 0.9.0
+Version: 1.0.0
 Authors@R: c(person("Kohei", "Watanabe", email = "watanabe.kohei@gmail.com", role = c("aut", "cre", "cph")),
              person("Phan", "Xuan-Hieu", email = "pxhieu@gmail.com", role = c("aut", "cph"), comment = "GibbsLDA++"))
 Description: Seeded Sequential LDA can classify sentences of texts into pre-define topics with a small number of seed words (Watanabe & Baturo, forthcoming).
