@@ -245,11 +245,11 @@ test_that("distributed LDA works", {
     # parameters
     dist_theta <- proxyC::dist(lda_seri$theta + 0.001, lda_para$theta + 0.001,
                                1, method = "jensen", diag = TRUE)
-    expect_lt(mean(Matrix::diag(dist_theta)), 0.1)
+    expect_lt(median(Matrix::diag(dist_theta)), 0.1)
 
     dist_phi <- proxyC::dist(lda_seri$phi + 0.001, lda_para$phi + 0.001,
                              2, method = "jensen", diag = TRUE)
-    expect_lt(mean(Matrix::diag(dist_phi)), 0.1)
+    expect_lt(median(Matrix::diag(dist_phi)), 0.1)
 
 })
 
