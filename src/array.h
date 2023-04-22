@@ -25,14 +25,14 @@ public:
 
     // allow access by .at()
     int & at(int i, int j) {
-        // if (this->row <= i)
+        // if (i < 0 || row <= i)
         //     throw std::range_error("Invalid row index");
-        // if (this->row <= j)
+        // if (j < 0 || row <= j)
         //     throw std::range_error("Invalid column index");
         return data[i][j];
     }
     int & at(int j) {
-        //if (this->col <= j)
+        //if (j < 0 || col <= j)
         //    throw std::range_error("Invalid index");
         return data[0][j];
     }
@@ -47,7 +47,7 @@ public:
         if (row != arr.data.size())
             throw std::range_error("Invalid number of rows");
         for (std::size_t i = 0; i < data.size(); i++) {
-            //if (this->col != arr.data[i].size())
+            //if (col != arr.data[i].size())
             //    throw std::range_error("Invalid number of colmuns");
             for (std::size_t j = 0; j < data[i].size(); j++) {
                 data[i][j] += arr.data[i][j];
