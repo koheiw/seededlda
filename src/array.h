@@ -14,10 +14,14 @@ public:
     Data data;
 
     // constructors
-    Array(): row(0), col(0), data(0, std::vector<int>(0, 0)) {} // empty
-    Array(std::size_t n): row(1), col(n), data(1, std::vector<int>(n, 0)) {} // vector
-    Array(std::size_t r, std::size_t c): row(r), col(c), data(r, std::vector<int>(c, 0)) {} // matrix
-    Array(arma::mat x): row(x.n_rows), col(x.n_cols), data(from_mat(x)) {}
+    Array():
+        row(0), col(0), data(0, std::vector<int>(0, 0)) {} // empty
+    Array(std::size_t n):
+        row(1), col(n), data(1, std::vector<int>(n, 0)) {} // vector
+    Array(std::size_t r, std::size_t c):
+        row(r), col(c), data(r, std::vector<int>(c, 0)) {} // matrix
+    Array(arma::mat x):
+        row(x.n_rows), col(x.n_cols), data(convert(x)) {}
 
     // allow access by .at()
     int & at(int i, int j) {
@@ -40,20 +44,19 @@ public:
 
     // allow addition by +=
     Array& operator+=(const Array &arr) {
-        if (this->row != arr.data.size())
+        if (row != arr.data.size())
             throw std::range_error("Invalid number of rows");
-        for (std::size_t i = 0; i < this->data.size(); i++) {
+        for (std::size_t i = 0; i < data.size(); i++) {
             //if (this->col != arr.data[i].size())
             //    throw std::range_error("Invalid number of colmuns");
-            for (std::size_t j = 0; j < this->data[i].size(); j++) {
-                this->data[i][j] += arr.data[i][j];
+            for (std::size_t j = 0; j < data[i].size(); j++) {
+                data[i][j] += arr.data[i][j];
             }
         }
         return *this;
     }
-
     // convert from arma::mat
-    Data from_mat(arma::mat &mt) {
+    Data convert(arma::mat &mt) {
         Data temp(mt.n_rows, std::vector<int>(mt.n_cols, 0));
         for (std::size_t i = 0;  i < mt.n_rows; i++) {
             for (std::size_t j = 0;  j < mt.n_cols; j++) {
@@ -62,12 +65,20 @@ public:
         }
         return temp;
     }
-    // convert to arma::sp_mat
-    // arma::sp_mat to_spmat() {
-    //     for (std::size_t i = 0;  i < x.n_rows; i++) {
-    //         for (std::size_t j = 0;  j < x.n_cols; j++) {
-    //             // https://arma.sourceforge.net/docs.html#SpMat
-    //         }
-    //     }
-    // }
+    //convert to arma::mat
+    arma::mat to_mat() {
+        std::vector<int> temp;
+        temp.reserve(row * col);
+        for (std::size_t i = 0;  i < data.size(); i++) {
+            temp.insert(temp.end(), data[i].begin(), data[i].end());
+        }
+        arma::vec mt = arma::conv_to<arma::vec>::from(temp);
+        mt.reshape(row, col);
+        return mt;
+    }
+    //convert to arma::sp_mat
+    arma::sp_mat to_smat() {
+        arma::mat mt = to_mat();
+        return arma::sp_mat(mt);
+    }
 };
