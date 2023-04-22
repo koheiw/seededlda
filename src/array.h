@@ -53,15 +53,16 @@ public:
     }
 
     // convert from arma::mat
-    Data from_mat(arma::mat x) {
-        Data temp(x.n_rows, std::vector<int>(x.n_cols, 0));
-        for (std::size_t i = 0;  i < x.n_rows; i++) {
-            for (std::size_t j = 0;  j < x.n_cols; j++) {
-                temp[i][j] = x.at(i, j);
+    Data from_mat(arma::mat &mt) {
+        Data temp(mt.n_rows, std::vector<int>(mt.n_cols, 0));
+        for (std::size_t i = 0;  i < mt.n_rows; i++) {
+            for (std::size_t j = 0;  j < mt.n_cols; j++) {
+                temp[i][j] = mt.at(i, j);
             }
         }
         return temp;
     }
+    // convert to arma::sp_mat
     // arma::sp_mat to_spmat() {
     //     for (std::size_t i = 0;  i < x.n_rows; i++) {
     //         for (std::size_t j = 0;  j < x.n_cols; j++) {
