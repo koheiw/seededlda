@@ -35,6 +35,7 @@
  */
 
 #include "lib.h"
+#include "array.h"
 #include "dev.h"
 #include <chrono>
 
@@ -42,59 +43,6 @@ using namespace std;
 //using namespace Rcpp;
 using namespace quanteda;
 
-// Matrix-like object
-class Array {
-
-public:
-    std::size_t row, col;
-    typedef std::vector<int> Row;
-    typedef std::vector<Row> Data;
-    Data data;
-
-    // constructors
-    Array(): row(0), col(0), data(0, std::vector<int>(0, 0)) {} // empty
-    Array(std::size_t n): row(1), col(n), data(1, std::vector<int>(n, 0)) {} // vector
-    Array(std::size_t r, std::size_t c): row(r), col(c), data(r, std::vector<int>(c, 0)) {} // matrix
-    Array(arma::mat x): row(x.n_rows), col(x.n_cols), data(convert(x)) {}
-
-    // convert from arma::mat
-    Data convert(arma::mat x) {
-        Data temp(x.n_rows, std::vector<int>(x.n_cols, 0));
-        for (std::size_t i = 0;  i < x.n_rows; i++) {
-            for (std::size_t j = 0;  j < x.n_cols; j++) {
-                temp[i][j] = x.at(i, j);
-            }
-        }
-        return temp;
-    }
-
-    // allow access by .at()
-    int & at(int i, int j) {
-        return data[i][j];
-    }
-    int & at(int j) {
-        return data[0][j];
-    }
-
-    // allow access by [i][j]
-    Row & operator[](std::size_t i) {
-        return data[i];
-    }
-
-    // allow addition by +=
-    Array& operator+=(const Array &arr) {
-        if (this->row != arr.data.size())
-            throw std::range_error("Invalid number of rows");
-        for (std::size_t i = 0; i < this->data.size(); i++) {
-            if (this->col != arr.data[i].size())
-                throw std::range_error("Invalid number of colmuns");
-            for (std::size_t j = 0; j < this->data[i].size(); j++) {
-                this->data[i][j] += arr.data[i][j];
-            }
-        }
-        return *this;
-    }
-};
 
 // LDA model
 class LDA {
@@ -114,7 +62,8 @@ class LDA {
         // topic transition
         double gamma; // parameter for topic transition
         std::vector<bool> first; // first[i], documents i are first sentence, size M
-        arma::vec q; // temp variable for previous document
+        //arma::vec q; // temp variable for previous document
+        std::vector<double> q; // temp variable for previous document
 
         arma::sp_mat data; // transposed document-feature matrix
         Texts texts; // individual words
@@ -236,14 +185,15 @@ int LDA::init_est() {
     theta = arma::mat(M, K, arma::fill::zeros);
     phi = arma::mat(K, V, arma::fill::zeros);
 
-    Array nw(V, K);
-    Array nd(M, K);
+    nw = Array(V, K);
+    nd = Array(M, K);
     //nw = arma::mat(V, K, arma::fill::zeros);
     //nd = arma::mat(M, K, arma::fill::zeros);
-    Array nwsum(K);
-    Array ndsum(arma::mat(arma::sum(data, 0)));
+    nwsum = Array(K);
+    ndsum = Array(arma::mat(arma::sum(data, 0)));
     //ndsum = arma::conv_to< std::vector<int> >::from(arma::mat(arma::sum(data, 0)));
-    q = arma::vec(K);
+
+    q.assign(K, 1.0);
     Vbeta = V * beta;
     Kalpha = K * alpha;
 
@@ -323,7 +273,6 @@ void LDA::estimate() {
                 //dev::start_timer("Iter", timer);
                 for (int i = 0; i < iter_inc; i++) {
                     for (int m = r.begin(); m < r.end(); ++m) {
-
                         // topic of the previous document
                         for (int k = 0; k < K; k++) {
                             if (gamma == 0 || first[m] || m == 0) {
@@ -366,15 +315,24 @@ int LDA::sampling(int m, int i, int w,
 
     // remove z_i from the count variables
     int topic = z[m][i];
+    //Rcout << "topic:" << topic << "\n";
     nw_tp.at(w, topic) -= 1;
     nwsum_tp.at(topic) -= 1;
     //nwsum_tp[topic] -= 1;
+    //Rcout << "nw_tp: " << nw_tp.row << " " << nw_tp.col << "\n";
+    //Rcout << "nd: " << nd.row << " " << nd.col << "\n";
+    //Rcout << "nwsum: " << nwsum.row << " " << nwsum.col << "\n";
     nd.at(m, topic) -= 1;
-    std::vector<double> p(K);
+    std::vector<double> p(K, 0);
     //arma::vec p(K);
 
     // do multinomial sampling via cumulative method
     for (int k = 0; k < K; k++) {
+
+        //Rcout << "nwsum: " << nwsum.at(k) << "\n";
+        //Rcout << "nwsum_tp: " << nwsum_tp.at(k) << "\n";
+        //Rcout << "nwsum_ft: " << nwsum_ft.at(k) << "\n";
+
         p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta) /
                 (nwsum.at(k) + nwsum_tp.at(k) + nwsum_ft.at(k) + Vbeta)) *
                 ((nd.at(m, k) + alpha) / (ndsum.at(m) + Kalpha)) * q[k];

@@ -20,12 +20,11 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, d
     if (lda.init_est() == 0) {
         bool seeded = arma::accu(seeds) > 0;
         //arma::mat s;
-        Array nw_sd;
-        Array nwsum_sd;
+        Array nw_sd(lda.V, lda.K);
+        Array nwsum_sd(lda.K);
         if (seeded) {
             if (seeds.n_cols != lda.nw.col ||  seeds.n_rows != lda.nw.row)
                 throw std::invalid_argument("Invalid seed matrix");
-
             nw_sd = Array(arma::mat(seeds));
             nwsum_sd = Array(arma::mat(arma::sum(arma::mat(seeds), 0)));
             lda.nw += nw_sd; // set pseudo count
@@ -48,7 +47,8 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, d
                         Rcpp::Named("beta") = lda.beta,
                         Rcpp::Named("gamma") = lda.gamma,
                         Rcpp::Named("phi") = wrap(lda.phi),
-                        Rcpp::Named("theta") = wrap(lda.theta));//,
+                        Rcpp::Named("theta") = wrap(lda.theta),
+                        Rcpp::Named("words") = wrap(arma::sp_mat(lda.V, lda.K)));
                         //Rcpp::Named("words") = wrap(arma::sp_mat(lda.nw))); // TODO: change to zeta?
 }
 
