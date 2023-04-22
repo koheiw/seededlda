@@ -16,17 +16,18 @@ class Array {
         Data data;
         Array(std::size_t r, std::size_t c): row(r), col(c), data(r, std::vector<int>(c, 0)) {}
 
-        // allow to use matrix[i][j]
+        // allow access by [i][j]
         Row & operator[](std::size_t i) {
             return data[i];
         }
 
+        // allow additon by +=
         Array& operator+=(const Array &arr) {
             if (this->data.size() != arr.data.size())
                 throw std::range_error("Invalid number of rows");
             for (std::size_t i = 0; i < this->data.size(); i++) {
                 if (this->data[i].size() != arr.data[i].size())
-                    throw std::range_error("Invalid number of columns");
+                    throw std::range_error("Invalid number of colmuns");
                 for (std::size_t j = 0; j < this->data[i].size(); j++) {
                     this->data[i][j] += arr.data[i][j];
                 }
