@@ -39,8 +39,38 @@
 #include <chrono>
 
 using namespace std;
-using namespace Rcpp;
+//using namespace Rcpp;
 using namespace quanteda;
+
+// Matrix-like object
+class Array {
+
+public:
+    std::size_t row, col;
+    typedef std::vector<int> Row;
+    typedef std::vector<Row> Data;
+    Data data;
+    Array(std::size_t r, std::size_t c): row(r), col(c), data(r, std::vector<int>(c, 0)) {}
+
+    // allow access by [i][j]
+    Row & operator[](std::size_t i) {
+        return data[i];
+    }
+
+    // allow additon by +=
+    Array& operator+=(const Array &arr) {
+        if (this->row != arr.data.size())
+            throw std::range_error("Invalid number of rows");
+        for (std::size_t i = 0; i < this->data.size(); i++) {
+            if (this->col != arr.data[i].size())
+                throw std::range_error("Invalid number of colmuns");
+            for (std::size_t j = 0; j < this->data[i].size(); j++) {
+                this->data[i][j] += arr.data[i][j];
+            }
+        }
+        return *this;
+    }
+};
 
 // LDA model
 class LDA {
@@ -65,10 +95,15 @@ class LDA {
         arma::sp_mat data; // transposed document-feature matrix
         Texts texts; // individual words
         Texts z; // topic assignments for words, size M x doc.size()
-        arma::mat nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
-        arma::mat nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
-        arma::rowvec nwsum; // nwsum[j]: total number of words assigned to topic j, size K
-        arma::colvec ndsum; // nasum[i]: total number of words in document i, size M
+        Array::Data nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
+        Array::Data nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
+        std::vector<int> nwsum; // nwsum[j]: total number of words assigned to topic j, size K
+        std::vector<int> ndsum; // nasum[i]: total number of words in document i, size M
+        // arma::mat nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
+        // arma::mat nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
+        // arma::rowvec nwsum; // nwsum[j]: total number of words assigned to topic j, size K
+        // arma::colvec ndsum; // nasum[i]: total number of words in document i, size M
+
         arma::mat theta; // theta: document-topic distributions, size M x K
         arma::mat phi; // phi: topic-word distributions, size K x V
 
