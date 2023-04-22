@@ -20,8 +20,8 @@ public:
         row(1), col(n), data(1, std::vector<int>(n, 0)) {} // vector
     Array(std::size_t r, std::size_t c):
         row(r), col(c), data(r, std::vector<int>(c, 0)) {} // matrix
-    Array(arma::mat x):
-        row(x.n_rows), col(x.n_cols), data(convert(x)) {}
+    Array(arma::mat mt):
+        row(mt.n_rows), col(mt.n_cols), data(convert(mt)) {}
 
     // allow access by .at()
     int & at(int i, int j) {
@@ -55,6 +55,7 @@ public:
         }
         return *this;
     }
+
     // convert from arma::mat
     Data convert(arma::mat &mt) {
         Data temp(mt.n_rows, std::vector<int>(mt.n_cols, 0));
