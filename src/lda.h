@@ -102,11 +102,11 @@ class LDA {
     void set_fitted(arma::sp_mat mt);
 
     // init for estimation
-    int init_est();
+    int initialize();
 
     // estimate LDA model using Gibbs sampling
     void estimate();
-    int sampling(int m, int n, int w, Array &nw_tp, Array &nwsum_tp);
+    int sample(int m, int n, int w, Array &nw_tp, Array &nwsum_tp);
     void compute_theta();
     void compute_phi();
 
@@ -172,7 +172,7 @@ void LDA::set_fitted(arma::sp_mat words) {
 
 }
 
-int LDA::init_est() {
+int LDA::initialize() {
 
     if (verbose) {
         Rprintf("Fitting LDA with %d topics\n", K);
@@ -220,7 +220,6 @@ int LDA::init_est() {
     tbb::task_arena arena(thread);
     arena.execute([&]{
         tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
-            //for (int m = 0; m < M; m++) {
             for (int m = r.begin(); m < r.end(); ++m) {
                 if (texts[m].size() == 0) continue;
                 for (std::size_t i = 0; i < texts[m].size(); i++) {
@@ -233,7 +232,6 @@ int LDA::init_est() {
                     nd.at(m, topic) += 1;
                     // total number of words assigned to topic j
                     nwsum.at(topic) += 1;
-                    //nwsum[0][topic] += 1;
                 }
             }
         }, tbb::auto_partitioner());
@@ -286,7 +284,7 @@ void LDA::estimate() {
                         if (texts[m].size() == 0) continue;
                         for (std::size_t i = 0; i < texts[m].size(); i++) {
                             int w = texts[m][i];
-                            z[m][i] = sampling(m, i, w, nw_tp, nwsum_tp);
+                            z[m][i] = sample(m, i, w, nw_tp, nwsum_tp);
                         }
                     }
                 }
@@ -310,7 +308,7 @@ void LDA::estimate() {
         Rprintf(" ...complete\n");
 }
 
-int LDA::sampling(int m, int i, int w,
+int LDA::sample(int m, int i, int w,
                   Array &nw_tp,
                   Array &nwsum_tp) {
 

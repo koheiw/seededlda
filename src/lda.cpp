@@ -17,7 +17,7 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, d
     lda.set_data(mt, first);
     lda.set_fitted(words);
 
-    if (lda.init_est() == 0) {
+    if (lda.initialize() == 0) {
         bool seeded = arma::accu(seeds) > 0;
         //arma::mat s;
         Array nw_sd(lda.V, lda.K);

@@ -8,6 +8,7 @@ using namespace std;
 class Array {
 
     public:
+
     std::size_t row, col;
     typedef std::vector<int> Row;
     typedef std::vector<Row> Data;
@@ -17,8 +18,8 @@ class Array {
     Array(): row(0), col(0), data(0, std::vector<int>(0, 0)) {} // empty
     Array(std::size_t n): row(1), col(n), data(1, std::vector<int>(n, 0)) {} // vector
     Array(std::size_t r, std::size_t c): row(r), col(c), data(r, std::vector<int>(c, 0)) {} // matrix
-    Array(arma::mat mt): row(mt.n_rows), col(mt.n_cols), data(convert(mt)) {}
-    Array(arma::sp_mat mt): row(mt.n_rows), col(mt.n_cols), data(convert(mt)) {}
+    Array(arma::mat mt): row(mt.n_rows), col(mt.n_cols), data(to_data(mt)) {}
+    Array(arma::sp_mat smt): row(smt.n_rows), col(smt.n_cols), data(to_data(smt)) {}
 
     // allow access by .at()
     int & at(int i, int j) {
@@ -65,6 +66,7 @@ class Array {
         mt = mt.t();
         return mt;
     }
+
     //convert to arma::sp_mat
     arma::sp_mat to_smat() {
         arma::mat mt = to_mat();
@@ -72,8 +74,8 @@ class Array {
     }
 
     private:
-    // convert from arma::mat
-    Data convert(arma::mat mt) {
+
+    Data to_data(arma::mat mt) {
         Data temp(mt.n_rows, std::vector<int>(mt.n_cols, 0));
         for (std::size_t i = 0;  i < mt.n_rows; i++) {
             for (std::size_t j = 0;  j < mt.n_cols; j++) {
@@ -82,13 +84,13 @@ class Array {
         }
         return temp;
     }
-    Data convert(arma::sp_mat &mt) {
-        return convert(arma::mat(mt));
+    Data to_data(arma::sp_mat &smt) {
+        return to_data(arma::mat(smt));
     }
-    Data convert(arma::rowvec &v) {
-        return convert(arma::mat(v));
+    Data to_data(arma::rowvec &v) {
+        return to_data(arma::mat(v));
     }
-    Data convert(arma::colvec &v) {
-        return convert(arma::mat(v).t());
+    Data to_data(arma::colvec &v) {
+        return to_data(arma::mat(v).t());
     }
 };
