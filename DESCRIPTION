@@ -18,9 +18,10 @@ Depends:
     proxyC (>= 0.3.1)
 Imports:
     Matrix
-LinkingTo: Rcpp, RcppParallel, RcppArmadillo (>= 0.7.600.1.0), quanteda
+LinkingTo: Rcpp, RcppParallel, RcppArmadillo (>= 0.7.600.1.0), quanteda, testthat
 Suggests:
     testthat,
-    topicmodels
+    topicmodels,
+    xml2
 RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
