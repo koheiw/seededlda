@@ -35,71 +35,76 @@
  */
 
 #include "lib.h"
+#include "array.h"
 #include "dev.h"
 #include <chrono>
 
 using namespace std;
-using namespace Rcpp;
+//using namespace Rcpp;
 using namespace quanteda;
+
 
 // LDA model
 class LDA {
+
     public:
-        // --- model parameters and variables ---
-        int M; // dataset size (i.e., number of docs)
-        int V; // vocabulary size
-        int K; // number of topics
-        double alpha, beta, Vbeta, Kalpha; // parameters for smoothing
-        int max_iter; // number of Gibbs sampling iterations
-        int iter; // the iteration at which the model was saved
-        int random; // seed for random number generation
-        int batch; // size of subsets to distribute
-        bool verbose; // print progress messages
-        int thread; // numebr of thread in parallel processing
+    // --- model parameters and variables ---
+    int M; // dataset size (i.e., number of docs)
+    int V; // vocabulary size
+    int K; // number of topics
+    double alpha, beta, Vbeta, Kalpha; // parameters for smoothing
+    int max_iter; // number of Gibbs sampling iterations
+    int iter; // the iteration at which the model was saved
+    int random; // seed for random number generation
+    int batch; // size of subsets to distribute
+    bool verbose; // print progress messages
+    int thread; // numebr of thread in parallel processing
 
-        // topic transition
-        double gamma; // parameter for topic transition
-        std::vector<bool> first; // first[i], documents i are first sentence, size M
-        arma::vec q; // temp variable for previous document
+    // topic transition
+    double gamma; // parameter for topic transition
+    std::vector<bool> first; // first[i], documents i are first sentence, size M
+    std::vector<double> q; // temp variable for previous document
 
-        arma::sp_mat data; // transposed document-feature matrix
-        Texts texts; // individual words
-        Texts z; // topic assignments for words, size M x doc.size()
-        arma::mat nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
-        arma::mat nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
-        arma::rowvec nwsum; // nwsum[j]: total number of words assigned to topic j, size K
-        arma::colvec ndsum; // nasum[i]: total number of words in document i, size M
-        arma::mat theta; // theta: document-topic distributions, size M x K
-        arma::mat phi; // phi: topic-word distributions, size K x V
+    arma::sp_mat data; // transposed document-feature matrix
+    Texts texts; // individual words
+    Texts z; // topic assignments for words, size M x doc.size()
+    Array nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
+    Array nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
+    Array nwsum; // nwsum[j]: total number of words assigned to topic j, size K
+    Array ndsum; // nasum[i]: total number of words in document i, size M
 
-        // prediction with fitted model
-        arma::mat nw_ft;
-        arma::rowvec nwsum_ft;
+    // prediction with fitted model
+    Array nw_ft;
+    Array nwsum_ft;
 
-        // random number generators
-        std::default_random_engine generator;
-        std::uniform_real_distribution<double> random_prob;
-        std::uniform_int_distribution<int> random_topic;
+    // estimated parameters
+    arma::mat theta; // theta: document-topic distributions, size M x K
+    arma::mat phi; // phi: topic-word distributions, size K x V
 
-        // --------------------------------------
+    // random number generators
+    std::default_random_engine generator;
+    std::uniform_real_distribution<double> random_prob;
+    std::uniform_int_distribution<int> random_topic;
 
-        // constructor
-        LDA(int K, double alpha, double beta, double gamma, int max_iter,
-            int random, int batch, bool verbose, int thread);
+    // --------------------------------------
 
-        // set default values for variables
-        void set_default_values();
-        void set_data(arma::sp_mat mt, std::vector<bool> first);
-        void set_fitted(arma::sp_mat mt);
+    // constructor
+    LDA(int K, double alpha, double beta, double gamma, int max_iter,
+        int random, int batch, bool verbose, int thread);
 
-        // init for estimation
-        int init_est();
+    // set default values for variables
+    void set_default_values();
+    void set_data(arma::sp_mat mt, std::vector<bool> first);
+    void set_fitted(arma::sp_mat mt);
 
-        // estimate LDA model using Gibbs sampling
-        void estimate();
-        int sampling(int m, int n, int w, arma::mat &nw_tp, arma::colvec &nwsum_tp);
-        void compute_theta();
-        void compute_phi();
+    // init for estimation
+    int initialize();
+
+    // estimate LDA model using Gibbs sampling
+    void estimate();
+    int sample(int m, int n, int w, Array &nw_tp, Array &nwsum_tp);
+    void compute_theta();
+    void compute_phi();
 
 };
 
@@ -155,12 +160,15 @@ void LDA::set_fitted(arma::sp_mat words) {
 
     if ((int)words.n_rows != V || (int)words.n_cols != K)
         throw std::invalid_argument("Invalid word matrix");
-    nw_ft = arma::conv_to<arma::mat>::from(arma::mat(words));
-    nwsum_ft = arma::sum(nw_ft, 0);
+
+    nw_ft = Array(words);
+    //nw_ft = arma::conv_to<arma::mat>::from(arma::mat(words));
+    nwsum_ft = Array(arma::sum(words, 0));
+    //nwsum_ft = arma::sum(nw_ft, 0);
 
 }
 
-int LDA::init_est() {
+int LDA::initialize() {
 
     if (verbose) {
         Rprintf("Fitting LDA with %d topics\n", K);
@@ -174,12 +182,15 @@ int LDA::init_est() {
     theta = arma::mat(M, K, arma::fill::zeros);
     phi = arma::mat(K, V, arma::fill::zeros);
 
-    nw = arma::mat(V, K, arma::fill::zeros);
-    nd = arma::mat(M, K, arma::fill::zeros);
-    nwsum = arma::rowvec(K, arma::fill::zeros);
-    ndsum = arma::conv_to<arma::colvec>::from(arma::mat(arma::sum(data, 0)));
+    nw = Array(V, K);
+    nd = Array(M, K);
+    //nw = arma::mat(V, K, arma::fill::zeros);
+    //nd = arma::mat(M, K, arma::fill::zeros);
+    nwsum = Array(K);
+    ndsum = Array(arma::sum(data, 0));
+    //ndsum = arma::conv_to< std::vector<int> >::from(arma::mat(arma::sum(data, 0)));
 
-    q = arma::vec(K);
+    q.assign(K, 1.0);
     Vbeta = V * beta;
     Kalpha = K * alpha;
 
@@ -187,8 +198,8 @@ int LDA::init_est() {
     z = Texts(M);
     texts = Texts(M);
     for (int m = 0; m < M; m++) {
-        z[m] = Text(ndsum[m]);
-        texts[m] = Text(ndsum[m]);
+        z[m] = Text(ndsum.at(m));
+        texts[m] = Text(ndsum.at(m));
         arma::sp_mat::const_col_iterator it = data.begin_col(m);
         arma::sp_mat::const_col_iterator it_end = data.end_col(m);
         int i = 0;
@@ -205,7 +216,6 @@ int LDA::init_est() {
     tbb::task_arena arena(thread);
     arena.execute([&]{
         tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
-            //for (int m = 0; m < M; m++) {
             for (int m = r.begin(); m < r.end(); ++m) {
                 if (texts[m].size() == 0) continue;
                 for (std::size_t i = 0; i < texts[m].size(); i++) {
@@ -217,7 +227,7 @@ int LDA::init_est() {
                     // number of words in document i assigned to topic j
                     nd.at(m, topic) += 1;
                     // total number of words assigned to topic j
-                    nwsum[topic] += 1;
+                    nwsum.at(topic) += 1;
                 }
             }
         }, tbb::auto_partitioner());
@@ -251,24 +261,26 @@ void LDA::estimate() {
         arena.execute([&]{
             tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
 
-                arma::mat nw_tp = arma::mat(size(nw), arma::fill::zeros);
-                arma::colvec nwsum_tp = arma::colvec(size(nwsum), arma::fill::zeros);
+                Array nw_tp(V, K);
+                //arma::mat nw_tp = arma::mat(size(nw), arma::fill::zeros);
+                Array nwsum_tp(K);
+                //arma::colvec nwsum_tp = arma::colvec(size(nwsum), arma::fill::zeros);
                 //dev::start_timer("Iter", timer);
                 for (int i = 0; i < iter_inc; i++) {
                     for (int m = r.begin(); m < r.end(); ++m) {
-
                         // topic of the previous document
                         for (int k = 0; k < K; k++) {
                             if (gamma == 0 || first[m] || m == 0) {
                                 q[k] = 1.0;
                             } else {
-                                q[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + K * alpha), gamma);
+                                q[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum.at(m - 1) + K * alpha), gamma);
+                                //q[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + K * alpha), gamma);
                             }
                         }
                         if (texts[m].size() == 0) continue;
                         for (std::size_t i = 0; i < texts[m].size(); i++) {
                             int w = texts[m][i];
-                            z[m][i] = sampling(m, i, w, nw_tp, nwsum_tp);
+                            z[m][i] = sample(m, i, w, nw_tp, nwsum_tp);
                         }
                     }
                 }
@@ -292,25 +304,37 @@ void LDA::estimate() {
         Rprintf(" ...complete\n");
 }
 
-int LDA::sampling(int m, int i, int w,
-                  arma::mat &nw_tp,
-                  arma::colvec &nwsum_tp) {
+int LDA::sample(int m, int i, int w,
+                  Array &nw_tp,
+                  Array &nwsum_tp) {
 
     // remove z_i from the count variables
     int topic = z[m][i];
+    //Rcout << "topic:" << topic << "\n";
     nw_tp.at(w, topic) -= 1;
-    nwsum_tp[topic] -= 1;
+    nwsum_tp.at(topic) -= 1;
+    //nwsum_tp[topic] -= 1;
+    //Rcout << "nw_tp: " << nw_tp.row << " " << nw_tp.col << "\n";
+    //Rcout << "nd: " << nd.row << " " << nd.col << "\n";
+    //Rcout << "nwsum: " << nwsum.row << " " << nwsum.col << "\n";
     nd.at(m, topic) -= 1;
-    arma::vec p(K);
+    std::vector<double> p(K, 0);
+    //arma::vec p(K);
 
     // do multinomial sampling via cumulative method
     for (int k = 0; k < K; k++) {
+
+        //Rcout << "nwsum: " << nwsum.at(k) << "\n";
+        //Rcout << "nwsum_tp: " << nwsum_tp.at(k) << "\n";
+        //Rcout << "nwsum_ft: " << nwsum_ft.at(k) << "\n";
+
         p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta) /
-                (nwsum[k] + nwsum_tp[k]+ nwsum_ft[k] + Vbeta)) *
-               ((nd.at(m, k) + alpha) / (ndsum[m] + Kalpha)) * q[k];
-        // p[k] = ((nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + Vbeta)) *
-        //        ((nw_tp.at(w, k) + beta) / (nwsum_tp[k] + Vbeta)) *
+                (nwsum.at(k) + nwsum_tp.at(k) + nwsum_ft.at(k) + Vbeta)) *
+                ((nd.at(m, k) + alpha) / (ndsum.at(m) + Kalpha)) * q[k];
+        // p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta) /
+        //         (nwsum[k] + nwsum_tp[k]+ nwsum_ft[k] + Vbeta)) *
         //        ((nd.at(m, k) + alpha) / (ndsum[m] + Kalpha)) * q[k];
+
     }
     // cumulate multinomial parameters
     for (int k = 1; k < K; k++) {
@@ -329,7 +353,7 @@ int LDA::sampling(int m, int i, int w,
 
     // add newly estimated z_i to count variables
     nw_tp.at(w, topic) += 1;
-    nwsum_tp[topic] += 1;
+    nwsum_tp.at(topic) += 1;
     nd.at(m, topic) += 1;
 
     return topic;
@@ -338,7 +362,7 @@ int LDA::sampling(int m, int i, int w,
 void LDA::compute_theta() {
     for (int m = 0; m < M; m++) {
         for (int k = 0; k < K; k++) {
-            theta.at(m, k) = (nd.at(m, k) + alpha) / (ndsum[m] + K * alpha);
+            theta.at(m, k) = (nd.at(m, k) + alpha) / (ndsum.at(m) + K * alpha);
         }
     }
 }
@@ -346,7 +370,7 @@ void LDA::compute_theta() {
 void LDA::compute_phi() {
     for (int k = 0; k < K; k++) {
         for (int w = 0; w < V; w++) {
-            phi.at(k, w) = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum[k] + nwsum_ft[k] + V * beta);
+            phi.at(k, w) = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum.at(k) + nwsum_ft.at(k) + V * beta);
         }
     }
 }
