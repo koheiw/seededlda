@@ -63,7 +63,6 @@ class LDA {
     // topic transition
     double gamma; // parameter for topic transition
     std::vector<bool> first; // first[i], documents i are first sentence, size M
-    //arma::vec q; // temp variable for previous document
     std::vector<double> q; // temp variable for previous document
 
     arma::sp_mat data; // transposed document-feature matrix
@@ -73,17 +72,14 @@ class LDA {
     Array nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
     Array nwsum; // nwsum[j]: total number of words assigned to topic j, size K
     Array ndsum; // nasum[i]: total number of words in document i, size M
-    // arma::mat nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
-    // arma::mat nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
-    // arma::rowvec nwsum; // nwsum[j]: total number of words assigned to topic j, size K
-    // arma::colvec ndsum; // nasum[i]: total number of words in document i, size M
-
-    arma::mat theta; // theta: document-topic distributions, size M x K
-    arma::mat phi; // phi: topic-word distributions, size K x V
 
     // prediction with fitted model
     Array nw_ft;
     Array nwsum_ft;
+
+    // estimated parameters
+    arma::mat theta; // theta: document-topic distributions, size M x K
+    arma::mat phi; // phi: topic-word distributions, size K x V
 
     // random number generators
     std::default_random_engine generator;
