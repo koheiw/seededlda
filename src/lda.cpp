@@ -20,22 +20,21 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, d
     if (lda.initialize() == 0) {
         bool seeded = arma::accu(seeds) > 0;
         //arma::mat s;
-        Array nw_sd(lda.V, lda.K);
-        Array nwsum_sd(lda.K);
         if (seeded) {
             if (seeds.n_cols != lda.nw.col ||  seeds.n_rows != lda.nw.row)
                 throw std::invalid_argument("Invalid seed matrix");
-            nw_sd = Array(seeds);
-            nwsum_sd = Array(arma::sum(seeds, 0));
-            lda.nw += nw_sd; // set pseudo count
+            Array nw_ss(seeds);
+            Array nwsum_ss(arma::sum(seeds, 0));
+            lda.nw += nw_ss; // set pseudo count
             //s = arma::conv_to<arma::mat>::from(arma::mat(seeds));
             //lda.nw = lda.nw + s; // set pseudo count
             //lda.nwsum = lda.nwsum + arma::sum(s, 0);
-        }
-        lda.estimate();
-        if (seeded)
-            lda.nwsum += nwsum_sd;
+            lda.estimate();
+            lda.nwsum += nwsum_ss;
             //lda.nwsum = lda.nwsum + Array(arma::sum(nw_sd, 0));
+        } else {
+            lda.estimate();
+        }
     }
     lda.compute_theta();
     lda.compute_phi();
@@ -48,8 +47,7 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, d
                         Rcpp::Named("gamma") = lda.gamma,
                         Rcpp::Named("phi") = wrap(lda.phi),
                         Rcpp::Named("theta") = wrap(lda.theta),
-                        Rcpp::Named("words") = wrap(lda.nw.to_smat()));
-                        //Rcpp::Named("words") = wrap(arma::sp_mat(lda.nw))); // TODO: change to zeta?
+                        Rcpp::Named("words") = wrap(lda.nw.to_smat())); // TODO: change to zeta?
 }
 
 
