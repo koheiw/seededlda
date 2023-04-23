@@ -45,9 +45,9 @@ respectively, in Gibbs sampling. Other elements in the list subject to
 change.
 }
 \description{
-\code{textmodel_lda()} implements unsupervised Latent Dirichlet allocation
-(LDA). The estimator's code adopted from the GibbsLDA++ library
-(Xuan-Hieu Phan, 2007).
+\code{textmodel_lda()} implements unsupervised Latent Dirichlet allocation (LDA).
+The estimator's code adopted from the GibbsLDA++ library (Phan & Nguyen,
+2007).
 }
 \details{
 To predict topics of new documents (i.e. out-of-sample), first,
@@ -74,6 +74,10 @@ topics(lda)
 lda2 <- textmodel_lda(tail(dfmt, 50), model = lda) # new documents
 topics(lda2)
 }
+}
+\references{
+Du, Lan et al. (2012). “Sequential Latent Dirichlet Allocation”.
+doi.org/10.1007/s10115-011-0425-1. \emph{Knowledge and Information Systems}.
 }
 \seealso{
 \link[topicmodels:LDA]{topicmodels}
