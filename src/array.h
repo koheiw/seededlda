@@ -7,21 +7,17 @@ using namespace std;
 // Matrix-like object
 class Array {
 
-public:
+    public:
     std::size_t row, col;
     typedef std::vector<int> Row;
     typedef std::vector<Row> Data;
     Data data;
 
     // constructors
-    Array():
-        row(0), col(0), data(0, std::vector<int>(0, 0)) {} // empty
-    Array(std::size_t n):
-        row(1), col(n), data(1, std::vector<int>(n, 0)) {} // vector
-    Array(std::size_t r, std::size_t c):
-        row(r), col(c), data(r, std::vector<int>(c, 0)) {} // matrix
-    Array(arma::mat mt):
-        row(mt.n_rows), col(mt.n_cols), data(convert(mt)) {}
+    Array(): row(0), col(0), data(0, std::vector<int>(0, 0)) {} // empty
+    Array(std::size_t n): row(1), col(n), data(1, std::vector<int>(n, 0)) {} // vector
+    Array(std::size_t r, std::size_t c): row(r), col(c), data(r, std::vector<int>(c, 0)) {} // matrix
+    Array(arma::mat mt): row(mt.n_rows), col(mt.n_cols), data(convert(mt)) {}
 
     // allow access by .at()
     int & at(int i, int j) {

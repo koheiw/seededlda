@@ -46,68 +46,69 @@ using namespace quanteda;
 
 // LDA model
 class LDA {
+
     public:
-        // --- model parameters and variables ---
-        int M; // dataset size (i.e., number of docs)
-        int V; // vocabulary size
-        int K; // number of topics
-        double alpha, beta, Vbeta, Kalpha; // parameters for smoothing
-        int max_iter; // number of Gibbs sampling iterations
-        int iter; // the iteration at which the model was saved
-        int random; // seed for random number generation
-        int batch; // size of subsets to distribute
-        bool verbose; // print progress messages
-        int thread; // numebr of thread in parallel processing
+    // --- model parameters and variables ---
+    int M; // dataset size (i.e., number of docs)
+    int V; // vocabulary size
+    int K; // number of topics
+    double alpha, beta, Vbeta, Kalpha; // parameters for smoothing
+    int max_iter; // number of Gibbs sampling iterations
+    int iter; // the iteration at which the model was saved
+    int random; // seed for random number generation
+    int batch; // size of subsets to distribute
+    bool verbose; // print progress messages
+    int thread; // numebr of thread in parallel processing
 
-        // topic transition
-        double gamma; // parameter for topic transition
-        std::vector<bool> first; // first[i], documents i are first sentence, size M
-        //arma::vec q; // temp variable for previous document
-        std::vector<double> q; // temp variable for previous document
+    // topic transition
+    double gamma; // parameter for topic transition
+    std::vector<bool> first; // first[i], documents i are first sentence, size M
+    //arma::vec q; // temp variable for previous document
+    std::vector<double> q; // temp variable for previous document
 
-        arma::sp_mat data; // transposed document-feature matrix
-        Texts texts; // individual words
-        Texts z; // topic assignments for words, size M x doc.size()
-        Array nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
-        Array nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
-        Array nwsum; // nwsum[j]: total number of words assigned to topic j, size K
-        Array ndsum; // nasum[i]: total number of words in document i, size M
-        // arma::mat nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
-        // arma::mat nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
-        // arma::rowvec nwsum; // nwsum[j]: total number of words assigned to topic j, size K
-        // arma::colvec ndsum; // nasum[i]: total number of words in document i, size M
+    arma::sp_mat data; // transposed document-feature matrix
+    Texts texts; // individual words
+    Texts z; // topic assignments for words, size M x doc.size()
+    Array nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
+    Array nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
+    Array nwsum; // nwsum[j]: total number of words assigned to topic j, size K
+    Array ndsum; // nasum[i]: total number of words in document i, size M
+    // arma::mat nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
+    // arma::mat nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
+    // arma::rowvec nwsum; // nwsum[j]: total number of words assigned to topic j, size K
+    // arma::colvec ndsum; // nasum[i]: total number of words in document i, size M
 
-        arma::mat theta; // theta: document-topic distributions, size M x K
-        arma::mat phi; // phi: topic-word distributions, size K x V
+    arma::mat theta; // theta: document-topic distributions, size M x K
+    arma::mat phi; // phi: topic-word distributions, size K x V
 
-        // prediction with fitted model
-        Array nw_ft;
-        Array nwsum_ft;
+    // prediction with fitted model
+    Array nw_ft;
+    Array nwsum_ft;
 
-        // random number generators
-        std::default_random_engine generator;
-        std::uniform_real_distribution<double> random_prob;
-        std::uniform_int_distribution<int> random_topic;
+    // random number generators
+    std::default_random_engine generator;
+    std::uniform_real_distribution<double> random_prob;
+    std::uniform_int_distribution<int> random_topic;
 
-        // --------------------------------------
+    // --------------------------------------
 
-        // constructor
-        LDA(int K, double alpha, double beta, double gamma, int max_iter,
-            int random, int batch, bool verbose, int thread);
+    // constructor
+    LDA(int K, double alpha, double beta, double gamma, int max_iter,
+        int random, int batch, bool verbose, int thread);
 
-        // set default values for variables
-        void set_default_values();
-        void set_data(arma::sp_mat mt, std::vector<bool> first);
-        void set_fitted(arma::sp_mat mt);
+    // set default values for variables
+    void set_default_values();
+    void set_data(arma::sp_mat mt, std::vector<bool> first);
+    void set_fitted(arma::sp_mat mt);
 
-        // init for estimation
-        int init_est();
+    // init for estimation
+    int init_est();
 
-        // estimate LDA model using Gibbs sampling
-        void estimate();
-        int sampling(int m, int n, int w, Array &nw_tp, Array &nwsum_tp);
-        void compute_theta();
-        void compute_phi();
+    // estimate LDA model using Gibbs sampling
+    void estimate();
+    int sampling(int m, int n, int w, Array &nw_tp, Array &nwsum_tp);
+    void compute_theta();
+    void compute_phi();
 
 };
 
