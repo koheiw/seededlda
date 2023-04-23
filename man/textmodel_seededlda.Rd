@@ -53,9 +53,9 @@ document is affected by the previous document's topics.}
 \item{model}{a fitted LDA model; if provided, \code{textmodel_lda()} inherits
 parameters from an existing model. See details.}
 
-\item{batch_size}{split the corpus into the smaller batches in the specified
-size for distributed computing; distributed computing is disabled by default
-(\code{batch_size = 1.0}).}
+\item{batch_size}{split the corpus into the smaller batches (specified in
+proportion) for distributed computing; it is disabled
+when a batch include all the documents (i.e. \code{batch_size = 1.0}).}
 
 \item{verbose}{logical; if \code{TRUE} print diagnostic information during
 fitting.}

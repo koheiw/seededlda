@@ -3,9 +3,9 @@
 #' @param k the number of topics; determined automatically by the number of keys
 #'   in `dictionary` in `textmodel_seededlda()`.
 #' @param max_iter the maximum number of iteration in Gibbs sampling.
-#' @param batch_size split the corpus into the smaller batches in the specified
-#'   size for distributed computing; distributed computing is disabled by default
-#'   (`batch_size = 1.0`).
+#' @param batch_size split the corpus into the smaller batches (specified in
+#'   proportion) for distributed computing; it is disabled
+#'   when a batch include all the documents (i.e. `batch_size = 1.0`).
 #' @param verbose logical; if `TRUE` print diagnostic information during
 #'   fitting.
 #' @param alpha the value to smooth topic-document distribution.
