@@ -165,9 +165,9 @@ void LDA::set_fitted(arma::sp_mat words) {
     if ((int)words.n_rows != V || (int)words.n_cols != K)
         throw std::invalid_argument("Invalid word matrix");
 
-    nw_ft = Array(arma::mat(words));
+    nw_ft = Array(words);
     //nw_ft = arma::conv_to<arma::mat>::from(arma::mat(words));
-    nwsum_ft = Array(arma::mat(arma::sum(words, 0)));
+    nwsum_ft = Array(arma::sum(words, 0));
     //nwsum_ft = arma::sum(nw_ft, 0);
 
 }
@@ -191,7 +191,7 @@ int LDA::init_est() {
     //nw = arma::mat(V, K, arma::fill::zeros);
     //nd = arma::mat(M, K, arma::fill::zeros);
     nwsum = Array(K);
-    ndsum = Array(arma::mat(arma::sum(data, 0)));
+    ndsum = Array(arma::sum(data, 0));
     //ndsum = arma::conv_to< std::vector<int> >::from(arma::mat(arma::sum(data, 0)));
 
     q.assign(K, 1.0);

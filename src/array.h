@@ -18,6 +18,7 @@ class Array {
     Array(std::size_t n): row(1), col(n), data(1, std::vector<int>(n, 0)) {} // vector
     Array(std::size_t r, std::size_t c): row(r), col(c), data(r, std::vector<int>(c, 0)) {} // matrix
     Array(arma::mat mt): row(mt.n_rows), col(mt.n_cols), data(convert(mt)) {}
+    Array(arma::sp_mat mt): row(mt.n_rows), col(mt.n_cols), data(convert(mt)) {}
 
     // allow access by .at()
     int & at(int i, int j) {
@@ -52,16 +53,6 @@ class Array {
         return *this;
     }
 
-    // convert from arma::mat
-    Data convert(arma::mat &mt) {
-        Data temp(mt.n_rows, std::vector<int>(mt.n_cols, 0));
-        for (std::size_t i = 0;  i < mt.n_rows; i++) {
-            for (std::size_t j = 0;  j < mt.n_cols; j++) {
-                temp[i][j] = mt.at(i, j);
-            }
-        }
-        return temp;
-    }
     //convert to arma::mat
     arma::mat to_mat() {
         std::vector<int> temp;
@@ -70,12 +61,33 @@ class Array {
             temp.insert(temp.end(), data[i].begin(), data[i].end());
         }
         arma::vec mt = arma::conv_to<arma::vec>::from(temp);
-        mt.reshape(row, col);
-        return mt;
+        mt.reshape(col, row);
+        return mt.t();
     }
     //convert to arma::sp_mat
     arma::sp_mat to_smat() {
         arma::mat mt = to_mat();
         return arma::sp_mat(mt);
+    }
+
+    private:
+    // convert from arma::mat
+    Data convert(arma::mat mt) {
+        Data temp(mt.n_rows, std::vector<int>(mt.n_cols, 0));
+        for (std::size_t i = 0;  i < mt.n_rows; i++) {
+            for (std::size_t j = 0;  j < mt.n_cols; j++) {
+                temp[i][j] = mt.at(i, j);
+            }
+        }
+        return temp;
+    }
+    Data convert(arma::sp_mat &mt) {
+        return convert(arma::mat(mt));
+    }
+    Data convert(arma::rowvec &v) {
+        return convert(arma::mat(v));
+    }
+    Data convert(arma::colvec &v) {
+        return convert(arma::mat(v).t());
     }
 };

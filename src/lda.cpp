@@ -25,8 +25,8 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, d
         if (seeded) {
             if (seeds.n_cols != lda.nw.col ||  seeds.n_rows != lda.nw.row)
                 throw std::invalid_argument("Invalid seed matrix");
-            nw_sd = Array(arma::mat(seeds));
-            nwsum_sd = Array(arma::mat(arma::sum(arma::mat(seeds), 0)));
+            nw_sd = Array(seeds);
+            nwsum_sd = Array(arma::sum(seeds, 0));
             lda.nw += nw_sd; // set pseudo count
             //s = arma::conv_to<arma::mat>::from(arma::mat(seeds));
             //lda.nw = lda.nw + s; // set pseudo count
