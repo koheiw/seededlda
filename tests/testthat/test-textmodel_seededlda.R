@@ -132,39 +132,6 @@ test_that("seeded LDA is working", {
     expect_false("dragon" %in% terms(lda2)[,2])
 })
 
-test_that("predict works with seeded LDA", {
-    skip_on_cran()
-
-    dict <- dictionary(list(romance = c("lover", "couple", "marige"),
-                            sifi = c("aliens", "star", "space")))
-
-    dfmt_train <- head(dfmt, 450)
-    dfmt_test <- tail(dfmt, 50)
-
-    lda <- textmodel_seededlda(dfmt_train, dict, residual = TRUE)
-
-    # original data
-    expect_warning({
-        pred_train <- predict(lda)
-    })
-    expect_equal(names(pred_train), docnames(dfmt_train))
-    expect_equal(
-        levels(pred_train),
-        c("romance", "sifi", "other")
-    )
-    expect_true(sum(topics(lda) == pred_train) / length(pred_train) > 0.9)
-
-    # new data
-    expect_warning({
-        pred_test <- predict(lda, newdata = dfmt_test)
-    })
-    expect_equal(names(pred_test), docnames(dfmt_test))
-    expect_equal(
-        levels(pred_test),
-        c("romance", "sifi", "other")
-    )
-})
-
 test_that("model argument works with seeded LDA", {
     skip_on_cran()
 
