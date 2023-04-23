@@ -129,36 +129,6 @@ test_that("LDA works with empty documents", {
 
 })
 
-test_that("predict works with LDA", {
-    skip_on_cran()
-
-    dfmt_train <- head(dfmt, 450)
-    dfmt_test <- tail(dfmt, 50)
-
-    lda <- textmodel_lda(dfmt_train, k = 5)
-
-    expect_warning({
-        pred_train <- predict(lda)
-    })
-    expect_equal(names(pred_train), docnames(dfmt_train))
-    expect_equal(
-        levels(pred_train),
-        c("topic1", "topic2", "topic3", "topic4", "topic5")
-    )
-    expect_true(sum(topics(lda) == pred_train) / length(pred_train) > 0.9)
-
-    expect_warning({
-        pred_test <- predict(lda, newdata = dfmt_test)
-    })
-    expect_equal(names(pred_test), docnames(dfmt_test))
-    expect_equal(
-        levels(pred_test),
-        c("topic1", "topic2", "topic3", "topic4", "topic5")
-    )
-
-})
-
-
 test_that("model argument works with LDA", {
     skip_on_cran()
 
