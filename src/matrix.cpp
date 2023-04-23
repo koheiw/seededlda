@@ -76,16 +76,30 @@ void test_arma(int nrow, int ncol) {
     //Rcout << amat.at(nrow - 1, ncol - 1) << "\n";
 }
 
+// [[Rcpp::export]]
+arma::mat test_reshae(int col, int row) {
+    std::vector<int> temp = {1, 2, 3, 4, 5, 6};
+    arma::vec mt = arma::conv_to<arma::vec>::from(temp);
+    mt.reshape(col, row);
+    mt = mt.t();
+    //mt = resize(mt, col, row);
+    //Rcout << mt;
+    //mt = mt.t();
+    return mt;
+}
+
 /***R
-microbenchmark::microbenchmark(
-    test_cmat(1000, 1000),
-    test_smat(1000, 1000),
-    test_arma(1000, 1000),
-    test_cmat(1000, 10000),
-    test_smat(1000, 10000),
-    test_arma(1000, 10000),
-    test_cmat(1000, 100000),
-    test_smat(1000, 100000),
-    test_arma(1000, 100000)
-)
+test_reshae(2, 3)
+# microbenchmark::microbenchmark(
+#     test_cmat(1000, 1000),
+#     test_smat(1000, 1000),
+#     test_arma(1000, 1000),
+#     test_cmat(1000, 10000),
+#     test_smat(1000, 10000),
+#     test_arma(1000, 10000),
+#     test_cmat(1000, 100000),
+#     test_smat(1000, 100000),
+#     test_arma(1000, 100000)
+# )
+
 ***/
