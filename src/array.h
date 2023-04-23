@@ -62,7 +62,8 @@ class Array {
         }
         arma::vec mt = arma::conv_to<arma::vec>::from(temp);
         mt.reshape(col, row);
-        return mt.t();
+        mt = mt.t();
+        return mt;
     }
     //convert to arma::sp_mat
     arma::sp_mat to_smat() {
