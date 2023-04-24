@@ -162,9 +162,7 @@ void LDA::set_fitted(arma::sp_mat words) {
         throw std::invalid_argument("Invalid word matrix");
 
     nw_ft = Array(words);
-    //nw_ft = arma::conv_to<arma::mat>::from(arma::mat(words));
     nwsum_ft = Array(arma::sum(words, 0));
-    //nwsum_ft = arma::sum(nw_ft, 0);
 
 }
 
@@ -184,11 +182,8 @@ int LDA::initialize() {
 
     nw = Array(V, K);
     nd = Array(M, K);
-    //nw = arma::mat(V, K, arma::fill::zeros);
-    //nd = arma::mat(M, K, arma::fill::zeros);
     nwsum = Array(K);
     ndsum = Array(arma::sum(data, 0));
-    //ndsum = arma::conv_to< std::vector<int> >::from(arma::mat(arma::sum(data, 0)));
 
     q.assign(K, 1.0);
     Vbeta = V * beta;
@@ -262,9 +257,7 @@ void LDA::estimate() {
             tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
 
                 Array nw_tp(V, K);
-                //arma::mat nw_tp = arma::mat(size(nw), arma::fill::zeros);
                 Array nwsum_tp(K);
-                //arma::colvec nwsum_tp = arma::colvec(size(nwsum), arma::fill::zeros);
                 //dev::start_timer("Iter", timer);
                 for (int i = 0; i < iter_inc; i++) {
                     for (int m = r.begin(); m < r.end(); ++m) {
@@ -274,7 +267,6 @@ void LDA::estimate() {
                                 q[k] = 1.0;
                             } else {
                                 q[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum.at(m - 1) + K * alpha), gamma);
-                                //q[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum[m - 1] + K * alpha), gamma);
                             }
                         }
                         if (texts[m].size() == 0) continue;
@@ -313,28 +305,14 @@ int LDA::sample(int m, int i, int w,
     //Rcout << "topic:" << topic << "\n";
     nw_tp.at(w, topic) -= 1;
     nwsum_tp.at(topic) -= 1;
-    //nwsum_tp[topic] -= 1;
-    //Rcout << "nw_tp: " << nw_tp.row << " " << nw_tp.col << "\n";
-    //Rcout << "nd: " << nd.row << " " << nd.col << "\n";
-    //Rcout << "nwsum: " << nwsum.row << " " << nwsum.col << "\n";
     nd.at(m, topic) -= 1;
     std::vector<double> p(K, 0);
-    //arma::vec p(K);
 
     // do multinomial sampling via cumulative method
     for (int k = 0; k < K; k++) {
-
-        //Rcout << "nwsum: " << nwsum.at(k) << "\n";
-        //Rcout << "nwsum_tp: " << nwsum_tp.at(k) << "\n";
-        //Rcout << "nwsum_ft: " << nwsum_ft.at(k) << "\n";
-
         p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta) /
                 (nwsum.at(k) + nwsum_tp.at(k) + nwsum_ft.at(k) + Vbeta)) *
                 ((nd.at(m, k) + alpha) / (ndsum.at(m) + Kalpha)) * q[k];
-        // p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta) /
-        //         (nwsum[k] + nwsum_tp[k]+ nwsum_ft[k] + Vbeta)) *
-        //        ((nd.at(m, k) + alpha) / (ndsum[m] + Kalpha)) * q[k];
-
     }
     // cumulate multinomial parameters
     for (int k = 1; k < K; k++) {
