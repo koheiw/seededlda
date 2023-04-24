@@ -5,7 +5,7 @@
 #' (Phan & Nguyen, 2007). `textmodel_seededlda()` allows users to specify
 #' topics using a seed word dictionary. Users can run Seed Sequential LDA by
 #' setting `gamma > 0`.
-#'
+#' @inheritParams textmodel_lda
 #' @param dictionary a [quanteda::dictionary()] with seed words that define
 #'   topics.
 #' @param residual the number of undefined topics. They are named "other" by

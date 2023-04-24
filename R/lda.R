@@ -126,17 +126,18 @@ lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, verbose
 
 #' Unsupervised Sequential Latent Dirichlet allocation
 #'
-#' `textmodel_sequentiallda()` is a shortcut function for
+#' `textmodel_seqlda()` is a shortcut function for
 #' Sequential LDA, equivalent to `textmodel_lda(gamma = 0.5)`.
+#' @inheritParams textmodel_lda
 #' @export
-textmodel_sequentiallda <- function(
+textmodel_seqlda <- function(
         x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1,
         model = NULL, verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_sequentiallda")
 }
 #' @export
-textmodel_sequentiallda.dfm <- function(
+textmodel_seqlda.dfm <- function(
         x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1,
         model = NULL, verbose = quanteda_options("verbose")
 ) {

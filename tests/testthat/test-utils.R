@@ -23,8 +23,8 @@ test_that("divergence() is working", {
     expect_equal(divergence(lda),
                  0.34, tolerance = 0.01)
 
-    expect_gt(divergence(lda, weighted = FALSE),
-              divergence(lda, weighted = TRUE))
+    expect_gt(divergence(lda, regularize = FALSE),
+              divergence(lda, regularize = TRUE))
 
     expect_gt(divergence(lda),
               divergence(lda, min_size = 0.1))
@@ -46,8 +46,8 @@ test_that("divergence() is working", {
         "Selected topics must be in the model"
     )
 
-    expect_gt(divergence(slda, weighted = FALSE),
-              divergence(slda, weighted = TRUE))
+    expect_gt(divergence(slda, regularize = FALSE),
+              divergence(slda, regularize = TRUE))
 
     expect_gt(divergence(slda),
               divergence(slda, min_size = 0.1))

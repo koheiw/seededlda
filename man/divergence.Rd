@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{divergence}
 \alias{divergence}
-\title{Compute the divergence of topics}
+\title{Compute the regularized divergence of topics}
 \usage{
 divergence(x, regularize = TRUE, min_size = 0.01, select = NULL)
 }
@@ -17,7 +17,7 @@ Ignored when \code{regularize = FALSE}.}
 \item{select}{names of topics for which the divergence is computed.}
 }
 \description{
-Compute the divergence of topics. This can be used to search the optimal
+Compute the regularized topic divergence to find the optimal
 number of topics for LDA.
 }
 \details{

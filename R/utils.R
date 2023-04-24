@@ -1,6 +1,6 @@
-#' Compute the divergence of topics
+#' Compute the regularized divergence of topics
 #'
-#' Compute the divergence of topics. This can be used to search the optimal
+#' Compute the regularized topic divergence to find the optimal
 #' number of topics for LDA.
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()].
 #' @param regularize if `TRUE`, compute the regularized divergence.
@@ -30,7 +30,7 @@ divergence <- function(x, regularize = TRUE, min_size = 0.01, select = NULL) {
 divergence.textmodel_lda <- function(x, regularize = TRUE, min_size = 0.01,
                                      select = NULL) {
 
-    weighted <- check_logical(weighted)
+    regularize <- check_logical(regularize)
     min_size <- check_double(min_size, min = 0, max = 1)
 
     if (is.null(select)) {
@@ -44,7 +44,7 @@ divergence.textmodel_lda <- function(x, regularize = TRUE, min_size = 0.01,
 
     div <- proxyC::dist(x$phi, method = "jensen")
     diag(div) <- NA
-    if (weighted) {
+    if (regularize) {
         p <- colSums(x$words) / sum(x$words)
     } else {
         min_size <- 0

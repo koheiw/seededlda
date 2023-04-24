@@ -21,6 +21,8 @@ textmodel_seededlda(
 )
 }
 \arguments{
+\item{x}{the dfm on which the model will be fit}
+
 \item{dictionary}{a \code{\link[quanteda:dictionary]{quanteda::dictionary()}} with seed words that define
 topics.}
 
@@ -37,9 +39,22 @@ words.}
 \item{uniform}{if \code{FALSE}, adjusts the weights of seed words to make their
 total amount equal across topics.}
 
+\item{max_iter}{the maximum number of iteration in Gibbs sampling.}
+
+\item{alpha}{the value to smooth topic-document distribution.}
+
+\item{beta}{the value to smooth topic-word distribution.}
+
+\item{gamma}{a parameter to determine change of topics between sentences or
+paragraphs. When \code{gamma > 0}, Gibbs sampling of topics for the current
+document is affected by the previous document's topics.}
+
 \item{...}{passed to \link[quanteda:dfm_trim]{quanteda::dfm_trim} to restrict seed words based on
 their term or document frequency. This is useful when glob patterns in the
 dictionary match too many words.}
+
+\item{verbose}{logical; if \code{TRUE} print diagnostic information during
+fitting.}
 }
 \description{
 \code{textmodel_seededlda()} implements semisupervised Latent Dirichlet allocation
