@@ -12,16 +12,15 @@ dfmt <- dfm(toks) %>%
     dfm_remove(stopwords(), min_nchar = 2) %>%
     dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
 
-
-lda1 <- textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 200, batch_size = 1000)
-lda2 <- textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 200, batch_size = 100)
+lda1 <- textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 200, batch_size = 0.1)
+lda2 <- textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 200, batch_size = 0.01)
 lda3 <- textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 200)
 
 microbenchmark::microbenchmark(
-    para = textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 1000, batch_size = 2000),
+    para = textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 1000, batch_size = 0.2),
     seri = textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 1000),
     times = 10
 )
 
-terms(lda)
-table(topics(lda))
+terms(lda1)
+table(topics(lda1))
