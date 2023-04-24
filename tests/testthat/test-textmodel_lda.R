@@ -282,29 +282,38 @@ test_that("select and min_prob are working", {
 
 test_that("distributed LDA works", {
 
-    options(seededlda_threads = "a")
+    # batch sizes
     expect_error(
-        textmodel_lda(dfmt, k = 5, batch_size = 100, max_iter = 200, verbose = FALSE),
-        'getOption("seededlda_threads", -1) must be coercible to integer', fixed = TRUE
+        textmodel_lda(dfmt, k = 5, batch_size = 0, max_iter = 200, verbose = FALSE),
+        "batch_size musht be larger than 0"
     )
-    options(seededlda_threads = -1)
     expect_error(
-        textmodel_lda(dfmt, k = 5, batch_size = -10, max_iter = 200, verbose = FALSE),
-        "The value of batch_size must be between 1 and Inf", fixed = TRUE
+        textmodel_lda(dfmt, k = 5, batch_size = -1.0, max_iter = 200, verbose = FALSE),
+        "The value of batch_size must be between 0 and 1", fixed = TRUE
+    )
+    expect_error(
+        textmodel_lda(dfmt, k = 5, batch_size = 2.0, max_iter = 200, verbose = FALSE),
+        "The value of batch_size must be between 0 and 1", fixed = TRUE
     )
 
-    options(seededlda_threads = -1)
-    expect_silent(
-        lda1 <- textmodel_lda(dfmt, k = 5, batch_size = 100, max_iter = 200, verbose = FALSE)
+    # threads
+    options(seededlda_threads = "a")
+    expect_error(
+        textmodel_lda(dfmt, k = 5, batch_size = 0.2, max_iter = 200, verbose = FALSE),
+        'getOption("seededlda_threads", -1) must be coercible to integer', fixed = TRUE
     )
-    expect_equal(lda1$batch_size, 100)
+    options(seededlda_threads = -1) # use all threads
+    expect_silent(
+        lda1 <- textmodel_lda(dfmt, k = 5, batch_size = 0.2, max_iter = 200, verbose = FALSE)
+    )
+    expect_equal(lda1$batch_size, 0.2)
 
     options(seededlda_threads = 2)
     expect_output(
-        lda2 <- textmodel_lda(dfmt, k = 5,  batch_size = 200, max_iter = 200, verbose = TRUE),
+        lda2 <- textmodel_lda(dfmt, k = 5,  batch_size = 0.2, max_iter = 200, verbose = TRUE),
         ".*using up to 2 threads for distributed computing.*"
     )
-    expect_equal(lda2$batch_size, 200)
+    expect_equal(lda2$batch_size, 0.2)
 
     # reset
     options(seededlda_threads = NULL)

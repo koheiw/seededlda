@@ -3,7 +3,9 @@
 #' @param k the number of topics; determined automatically by the number of keys
 #'   in `dictionary` in `textmodel_seededlda()`.
 #' @param max_iter the maximum number of iteration in Gibbs sampling.
-#' @param batch_size split the corpus into the specified size for distributed computing.
+#' @param batch_size split the corpus into the smaller batches (specified in
+#'   proportion) for distributed computing; it is disabled
+#'   when a batch include all the documents (i.e. `batch_size = 1.0`).
 #' @param verbose logical; if `TRUE` print diagnostic information during
 #'   fitting.
 #' @param alpha the value to smooth topic-document distribution.
@@ -29,7 +31,7 @@
 #' @export
 textmodel_lda <- function(
     x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
-    model = NULL, batch_size = NULL, verbose = quanteda_options("verbose")
+    model = NULL, batch_size = 1.0, verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_lda")
 }
@@ -37,7 +39,7 @@ textmodel_lda <- function(
 #' @export
 textmodel_lda.dfm <- function(
     x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
-    model = NULL, batch_size = NULL, verbose = quanteda_options("verbose")
+    model = NULL, batch_size = 1.0, verbose = quanteda_options("verbose")
 ) {
 
     if (!is.null(model)) {
@@ -71,7 +73,7 @@ lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, batch_s
     alpha <- check_double(alpha, min = 0)
     beta <- check_double(beta, min = 0)
     gamma <- check_double(gamma, min = 0, max = 1)
-    batch_size <- check_integer(batch_size, min = 1, allow_null = TRUE)
+    batch_size <- check_double(batch_size, min = 0, max = 1)
     verbose <- check_logical(verbose)
     max_iter <- check_integer(max_iter)
 
@@ -79,19 +81,19 @@ lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, batch_s
         seeds <- Matrix::Matrix(0, nrow = nfeat(x), ncol = k)
     if (is.null(words))
         words <- Matrix::Matrix(0, nrow = nfeat(x), ncol = k)
-    if (is.null(batch_size))
-        batch_size <- ndoc(x)
 
     first <- !duplicated(docid(x))
     if (all(first) && gamma)
         warning("gamma has no effect when docid are all unique.", call. = FALSE, immediate. = TRUE)
-
+    if (batch_size == 0)
+        stop("batch_size musht be larger than 0", call. = FALSE)
     random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
+    batch <- ceiling(ndoc(x) * batch_size)
     thread <- check_integer(getOption("seededlda_threads", -1))
 
     result <- cpp_lda(x, k, max_iter, alpha, beta, gamma,
                       as(seeds, "dgCMatrix"), as(words, "dgCMatrix"),
-                      first, random, batch_size, verbose, thread)
+                      first, random, batch, verbose, thread)
 
     dimnames(result$words) <- list(colnames(x), label)
     dimnames(result$phi) <- list(label, colnames(x))

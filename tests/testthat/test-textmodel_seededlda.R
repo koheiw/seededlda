@@ -199,11 +199,11 @@ test_that("distributed LDA works", {
     set.seed(1234)
     lda_seri <- textmodel_seededlda(dfmt, dict, residual = TRUE)
     set.seed(1234)
-    lda_para <- textmodel_seededlda(dfmt, dict, residual = TRUE, batch_size = 100)
+    lda_para <- textmodel_seededlda(dfmt, dict, residual = TRUE, batch_size = 0.2)
 
     # names of elements
-    expect_equal(lda_seri$batch_size, 500)
-    expect_equal(lda_para$batch_size, 100)
+    expect_equal(lda_seri$batch_size, 1.0)
+    expect_equal(lda_para$batch_size, 0.2)
     expect_identical(
         dimnames(lda_seri$phi), dimnames(lda_para$phi)
     )

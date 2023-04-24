@@ -34,21 +34,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// run
-void run();
-RcppExport SEXP _seededlda_run() {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    run();
-    return R_NilValue;
-END_RCPP
-}
 
 RcppExport SEXP run_testthat_tests(SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
     {"_seededlda_cpp_lda", (DL_FUNC) &_seededlda_cpp_lda, 13},
-    {"_seededlda_run", (DL_FUNC) &_seededlda_run, 0},
     {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 1},
     {NULL, NULL, 0}
 };
