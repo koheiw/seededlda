@@ -87,6 +87,7 @@ class Array {
         return temp;
     }
     Data to_data(arma::sp_mat &smt) {
-        return to_data(arma::mat(smt));
+        arma::mat mt(smt);
+        return to_data(mt);
     }
 };
