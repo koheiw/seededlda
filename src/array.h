@@ -77,7 +77,7 @@ class Array {
 
     private:
 
-    Data to_data(arma::mat mt) {
+    Data to_data(arma::mat &mt) {
         Data temp(mt.n_rows, std::vector<int>(mt.n_cols, 0));
         for (std::size_t i = 0;  i < mt.n_rows; i++) {
             for (std::size_t j = 0;  j < mt.n_cols; j++) {
@@ -86,7 +86,7 @@ class Array {
         }
         return temp;
     }
-    Data to_data(arma::sp_mat smt) {
+    Data to_data(arma::sp_mat &smt) {
         return to_data(arma::mat(smt));
     }
 };
