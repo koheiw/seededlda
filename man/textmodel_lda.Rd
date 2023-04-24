@@ -75,10 +75,6 @@ lda2 <- textmodel_lda(tail(dfmt, 50), model = lda) # new documents
 topics(lda2)
 }
 }
-\references{
-Du, Lan et al. (2012). “Sequential Latent Dirichlet Allocation”.
-doi.org/10.1007/s10115-011-0425-1. \emph{Knowledge and Information Systems}.
-}
 \seealso{
 \link[topicmodels:LDA]{topicmodels}
 }

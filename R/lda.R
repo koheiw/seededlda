@@ -48,11 +48,6 @@
 #' lda2 <- textmodel_lda(tail(dfmt, 50), model = lda) # new documents
 #' topics(lda2)
 #' }
-#' @references
-#'
-#' Du, Lan et al. (2012). “Sequential Latent Dirichlet Allocation”.
-#' doi.org/10.1007/s10115-011-0425-1. *Knowledge and Information Systems*.
-#'
 textmodel_lda <- function(
     x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
     model = NULL, verbose = quanteda_options("verbose")
@@ -88,6 +83,11 @@ textmodel_lda.dfm <- function(
     lda(x, k, label, max_iter, alpha, beta, gamma, NULL, words, verbose)
 }
 
+is.textmodel_lda <- function(x) {
+    "textmodel_lda" %in% class(x)
+}
+
+
 #' @importFrom methods as
 #' @import quanteda
 #' @useDynLib seededlda, .registration = TRUE
@@ -122,29 +122,4 @@ lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, verbose
     result$version <- utils::packageVersion("seededlda")
     class(result) <- c("textmodel_lda", "textmodel", "list")
     return(result)
-}
-
-#' Unsupervised Sequential Latent Dirichlet allocation
-#'
-#' `textmodel_seqlda()` is a shortcut function for
-#' Sequential LDA, equivalent to `textmodel_lda(gamma = 0.5)`.
-#' @inheritParams textmodel_lda
-#' @export
-textmodel_seqlda <- function(
-        x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1,
-        model = NULL, verbose = quanteda_options("verbose")
-) {
-    UseMethod("textmodel_sequentiallda")
-}
-#' @export
-textmodel_seqlda.dfm <- function(
-        x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1,
-        model = NULL, verbose = quanteda_options("verbose")
-) {
-    textmodel_lda(x, k = k, max_iter = max_iter, alpha = alpha, beta = beta,
-                  gamma = 0.5, model = model, verbose = verbose)
-}
-
-is.textmodel_lda <- function(x) {
-    "textmodel_lda" %in% class(x)
 }
