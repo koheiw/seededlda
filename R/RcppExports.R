@@ -5,3 +5,7 @@ cpp_lda <- function(mt, k, max_iter, alpha, beta, gamma, seeds, words, first, ra
     .Call(`_seededlda_cpp_lda`, mt, k, max_iter, alpha, beta, gamma, seeds, words, first, random, batch, verbose, threads)
 }
 
+run <- function() {
+    invisible(.Call(`_seededlda_run`))
+}
+
