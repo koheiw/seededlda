@@ -41,7 +41,7 @@ class Array {
     }
 
     // allow addition by +=
-    Array& operator+=(const Array &arr) {
+    Array & operator+=(const Array &arr) {
         if (row != arr.row || col != arr.col)
             throw std::invalid_argument("The sizes of objects do not match");
         //if (row != arr.data.size())
