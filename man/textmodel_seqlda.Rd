@@ -41,6 +41,6 @@ LDA, equivalent to \code{textmodel_lda(gamma = 0.5)}. Seeded Sequential LDA is
 Du, Lan et al. (2012). "Sequential Latent Dirichlet Allocation".
 doi.org/10.1007/s10115-011-0425-1. \emph{Knowledge and Information Systems}.
 
-Watanabe, K & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA: A
-Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA:
+A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
 }

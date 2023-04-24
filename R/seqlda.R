@@ -11,8 +11,8 @@
 #' Du, Lan et al. (2012). "Sequential Latent Dirichlet Allocation".
 #' doi.org/10.1007/s10115-011-0425-1. *Knowledge and Information Systems*.
 #'
-#' Watanabe, K & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA: A
-#' Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+#' Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA:
+#' A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
 #'
 textmodel_seqlda <- function(
         x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1,
