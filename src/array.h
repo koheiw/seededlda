@@ -42,11 +42,13 @@ class Array {
 
     // allow addition by +=
     Array& operator+=(const Array &arr) {
-        if (row != arr.data.size())
-            throw std::range_error("Invalid number of rows");
+        if (row != arr.row || col != arr.col)
+            throw std::invalid_argument("The sizes of objects do not match");
+        //if (row != arr.data.size())
+        //    throw std::range_error("Invalid number of rows");
         for (std::size_t i = 0; i < data.size(); i++) {
             //if (col != arr.data[i].size())
-            //    throw std::range_error("Invalid number of colmuns");
+            //    throw std::range_error("Invalid number of columns");
             for (std::size_t j = 0; j < data[i].size(); j++) {
                 data[i][j] += arr.data[i][j];
             }
@@ -84,13 +86,7 @@ class Array {
         }
         return temp;
     }
-    Data to_data(arma::sp_mat &smt) {
+    Data to_data(arma::sp_mat smt) {
         return to_data(arma::mat(smt));
-    }
-    Data to_data(arma::rowvec &v) {
-        return to_data(arma::mat(v));
-    }
-    Data to_data(arma::colvec &v) {
-        return to_data(arma::mat(v).t());
     }
 };
