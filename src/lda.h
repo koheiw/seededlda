@@ -43,7 +43,6 @@ using namespace std;
 //using namespace Rcpp;
 using namespace quanteda;
 
-
 // LDA model
 class LDA {
 
@@ -52,6 +51,7 @@ class LDA {
     int M; // dataset size (i.e., number of docs)
     int V; // vocabulary size
     int K; // number of topics
+    int N; // total word count
     double alpha, beta, Vbeta, Kalpha; // parameters for smoothing
     int max_iter; // number of Gibbs sampling iterations
     int iter; // the iteration at which the model was saved
@@ -106,6 +106,7 @@ class LDA {
     void compute_theta();
     void compute_phi();
 
+    double dist_jensen(const arma::rowvec &row_i, const arma::rowvec &row_j, double smooth);
 };
 
 LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter,
@@ -137,6 +138,7 @@ void LDA::set_default_values() {
     M = 0;
     V = 0;
     K = 100;
+    N = 0;
     alpha = 0.5;
     beta = 0.1;
     max_iter = 2000;
@@ -152,6 +154,7 @@ void LDA::set_default_values() {
 void LDA::set_data(arma::sp_mat mt, std::vector<bool> first) {
 
     data = mt.t();
+    N = arma::accu(data);
     M = data.n_cols;
     V = data.n_rows;
     this->first = first;
@@ -246,6 +249,7 @@ void LDA::estimate() {
 
     int iter_inc = 10;
     int last_iter = iter;
+    Array nw_pv, nd_pv;
     auto start = std::chrono::high_resolution_clock::now();
     for (iter = last_iter + iter_inc; iter <= max_iter + last_iter; iter += iter_inc) {
 
@@ -253,7 +257,10 @@ void LDA::estimate() {
         if (verbose && iter % 100 == 0) {
             Rprintf(" ......iteration %d", iter);
         }
-
+        nw_pv = nw;
+        nd_pv = nd;
+        //compute_phi();
+        arma::mat phi_pv = phi;
         Mutex mutex;
         //dev::Timer timer;
         //dev::start_timer("Process batch", timer);
@@ -287,12 +294,37 @@ void LDA::estimate() {
                 mutex.unlock();
             }, tbb::auto_partitioner());
         });
+
+        // double change = 0;
+        // for (std::size_t i = 0; i < nw.row; i++) {
+        //     for (std::size_t j = 0; j < nw.col; j++) {
+        //         change += (double)abs(nw[i][j] - nw_pv[i][j]) / (double)nwsum.at(j);
+        //     }
+        // }
+        double change = 0;
+        for (std::size_t i = 0; i < nd.row; i++) {
+            for (std::size_t j = 0; j < nd.col; j++) {
+                change += abs(nd[i][j] - nd_pv[i][j]);
+            }
+        }
+        //compute_phi();
+        // for (int k = 0; k < K; k++) {
+        //     change += dist_jensen(arma::rowvec(nw_pv[k]), arma::rowvec(nw[k]), 0.0001) / K;
+        // }
+        //double change = arma::accu(abs(phi - phi_pv));
+        //double change = changed / (K * V);
+        //double change = changed / N;
+        Rcout << "change:" << (change) / (double)N << "\n";
+
         if (verbose && iter % 100 == 0) {
+
+
+
             auto end = std::chrono::high_resolution_clock::now();
             auto diff = std::chrono::duration<double, std::milli>(end - start);
             double msec = diff.count();
             if (msec > 1000) {
-                Rprintf(" elapsed time: %.2f seconds\n", msec / 1000);
+                Rprintf(" elapsed time: %.2f seconds (%.2f change)\n", msec / 1000, change);
             } else {
                 Rprintf(" elapsed time: %.2f milliseconds\n", msec);
             }
@@ -360,4 +392,14 @@ void LDA::compute_phi() {
             phi.at(k, w) = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum.at(k) + nwsum_ft.at(k) + V * beta);
         }
     }
+}
+
+
+double LDA::dist_jensen(const arma::rowvec &row_i, const arma::rowvec &row_j, double smooth) {
+    double s1 = arma::accu(row_i) + smooth * row_i.n_rows;
+    double s2 = arma::accu(row_j) + smooth * row_j.n_rows;
+    arma::rowvec p1 = (row_i + smooth) / s1;
+    arma::rowvec p2 = (row_j + smooth) / s2;
+    arma::rowvec m = (p1 + p2) / 2;
+    return (arma::accu(trans(p1) * log(p1 / m)) + arma::accu(trans(p2) * log(p2 / m))) / 2;
 }

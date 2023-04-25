@@ -35,3 +35,6 @@ dist <- proxyC::dist(lda1$phi, lda2$phi, method = "jensen")
 Matrix::diag(dist)
 dist <- proxyC::dist(lda1$phi, lda3$phi, method = "jensen")
 Matrix::diag(dist)
+
+
+lda2 <- textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 2000, batch_size = 0.01)
