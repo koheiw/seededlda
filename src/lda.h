@@ -290,7 +290,7 @@ void LDA::estimate() {
         if (verbose && iter % 100 == 0) {
             auto end = std::chrono::high_resolution_clock::now();
             auto sec = std::chrono::duration<double, std::milli>(end - start);
-            Rcout << " elapsed time: " << (sec.count() / 1000) << " seconds\n";
+            Rcout << " elapsed time: " << ceil((sec.count() / 100)) / 10 << " seconds\n";
         }
     }
     iter -= iter_inc;
