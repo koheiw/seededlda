@@ -111,6 +111,9 @@ class LDA {
 LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter,
          int random, int batch, bool verbose, int thread) {
 
+    if (verbose)
+        Rprintf("Fitting LDA with %d topics\n", K);
+
     set_default_values();
     this->K = K;
     if (0 < alpha)
@@ -136,7 +139,7 @@ void LDA::set_default_values() {
     K = 100;
     alpha = 0.5;
     beta = 0.1;
-    max_iter = 2000;
+    max_iter = 500;
     iter = 0;
     verbose = false;
     random = 1234;
@@ -161,6 +164,9 @@ void LDA::set_fitted(arma::sp_mat words) {
     if ((int)words.n_rows != V || (int)words.n_cols != K)
         throw std::invalid_argument("Invalid word matrix");
 
+    if (verbose && arma::accu(words) > 0)
+        Rprintf(" ...loading fitted model\n");
+
     nw_ft = Array(words);
     nwsum_ft = Array(arma::sum(words, 0));
 
@@ -168,10 +174,8 @@ void LDA::set_fitted(arma::sp_mat words) {
 
 int LDA::initialize() {
 
-    if (verbose) {
-        Rprintf("Fitting LDA with %d topics\n", K);
+    if (verbose)
         Rprintf(" ...initializing\n");
-    }
 
     std::default_random_engine generator(random);
     std::uniform_real_distribution< double > random_prob(0, 1);
@@ -235,19 +239,20 @@ void LDA::estimate() {
 
     if (verbose && thread > 1 && batch != M) {
         Rprintf(" ...using up to %d threads for distributed computing\n", thread);
-        Rprintf(" ...allocating %d documents to each thread\n", batch);
+        Rprintf(" ......allocating %d documents to each thread\n", batch);
     }
     if (verbose)
         Rprintf(" ...Gibbs sampling in %d itterations\n", max_iter);
 
-    int iter_inc = 100;
+    int iter_inc = 10;
     int last_iter = iter;
+    auto start = std::chrono::high_resolution_clock::now();
     for (iter = last_iter + iter_inc; iter <= max_iter + last_iter; iter += iter_inc) {
 
-        auto start = std::chrono::high_resolution_clock::now();
         checkUserInterrupt();
-        if (verbose)
-            Rprintf(" ...iteration %d", iter);
+        if (verbose && iter % 100 == 0) {
+            Rprintf(" ......iteration %d", iter);
+        }
 
         Mutex mutex;
         //dev::Timer timer;
@@ -277,19 +282,18 @@ void LDA::estimate() {
                     }
                 }
                 mutex.lock();
-                //dev::stop_timer("Iter", timer);
                 nw += nw_tp;
                 nwsum += nwsum_tp;
                 mutex.unlock();
             }, tbb::auto_partitioner());
-            //dev::stop_timer("Process batch", timer);
         });
-        auto now = std::chrono::high_resolution_clock::now();
-        auto sec = std::chrono::duration<double, std::milli>(now - start);
-        if (verbose)
-            Rcout << " finished in " << (sec.count() / 1000) << " seconds\n";
+        if (verbose && iter % 100 == 0) {
+            auto end = std::chrono::high_resolution_clock::now();
+            auto sec = std::chrono::duration<double, std::milli>(end - start);
+            Rcout << " elapsed time: " << (sec.count() / 1000) << " seconds\n";
+        }
     }
-
+    iter -= iter_inc;
     if (verbose)
         Rprintf(" ...computing theta and phi\n");
     if (verbose)
