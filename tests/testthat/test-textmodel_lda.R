@@ -16,7 +16,7 @@ test_that("LDA is working", {
     skip_on_os("mac")
 
     set.seed(1234)
-    lda <- textmodel_lda(dfmt, k = 5)
+    lda <- textmodel_lda(dfmt, k = 5, max_iter = 2000)
     # saveRDS(lda, "tests/data/lda.RDS")
 
     lda_v081 <- readRDS("../data/lda_v081.RDS")
@@ -68,7 +68,7 @@ test_that("LDA is working", {
     expect_output(
         print(lda),
         paste0("\nCall:\n",
-               "textmodel_lda(x = dfmt, k = 5)\n\n",
+               "textmodel_lda(x = dfmt, k = 5, max_iter = 2000)\n\n",
                "5 topics; 500 documents; 22,605 features."),
         fixed = TRUE
     )
@@ -77,6 +77,7 @@ test_that("LDA is working", {
         c("k", "max_iter", "last_iter", "alpha", "beta", "gamma", "phi", "theta",
           "words", "data", "batch_size", "call", "version")
     )
+    expect_equal(lda$last_iter, 2000)
     expect_equivalent(class(lda$words), "dgCMatrix")
     expect_equal(rownames(lda$words), colnames(lda$phi))
     expect_equal(colnames(lda$words), rownames(lda$phi))
@@ -106,15 +107,42 @@ test_that("alpha and beta work", {
 
 test_that("verbose works", {
 
-    expect_output(textmodel_lda(dfmt, k = 5, verbose = TRUE, max_iter = 200),
-                  paste("Fitting LDA with 5 topics\n",
-                        "[ .]{4}initializing\n",
-                        "[ .]{4}Gibbs sampling in 200 itterations\n",
-                        "[ .]{4}iteration 100 finished in .*\n",
-                        "[ .]{4}iteration 200 finished in .*\n",
-                        "[ .]{4}computing theta and phi\n",
-                        "[ .]{4}complete", sep = ""))
+    expect_output(
+        lda1 <- textmodel_lda(dfmt, k = 5, verbose = TRUE, max_iter = 200),
+        paste("Fitting LDA with 5 topics\n",
+              " [.]{3}initializing\n",
+              " [.]{3}Gibbs sampling in 200 itterations\n",
+              " [.]{6}iteration 100 elapsed time: .*\n",
+              " [.]{6}iteration 200 elapsed time: .*\n",
+              " [.]{3}computing theta and phi\n",
+              " [.]{3}complete", sep = "")
+    )
 
+    expect_output(
+        suppressWarnings(
+         lda2 <- textmodel_lda(dfmt, k = 5, verbose = TRUE, max_iter = 200, model = lda1)
+        ),
+        paste("Fitting LDA with 5 topics\n",
+            " [.]{3}loading fitted model\n",
+            " [.]{3}initializing\n",
+            " [.]{3}Gibbs sampling in 200 itterations\n",
+            " [.]{6}iteration 100 elapsed time: .*\n",
+            " [.]{6}iteration 200 elapsed time: .*\n",
+            " [.]{3}computing theta and phi\n",
+            " [.]{3}complete", sep = "")
+    )
+
+    expect_output(
+        lda3 <- textmodel_lda(dfmt, k = 5, verbose = TRUE, max_iter = 100, batch_size = 0.5),
+        paste("Fitting LDA with 5 topics\n",
+            " [.]{3}initializing\n",
+            " [.]{3}using up to .* threads for distributed computing\n",
+            " [.]{6}allocating .* documents to each thread\n",
+            " [.]{3}Gibbs sampling in 100 itterations\n",
+            " [.]{6}iteration 100 elapsed time: .*\n",
+            " [.]{3}computing theta and phi\n",
+            " [.]{3}complete", sep = "")
+    )
 })
 
 test_that("LDA works with empty documents", {
