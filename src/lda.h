@@ -275,9 +275,9 @@ void LDA::estimate() {
                             }
                         }
                         if (texts[m].size() == 0) continue;
-                        for (std::size_t i = 0; i < texts[m].size(); i++) {
-                            int w = texts[m][i];
-                            z[m][i] = sample(m, i, w, nw_tp, nwsum_tp);
+                        for (std::size_t n = 0; n < texts[m].size(); n++) {
+                            int w = texts[m][n];
+                            z[m][n] = sample(m, n, w, nw_tp, nwsum_tp);
                         }
                     }
                 }
@@ -305,12 +305,12 @@ void LDA::estimate() {
         Rprintf(" ...complete\n");
 }
 
-int LDA::sample(int m, int i, int w,
+int LDA::sample(int m, int n, int w,
                   Array &nw_tp,
                   Array &nwsum_tp) {
 
     // remove z_i from the count variables
-    int topic = z[m][i];
+    int topic = z[m][n];
     //Rcout << "topic:" << topic << "\n";
     nw_tp.at(w, topic) -= 1;
     nwsum_tp.at(topic) -= 1;
