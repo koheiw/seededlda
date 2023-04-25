@@ -1,3 +1,7 @@
+## Changes in v1.0.0
+
+* Change the default value of `max_iter` from 2000 to 500.
+
 ## Changes in v0.8.4
 
 * Fix for deprecation in Matrix 1.5-4.
