@@ -139,7 +139,7 @@ void LDA::set_default_values() {
     K = 100;
     alpha = 0.5;
     beta = 0.1;
-    max_iter = 500;
+    max_iter = 2000;
     iter = 0;
     verbose = false;
     random = 1234;
