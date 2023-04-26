@@ -3,9 +3,11 @@
 #' @param k the number of topics; determined automatically by the number of keys
 #'   in `dictionary` in `textmodel_seededlda()`.
 #' @param max_iter the maximum number of iteration in Gibbs sampling.
+#' @param min_delta the criteria to stop Gibbs sampling before reaching
+#'   `max_iter`; it is disabled by default (`min_delta = -1.0`).
 #' @param batch_size split the corpus into the smaller batches (specified in
-#'   proportion) for distributed computing; it is disabled
-#'   when a batch include all the documents (i.e. `batch_size = 1.0`).
+#'   proportion) for distributed computing; it is disabled when a batch include
+#'   all the documents (i.e. `batch_size = 1.0`).
 #' @param verbose logical; if `TRUE` print diagnostic information during
 #'   fitting.
 #' @param alpha the value to smooth topic-document distribution.
@@ -30,7 +32,7 @@
 #' @seealso [topicmodels][topicmodels::LDA]
 #' @export
 textmodel_lda <- function(
-    x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
+    x, k = 10, max_iter = 2000, min_delta = -1.0, alpha = 0.5, beta = 0.1, gamma = 0,
     model = NULL, batch_size = 1.0, verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_lda")
@@ -38,7 +40,7 @@ textmodel_lda <- function(
 
 #' @export
 textmodel_lda.dfm <- function(
-    x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
+    x, k = 10, max_iter = 2000, min_delta = -1.0, alpha = 0.5, beta = 0.1, gamma = 0,
     model = NULL, batch_size = 1.0, verbose = quanteda_options("verbose")
 ) {
 
@@ -61,21 +63,23 @@ textmodel_lda.dfm <- function(
         label <- paste0("topic", seq_len(k))
         words <- NULL
     }
-    lda(x, k, label, max_iter, alpha, beta, gamma, NULL, words, batch_size, verbose)
+    lda(x, k, label, max_iter, min_delta, alpha, beta, gamma, NULL, words, batch_size, verbose)
 }
 
 #' @importFrom methods as
 #' @import quanteda
 #' @useDynLib seededlda, .registration = TRUE
-lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, batch_size, verbose) {
+lda <- function(x, k, label, max_iter, min_delta, alpha, beta, gamma,
+                seeds, words, batch_size, verbose) {
 
     k <- check_integer(k, min = 1, max = 1000)
+    max_iter <- check_integer(max_iter, min = 100)
+    min_delta <- check_double(min_delta, min = -1, max = 1)
     alpha <- check_double(alpha, min = 0)
     beta <- check_double(beta, min = 0)
     gamma <- check_double(gamma, min = 0, max = 1)
     batch_size <- check_double(batch_size, min = 0, max = 1)
     verbose <- check_logical(verbose)
-    max_iter <- check_integer(max_iter)
 
     if (is.null(seeds))
         seeds <- Matrix::Matrix(0, nrow = nfeat(x), ncol = k)
@@ -91,7 +95,7 @@ lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, batch_s
     batch <- ceiling(ndoc(x) * batch_size)
     thread <- check_integer(getOption("seededlda_threads", -1))
 
-    result <- cpp_lda(x, k, max_iter, alpha, beta, gamma,
+    result <- cpp_lda(x, k, max_iter, min_delta, alpha, beta, gamma,
                       as(seeds, "dgCMatrix"), as(words, "dgCMatrix"),
                       first, random, batch, verbose, thread)
 
