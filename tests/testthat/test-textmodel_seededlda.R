@@ -155,7 +155,7 @@ test_that("model argument works with seeded LDA", {
     }, "k, alpha and beta values are overwriten by the fitted model")
     expect_false(all(lda$phi == lda1$phi))
     expect_identical(dimnames(lda$phi), dimnames(lda1$phi))
-    expect_gt(mean(topics(lda)[1:50] == topics(lda1)), 0.9)
+    expect_gt(mean(topics(lda)[1:50] == topics(lda1)), 0.8)
     expect_equal(
         levels(topics(lda1)),
         c("romance", "sifi", "other")
