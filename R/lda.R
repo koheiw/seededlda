@@ -4,10 +4,10 @@
 #'   in `dictionary` in `textmodel_seededlda()`.
 #' @param max_iter the maximum number of iteration in Gibbs sampling.
 #' @param min_delta the criteria to stop Gibbs sampling before reaching
-#'   `max_iter`; it is disabled by default (`min_delta = -1.0`).
+#'   `max_iter`; it is disabled `min_delta = -1.0` by default.
 #' @param batch_size split the corpus into the smaller batches (specified in
 #'   proportion) for distributed computing; it is disabled when a batch include
-#'   all the documents (i.e. `batch_size = 1.0`).
+#'   all the documents `batch_size = 1.0`.
 #' @param verbose logical; if `TRUE` print diagnostic information during
 #'   fitting.
 #' @param alpha the value to smooth topic-document distribution.

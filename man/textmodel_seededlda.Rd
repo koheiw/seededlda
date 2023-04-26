@@ -9,6 +9,7 @@ textmodel_lda(
   x,
   k = 10,
   max_iter = 2000,
+  min_delta = -1,
   alpha = 0.5,
   beta = 0.1,
   gamma = 0,
@@ -26,6 +27,7 @@ textmodel_seededlda(
   weight = 0.01,
   uniform = TRUE,
   max_iter = 2000,
+  min_delta = -1,
   alpha = 0.5,
   beta = 0.1,
   gamma = 0,
@@ -42,6 +44,9 @@ in \code{dictionary} in \code{textmodel_seededlda()}.}
 
 \item{max_iter}{the maximum number of iteration in Gibbs sampling.}
 
+\item{min_delta}{the criteria to stop Gibbs sampling before reaching
+\code{max_iter}; it is disabled \code{min_delta = -1.0} by default.}
+
 \item{alpha}{the value to smooth topic-document distribution.}
 
 \item{beta}{the value to smooth topic-word distribution.}
@@ -54,8 +59,8 @@ document is affected by the previous document's topics.}
 parameters from an existing model. See details.}
 
 \item{batch_size}{split the corpus into the smaller batches (specified in
-proportion) for distributed computing; it is disabled
-when a batch include all the documents (i.e. \code{batch_size = 1.0}).}
+proportion) for distributed computing; it is disabled when a batch include
+all the documents \code{batch_size = 1.0}.}
 
 \item{verbose}{logical; if \code{TRUE} print diagnostic information during
 fitting.}
