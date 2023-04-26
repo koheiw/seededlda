@@ -8,12 +8,13 @@ using namespace std;
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, double gamma,
+List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double min_delta,
+             double alpha, double beta, double gamma,
              arma::sp_mat &seeds, arma::sp_mat &words,
              std::vector<bool> &first,
              int random, int batch, bool verbose= false, int threads = -1) {
 
-    LDA lda(k, alpha, beta, gamma, max_iter, random, batch, verbose, threads);
+    LDA lda(k, alpha, beta, gamma, max_iter, min_delta, random, batch, verbose, threads);
     lda.set_data(mt, first);
     lda.set_fitted(words);
 
@@ -37,6 +38,7 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double alpha, double beta, d
     return List::create(Rcpp::Named("k") = lda.K,
                         Rcpp::Named("max_iter") = lda.max_iter,
                         Rcpp::Named("last_iter") = lda.iter,
+                        Rcpp::Named("min_delta") = lda.min_delta,
                         Rcpp::Named("alpha") = lda.alpha,
                         Rcpp::Named("beta") = lda.beta,
                         Rcpp::Named("gamma") = lda.gamma,

@@ -56,6 +56,7 @@ class LDA {
     double alpha, beta, Vbeta, Kalpha; // parameters for smoothing
     int max_iter; // number of Gibbs sampling iterations
     int iter; // the iteration at which the model was saved
+    double min_delta; // criteria for convergence
     int random; // seed for random number generation
     int batch; // size of subsets to distribute
     bool verbose; // print progress messages
@@ -90,7 +91,7 @@ class LDA {
     // --------------------------------------
 
     // constructor
-    LDA(int K, double alpha, double beta, double gamma, int max_iter,
+    LDA(int K, double alpha, double beta, double gamma, int max_iter, double min_delta,
         int random, int batch, bool verbose, int thread);
 
     // set default values for variables
@@ -109,7 +110,7 @@ class LDA {
 
 };
 
-LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter,
+LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter, double min_delta,
          int random, int batch, bool verbose, int thread) {
 
     if (verbose)
@@ -127,6 +128,7 @@ LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter,
         this->max_iter = max_iter;
     if (0 < thread && thread <= tbb::this_task_arena::max_concurrency())
         this->thread = thread;
+    this->min_delta = min_delta;
     this->random = random;
     this->batch = batch;
     this->verbose = verbose;
@@ -144,6 +146,7 @@ void LDA::set_default_values() {
     max_iter = 2000;
     iter = 0;
     verbose = false;
+    min_delta = -1.0;
     random = 1234;
     gamma = 0;
     first = std::vector<bool>(M);
@@ -247,20 +250,17 @@ void LDA::estimate() {
     if (verbose)
         Rprintf(" ...Gibbs sampling in %d itterations\n", max_iter);
 
-    int iter_inc = 10;
-    int last_iter = iter;
     int change, change_pv = 0;
     auto start = std::chrono::high_resolution_clock::now();
-    for (iter = last_iter + iter_inc; iter <= max_iter + last_iter; iter += iter_inc) {
+    int iter_inc = 10;
+    iter += iter_inc;
+    while (iter < max_iter) {
 
         checkUserInterrupt();
-        if (verbose && iter % 100 == 0) {
+        if (verbose && iter % 100 == 0)
             Rprintf(" ......iteration %d", iter);
-        }
-        Mutex mutex;
-        //dev::Timer timer;
-        //dev::start_timer("Process batch", timer);
         change = 0;
+        Mutex mutex;
         tbb::task_arena arena(thread);
         arena.execute([&]{
             tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
@@ -268,7 +268,6 @@ void LDA::estimate() {
                 Array nw_tp(V, K);
                 Array nwsum_tp(K);
                 int change_tp = 0;
-                //dev::start_timer("Iter", timer);
                 for (int i = 0; i < iter_inc; i++) {
                     for (int m = r.begin(); m < r.end(); ++m) {
                         // topic of the previous document
@@ -301,16 +300,18 @@ void LDA::estimate() {
             auto end = std::chrono::high_resolution_clock::now();
             auto diff = std::chrono::duration<double, std::milli>(end - start);
             double msec = diff.count();
-            double rate = (double)(change_pv - change) / (double)(iter_inc * N);
+            double delta = (double)(change_pv - change) / (double)(iter_inc * N);
             if (msec > 1000) {
-                Rprintf(" elapsed time: %.2f seconds (delta: %.2f%%)\n", msec / 1000, rate * 100);
+                Rprintf(" elapsed time: %.2f seconds (delta: %.2f%%)\n", msec / 1000, delta * 100);
             } else {
-                Rprintf(" elapsed time: %.2f milliseconds (delta: %.2f%%)\n", msec, rate * 100);
+                Rprintf(" elapsed time: %.2f milliseconds (delta: %.2f%%)\n", msec, delta * 100);
             }
+            if (delta < min_delta)
+                break;
         }
         change_pv = change;
+        iter += iter_inc;
     }
-    iter -= iter_inc;
     if (verbose)
         Rprintf(" ...computing theta and phi\n");
     if (verbose)
