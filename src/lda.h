@@ -302,11 +302,7 @@ void LDA::estimate() {
                 auto end = std::chrono::high_resolution_clock::now();
                 auto diff = std::chrono::duration<double, std::milli>(end - start);
                 double msec = diff.count();
-                if (msec > 1000) {
-                    Rprintf(" elapsed time: %.2f seconds (delta: %.2f%%)\n", msec / 1000, delta * 100);
-                } else {
-                    Rprintf(" elapsed time: %.2f milliseconds (delta: %.2f%%)\n", msec, delta * 100);
-                }
+                Rprintf(" elapsed time: %.2f seconds (delta: %.2f%%)\n", msec / 1000, delta * 100);
             }
             if (min_delta > delta)
                 break;
