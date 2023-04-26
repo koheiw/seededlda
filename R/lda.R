@@ -3,7 +3,7 @@
 #' @param k the number of topics; determined automatically by the number of keys
 #'   in `dictionary` in `textmodel_seededlda()`.
 #' @param max_iter the maximum number of iteration in Gibbs sampling.
-#' @param auto_inter if `TRUE`, stops Gibbs sampling on convergence before
+#' @param auto_iter if `TRUE`, stops Gibbs sampling on convergence before
 #'   reaching `max_iter`; a negative `delta` indicates convergence.
 #' @param batch_size split the corpus into the smaller batches (specified in
 #'   proportion) for distributed computing; it is disabled when a batch include

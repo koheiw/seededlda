@@ -44,6 +44,9 @@ in \code{dictionary} in \code{textmodel_seededlda()}.}
 
 \item{max_iter}{the maximum number of iteration in Gibbs sampling.}
 
+\item{auto_iter}{if \code{TRUE}, stops Gibbs sampling on convergence before
+reaching \code{max_iter}; a negative \code{delta} indicates convergence.}
+
 \item{alpha}{the value to smooth topic-document distribution.}
 
 \item{beta}{the value to smooth topic-word distribution.}
@@ -80,9 +83,6 @@ total amount equal across topics.}
 \item{...}{passed to \link[quanteda:dfm_trim]{quanteda::dfm_trim} to restrict seed words based on
 their term or document frequency. This is useful when glob patterns in the
 dictionary match too many words.}
-
-\item{auto_inter}{the criteria to stop Gibbs sampling when \code{delta < 0} before
-reaching \code{max_iter}; disabled by default.}
 }
 \value{
 \code{textmodel_seededlda()} and \code{textmodel_lda()} returns a list of model
