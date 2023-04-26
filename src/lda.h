@@ -52,6 +52,7 @@ class LDA {
     int M; // dataset size (i.e., number of docs)
     int V; // vocabulary size
     int K; // number of topics
+    int N; // total number of words
     double alpha, beta, Vbeta, Kalpha; // parameters for smoothing
     int max_iter; // number of Gibbs sampling iterations
     int iter; // the iteration at which the model was saved
@@ -137,6 +138,7 @@ void LDA::set_default_values() {
     M = 0;
     V = 0;
     K = 100;
+    N = 0;
     alpha = 0.5;
     beta = 0.1;
     max_iter = 2000;
@@ -154,6 +156,7 @@ void LDA::set_data(arma::sp_mat mt, std::vector<bool> first) {
     data = mt.t();
     M = data.n_cols;
     V = data.n_rows;
+    N = arma::accu(data);
     this->first = first;
 
     //printf("M = %d, V = %d\n", M, V);
@@ -246,6 +249,7 @@ void LDA::estimate() {
 
     int iter_inc = 10;
     int last_iter = iter;
+    int change, change_pv = 0;
     auto start = std::chrono::high_resolution_clock::now();
     for (iter = last_iter + iter_inc; iter <= max_iter + last_iter; iter += iter_inc) {
 
@@ -253,16 +257,17 @@ void LDA::estimate() {
         if (verbose && iter % 100 == 0) {
             Rprintf(" ......iteration %d", iter);
         }
-
         Mutex mutex;
         //dev::Timer timer;
         //dev::start_timer("Process batch", timer);
+        change = 0;
         tbb::task_arena arena(thread);
         arena.execute([&]{
             tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
 
                 Array nw_tp(V, K);
                 Array nwsum_tp(K);
+                int change_tp = 0;
                 //dev::start_timer("Iter", timer);
                 for (int i = 0; i < iter_inc; i++) {
                     for (int m = r.begin(); m < r.end(); ++m) {
@@ -277,11 +282,16 @@ void LDA::estimate() {
                         if (texts[m].size() == 0) continue;
                         for (std::size_t n = 0; n < texts[m].size(); n++) {
                             int w = texts[m][n];
-                            z[m][n] = sample(m, n, w, nw_tp, nwsum_tp);
+                            unsigned int topic = sample(m, n, w, nw_tp, nwsum_tp);
+                            if (z[m][n] != topic) {
+                                change_tp++;
+                                z[m][n] = topic;
+                            }
                         }
                     }
                 }
                 mutex.lock();
+                change += change_tp;
                 nw += nw_tp;
                 nwsum += nwsum_tp;
                 mutex.unlock();
@@ -291,12 +301,14 @@ void LDA::estimate() {
             auto end = std::chrono::high_resolution_clock::now();
             auto diff = std::chrono::duration<double, std::milli>(end - start);
             double msec = diff.count();
+            double rate = (double)(change_pv - change) / (double)(iter_inc * N);
             if (msec > 1000) {
-                Rprintf(" elapsed time: %.2f seconds\n", msec / 1000);
+                Rprintf(" elapsed time: %.2f seconds (delta: %.2f%%)\n", msec / 1000, rate * 100);
             } else {
-                Rprintf(" elapsed time: %.2f milliseconds\n", msec);
+                Rprintf(" elapsed time: %.2f milliseconds (delta: %.2f%%)\n", msec, rate * 100);
             }
         }
+        change_pv = change;
     }
     iter -= iter_inc;
     if (verbose)
