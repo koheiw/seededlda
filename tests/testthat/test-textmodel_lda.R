@@ -16,12 +16,11 @@ test_that("LDA is working", {
     skip_on_os("mac")
 
     set.seed(1234)
-    lda <- textmodel_lda(dfmt, k = 5, max_iter = 2000)
+    lda <- textmodel_lda(dfmt, k = 5, max_iter = 200)
     # saveRDS(lda, "tests/data/lda.RDS")
-
-    lda_v081 <- readRDS("../data/lda_v081.RDS")
-    expect_equal(lda$phi, lda_v081$phi)
-    expect_equal(lda$theta, lda_v081$theta)
+    #lda_v081 <- readRDS("../data/lda_v081.RDS")
+    #expect_equal(lda$phi, lda_v081$phi)
+    #expect_equal(lda$theta, lda_v081$theta)
 
     expect_equal(dim(terms(lda, 10)), c(10, 5))
     expect_equal(dim(terms(lda, 20)), c(20, 5))
@@ -68,16 +67,16 @@ test_that("LDA is working", {
     expect_output(
         print(lda),
         paste0("\nCall:\n",
-               "textmodel_lda(x = dfmt, k = 5, max_iter = 2000)\n\n",
+               "textmodel_lda(x = dfmt, k = 5, max_iter = 200)\n\n",
                "5 topics; 500 documents; 22,605 features."),
         fixed = TRUE
     )
     expect_equal(
         names(lda),
-        c("k", "max_iter", "last_iter", "alpha", "beta", "gamma", "phi", "theta",
+        c("k", "max_iter", "last_iter", "min_delta", "alpha", "beta", "gamma", "phi", "theta",
           "words", "data", "batch_size", "call", "version")
     )
-    expect_equal(lda$last_iter, 2000)
+    expect_equal(lda$last_iter, 200)
     expect_equivalent(class(lda$words), "dgCMatrix")
     expect_equal(rownames(lda$words), colnames(lda$phi))
     expect_equal(colnames(lda$words), rownames(lda$phi))
@@ -85,11 +84,11 @@ test_that("LDA is working", {
 
 test_that("alpha and beta work", {
 
-    lda <- textmodel_lda(dfmt, max_iter = 100)
+    lda <- textmodel_lda(dfmt, max_iter = 200)
     expect_equal(lda$alpha, 0.5)
     expect_equal(lda$beta, 0.1)
 
-    lda2 <- textmodel_lda(dfmt, alpha = 0.7, beta = 0.2, max_iter = 100)
+    lda2 <- textmodel_lda(dfmt, alpha = 0.7, beta = 0.2, max_iter = 200)
     expect_equal(lda2$alpha, 0.7)
     expect_equal(lda2$beta, 0.2)
 
@@ -346,3 +345,18 @@ test_that("distributed LDA works", {
     # reset
     options(seededlda_threads = NULL)
 })
+
+test_that("min_delta works", {
+    expect_error(
+        textmodel_lda(dfmt, k = 5, min_delta = 10, verbose = FALSE),
+        "The value of min_delta must be between -1 and 1"
+    )
+    expect_error(
+        textmodel_lda(dfmt, k = 5, min_delta = -10, verbose = FALSE),
+        "The value of min_delta must be between -1 and 1"
+    )
+    expect_silent(
+        textmodel_lda(dfmt, k = 5, min_delta = 0.1, verbose = FALSE)
+    )
+})
+

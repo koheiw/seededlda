@@ -106,7 +106,7 @@ test_that("seeded LDA is working", {
     )
     expect_equal(
         names(lda),
-        c("k", "max_iter", "last_iter", "alpha", "beta", "gamma","phi", "theta",
+        c("k", "max_iter", "last_iter", "min_delta", "alpha", "beta", "gamma","phi", "theta",
           "words", "data", "batch_size", "call", "version",
           "dictionary", "valuetype", "case_insensitive", "seeds",
           "residual", "weight")
@@ -203,9 +203,11 @@ test_that("distributed LDA works", {
     set.seed(1234)
     lda_para <- textmodel_seededlda(dfmt, dict, residual = TRUE, batch_size = 0.2)
 
-    # names of elements
+    # batch_size
     expect_equal(lda_seri$batch_size, 1.0)
     expect_equal(lda_para$batch_size, 0.2)
+
+    # names of elements
     expect_identical(
         dimnames(lda_seri$phi), dimnames(lda_para$phi)
     )
@@ -223,5 +225,49 @@ test_that("distributed LDA works", {
     expect_lt(median(Matrix::diag(dist_phi)), 0.1)
 
 })
+
+
+test_that("min_delta works", {
+
+    skip_on_cran()
+
+    dict <- dictionary(list(romance = c("love*", "couple*"),
+                            sifi = c("alien*", "star", "space")))
+
+    set.seed(1234)
+    lda_fix <- textmodel_seededlda(dfmt, dict, min_delta = -1, residual = TRUE,
+                                   max_iter = 1000)
+
+    set.seed(1234)
+    lda_auto <- textmodel_seededlda(dfmt, dict, min_delta = 0, residual = TRUE,
+                                    max_iter = 1000)
+
+    # iteration
+    expect_equal(lda_fix$last_iter, 1000)
+    expect_equal(lda_fix$max_iter, 1000)
+    expect_equal(lda_fix$min_delta, -1)
+    expect_lt(lda_auto$last_iter, 500)
+    expect_equal(lda_auto$max_iter, 1000)
+    expect_equal(lda_auto$min_delta, 0)
+
+    # names of elements
+    expect_identical(
+        dimnames(lda_fix$phi), dimnames(lda_auto$phi)
+    )
+    expect_identical(
+        dimnames(lda_fix$theta), dimnames(lda_auto$theta)
+    )
+
+    # parameters
+    dist_theta <- proxyC::dist(lda_fix$theta + 0.001, lda_auto$theta + 0.001,
+                               1, method = "jensen", diag = TRUE)
+    expect_lt(median(Matrix::diag(dist_theta)), 0.1)
+
+    dist_phi <- proxyC::dist(lda_fix$phi + 0.001, lda_auto$phi + 0.001,
+                             2, method = "jensen", diag = TRUE)
+    expect_lt(median(Matrix::diag(dist_phi)), 0.1)
+
+})
+
 
 
