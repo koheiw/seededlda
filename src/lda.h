@@ -253,12 +253,12 @@ void LDA::estimate() {
     int change, change_pv = 0;
     auto start = std::chrono::high_resolution_clock::now();
     int iter_inc = 10;
-    iter += iter_inc;
     while (iter < max_iter) {
 
         checkUserInterrupt();
         if (verbose && iter % 100 == 0)
             Rprintf(" ......iteration %d", iter);
+
         change = 0;
         Mutex mutex;
         tbb::task_arena arena(thread);
@@ -318,9 +318,7 @@ void LDA::estimate() {
         Rprintf(" ...complete\n");
 }
 
-int LDA::sample(int m, int n, int w,
-                  Array &nw_tp,
-                  Array &nwsum_tp) {
+int LDA::sample(int m, int n, int w, Array &nw_tp, Array &nwsum_tp) {
 
     // remove z_i from the count variables
     int topic = z[m][n];
