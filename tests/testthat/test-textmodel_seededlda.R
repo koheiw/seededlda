@@ -155,7 +155,7 @@ test_that("model argument works with seeded LDA", {
     }, "k, alpha and beta values are overwriten by the fitted model")
     expect_false(all(lda$phi == lda1$phi))
     expect_identical(dimnames(lda$phi), dimnames(lda1$phi))
-    expect_true(mean(topics(lda)[1:50] == topics(lda1)) > 0.9)
+    expect_gt(mean(topics(lda)[1:50] == topics(lda1)), 0.9)
     expect_equal(
         levels(topics(lda1)),
         c("romance", "sifi", "other")
@@ -201,11 +201,11 @@ test_that("distributed LDA works", {
     set.seed(1234)
     lda_seri <- textmodel_seededlda(dfmt, dict, residual = TRUE)
     set.seed(1234)
-    lda_para <- textmodel_seededlda(dfmt, dict, residual = TRUE, batch_size = 0.2)
+    lda_para <- textmodel_seededlda(dfmt, dict, residual = TRUE, batch_size = 0.01)
 
     # batch_size
     expect_equal(lda_seri$batch_size, 1.0)
-    expect_equal(lda_para$batch_size, 0.2)
+    expect_equal(lda_para$batch_size, 0.01)
 
     # names of elements
     expect_identical(
