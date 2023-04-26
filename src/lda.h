@@ -253,10 +253,10 @@ void LDA::estimate() {
     int change, change_pv = 0;
     auto start = std::chrono::high_resolution_clock::now();
     int iter_inc = 10;
-    while (iter < max_iter) {
+    while (true) {
 
         checkUserInterrupt();
-        if (verbose && iter % 100 == 0)
+        if (verbose && iter > 0 && iter % 100 == 0)
             Rprintf(" ......iteration %d", iter);
 
         change = 0;
@@ -296,19 +296,23 @@ void LDA::estimate() {
                 mutex.unlock();
             }, tbb::auto_partitioner());
         });
-        if (verbose && iter % 100 == 0) {
-            auto end = std::chrono::high_resolution_clock::now();
-            auto diff = std::chrono::duration<double, std::milli>(end - start);
-            double msec = diff.count();
+        if (iter > 0 && iter % 100 == 0) {
             double delta = (double)(change_pv - change) / (double)(iter_inc * N);
-            if (msec > 1000) {
-                Rprintf(" elapsed time: %.2f seconds (delta: %.2f%%)\n", msec / 1000, delta * 100);
-            } else {
-                Rprintf(" elapsed time: %.2f milliseconds (delta: %.2f%%)\n", msec, delta * 100);
+            if (verbose) {
+                auto end = std::chrono::high_resolution_clock::now();
+                auto diff = std::chrono::duration<double, std::milli>(end - start);
+                double msec = diff.count();
+                if (msec > 1000) {
+                    Rprintf(" elapsed time: %.2f seconds (delta: %.2f%%)\n", msec / 1000, delta * 100);
+                } else {
+                    Rprintf(" elapsed time: %.2f milliseconds (delta: %.2f%%)\n", msec, delta * 100);
+                }
             }
-            if (delta < min_delta)
+            if (min_delta > delta)
                 break;
         }
+        if (iter >= max_iter)
+            break;
         change_pv = change;
         iter += iter_inc;
     }
