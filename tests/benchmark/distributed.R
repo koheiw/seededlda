@@ -16,22 +16,9 @@ lda1 <- textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 200, batch_size =
 lda2 <- textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 200, batch_size = 0.01)
 
 microbenchmark::microbenchmark(
-    para = textmodel_lda(dfmt, k = 20, verbose = TRUE, batch_size = 0.2),
+    para = textmodel_lda(dfmt, k = 20, verbose = TRUE, batch_size = 0.01),
+    auto = textmodel_lda(dfmt, k = 20, verbose = TRUE, batch_size = 0.01, auto_iter = 0),
     seri = textmodel_lda(dfmt, k = 20, verbose = TRUE),
-    times = 10
+    times = 1
 )
 
-terms(lda1)
-table(topics(lda1))
-
-lda1 <- textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 100)
-lda2 <- textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 100, model = lda1)
-lda3 <- textmodel_lda(dfmt, k = 20, verbose = TRUE, max_iter = 100, model = lda2)
-
-terms(lda1)
-terms(lda2)
-
-dist <- proxyC::dist(lda1$phi, lda2$phi, method = "jensen")
-Matrix::diag(dist)
-dist <- proxyC::dist(lda1$phi, lda3$phi, method = "jensen")
-Matrix::diag(dist)

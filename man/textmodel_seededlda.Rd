@@ -9,7 +9,7 @@ textmodel_lda(
   x,
   k = 10,
   max_iter = 2000,
-  min_delta = -1,
+  auto_iter = FALSE,
   alpha = 0.5,
   beta = 0.1,
   gamma = 0,
@@ -27,7 +27,7 @@ textmodel_seededlda(
   weight = 0.01,
   uniform = TRUE,
   max_iter = 2000,
-  min_delta = -1,
+  auto_iter = FALSE,
   alpha = 0.5,
   beta = 0.1,
   gamma = 0,
@@ -44,8 +44,8 @@ in \code{dictionary} in \code{textmodel_seededlda()}.}
 
 \item{max_iter}{the maximum number of iteration in Gibbs sampling.}
 
-\item{min_delta}{the criteria to stop Gibbs sampling before reaching
-\code{max_iter}; it is disabled \code{min_delta = -1.0} by default.}
+\item{auto_iter}{if \code{TRUE}, stops Gibbs sampling on convergence before
+reaching \code{max_iter}; a negative \code{delta} indicates convergence.}
 
 \item{alpha}{the value to smooth topic-document distribution.}
 

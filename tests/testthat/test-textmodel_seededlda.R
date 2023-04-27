@@ -106,7 +106,7 @@ test_that("seeded LDA is working", {
     )
     expect_equal(
         names(lda),
-        c("k", "max_iter", "last_iter", "min_delta", "alpha", "beta", "gamma","phi", "theta",
+        c("k", "max_iter", "last_iter", "auto_iter", "alpha", "beta", "gamma","phi", "theta",
           "words", "data", "batch_size", "call", "version",
           "dictionary", "valuetype", "case_insensitive", "seeds",
           "residual", "weight")
@@ -227,7 +227,7 @@ test_that("distributed LDA works", {
 })
 
 
-test_that("min_delta works", {
+test_that("auto_iter works", {
 
     skip_on_cran()
 
@@ -235,20 +235,20 @@ test_that("min_delta works", {
                             sifi = c("alien*", "star", "space")))
 
     set.seed(1234)
-    lda_fix <- textmodel_seededlda(dfmt, dict, min_delta = -1, residual = TRUE,
+    lda_fix <- textmodel_seededlda(dfmt, dict, auto_iter = FALSE, residual = TRUE,
                                    max_iter = 1000)
 
     set.seed(1234)
-    lda_auto <- textmodel_seededlda(dfmt, dict, min_delta = 0, residual = TRUE,
+    lda_auto <- textmodel_seededlda(dfmt, dict, auto_iter = TRUE, residual = TRUE,
                                     max_iter = 1000)
 
     # iteration
     expect_equal(lda_fix$last_iter, 1000)
     expect_equal(lda_fix$max_iter, 1000)
-    expect_equal(lda_fix$min_delta, -1)
+    expect_equal(lda_fix$auto_iter, FALSE)
     expect_lt(lda_auto$last_iter, 500)
     expect_equal(lda_auto$max_iter, 1000)
-    expect_equal(lda_auto$min_delta, 0)
+    expect_equal(lda_auto$auto_iter, TRUE)
 
     # names of elements
     expect_identical(

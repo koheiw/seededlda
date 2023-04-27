@@ -73,7 +73,7 @@ test_that("LDA is working", {
     )
     expect_equal(
         names(lda),
-        c("k", "max_iter", "last_iter", "min_delta", "alpha", "beta", "gamma", "phi", "theta",
+        c("k", "max_iter", "last_iter", "auto_iter", "alpha", "beta", "gamma", "phi", "theta",
           "words", "data", "batch_size", "call", "version")
     )
     expect_equal(lda$last_iter, 200)
@@ -346,17 +346,13 @@ test_that("distributed LDA works", {
     options(seededlda_threads = NULL)
 })
 
-test_that("min_delta works", {
+test_that("auto_iter works", {
     expect_error(
-        textmodel_lda(dfmt, k = 5, min_delta = 10, verbose = FALSE),
-        "The value of min_delta must be between -1 and 1"
-    )
-    expect_error(
-        textmodel_lda(dfmt, k = 5, min_delta = -10, verbose = FALSE),
-        "The value of min_delta must be between -1 and 1"
+        textmodel_lda(dfmt, k = 5, auto_iter = -1, verbose = FALSE),
+        "The type of auto_iter must be logical"
     )
     expect_silent(
-        textmodel_lda(dfmt, k = 5, min_delta = 0.1, verbose = FALSE)
+        textmodel_lda(dfmt, k = 5, auto_iter = TRUE, verbose = FALSE)
     )
 })
 

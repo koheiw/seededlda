@@ -3,8 +3,8 @@
 #' @param k the number of topics; determined automatically by the number of keys
 #'   in `dictionary` in `textmodel_seededlda()`.
 #' @param max_iter the maximum number of iteration in Gibbs sampling.
-#' @param min_delta the criteria to stop Gibbs sampling before reaching
-#'   `max_iter`; it is disabled `min_delta = -1.0` by default.
+#' @param auto_iter if `TRUE`, stops Gibbs sampling on convergence before
+#'   reaching `max_iter`; a negative `delta` indicates convergence.
 #' @param batch_size split the corpus into the smaller batches (specified in
 #'   proportion) for distributed computing; it is disabled when a batch include
 #'   all the documents `batch_size = 1.0`.
@@ -32,7 +32,7 @@
 #' @seealso [topicmodels][topicmodels::LDA]
 #' @export
 textmodel_lda <- function(
-    x, k = 10, max_iter = 2000, min_delta = -1.0, alpha = 0.5, beta = 0.1, gamma = 0,
+    x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, gamma = 0,
     model = NULL, batch_size = 1.0, verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_lda")
@@ -40,7 +40,7 @@ textmodel_lda <- function(
 
 #' @export
 textmodel_lda.dfm <- function(
-    x, k = 10, max_iter = 2000, min_delta = -1.0, alpha = 0.5, beta = 0.1, gamma = 0,
+    x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, gamma = 0,
     model = NULL, batch_size = 1.0, verbose = quanteda_options("verbose")
 ) {
 
@@ -63,28 +63,33 @@ textmodel_lda.dfm <- function(
         label <- paste0("topic", seq_len(k))
         words <- NULL
     }
-    lda(x, k, label, max_iter, min_delta, alpha, beta, gamma, NULL, words, batch_size, verbose)
+    lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, NULL, words, batch_size, verbose)
 }
 
 #' @importFrom methods as
 #' @import quanteda
 #' @useDynLib seededlda, .registration = TRUE
-lda <- function(x, k, label, max_iter, min_delta, alpha, beta, gamma,
+lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
                 seeds, words, batch_size, verbose) {
 
     k <- check_integer(k, min = 1, max = 1000)
     max_iter <- check_integer(max_iter, min = 100)
-    min_delta <- check_double(min_delta, min = -1, max = 1)
+    auto_iter <- check_logical(auto_iter, strict = TRUE)
     alpha <- check_double(alpha, min = 0)
     beta <- check_double(beta, min = 0)
     gamma <- check_double(gamma, min = 0, max = 1)
     batch_size <- check_double(batch_size, min = 0, max = 1)
-    verbose <- check_logical(verbose)
+    verbose <- check_logical(verbose, strict = TRUE)
 
     if (is.null(seeds))
         seeds <- Matrix::Matrix(0, nrow = nfeat(x), ncol = k)
     if (is.null(words))
         words <- Matrix::Matrix(0, nrow = nfeat(x), ncol = k)
+    if (auto_iter) {
+        min_delta <- 0.0
+    } else {
+        min_delta <- -1.0
+    }
 
     first <- !duplicated(docid(x))
     if (all(first) && gamma)
