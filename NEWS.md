@@ -1,12 +1,12 @@
 ## Changes in v1.0.0
 
-* Add `auto_iter` to stop Gibbs sampling automatically before `max_iter` is reached.
-* Add `batch_size` to enable the distributed LDA algorithm for parallel computing.
+* Add `auto_iter` to `textmodel_seededlda()` and `textmodel_lda()` to stop Gibbs sampling automatically before `max_iter` is reached.
+* Add `batch_size` to `textmodel_seededlda()` and `textmodel_lda()` to enable the distributed LDA algorithm for parallel computing.
 
 ## Changes in v0.9.0
 
 * Add the gamma parameter to `textmodel_seededlda()` and `textmodel_lda()` for sequential classification.
-* Add `textmodel_seqlda` as as short cut for `textmodel_lda(gamma = 0.5)`.
+* Add `textmodel_seqlda()` as as short cut for `textmodel_lda(gamma = 0.5)`.
 * Improve the calculation of weights for seed words.
 * Add the `regularize` argument to `divergence()` for the regularized topic divergence measure.
 
