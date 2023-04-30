@@ -2,35 +2,39 @@
 % Please edit documentation in R/utils.R
 \name{divergence}
 \alias{divergence}
-\title{[Experimental] Compute the divergence of topics}
+\title{Optimize the number of topics}
 \usage{
-divergence(x, weighted = TRUE, min_size = 0.01, select = NULL)
+divergence(x, regularize = TRUE, min_size = 0.01, select = NULL)
 }
 \arguments{
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}.}
 
-\item{weighted}{if \code{TRUE} weight the divergence scores by the sizes of
-topics.}
+\item{regularize}{if \code{TRUE}, compute the regularized divergence.}
 
-\item{min_size}{the minimum size of topics that can increase the average
-divergence. Ignored when \code{weighted = FALSE}.}
+\item{min_size}{the minimum size of topics for regularized topic divergence.
+Ignored when \code{regularize = FALSE}.}
 
 \item{select}{names of topics for which the divergence is computed.}
 }
 \description{
-Compute the divergence of topics. This can be used to search the optimal
+\code{divergence()} computes the regularized topic divergence to find the optimal
 number of topics for LDA.
 }
 \details{
 \code{divergence()} computes the average Jensen-Shannon divergence
 between all the pairs of topic vectors in \code{x$phi}. The divergence score
 maximizes when the chosen number of topic \code{k} is optimal (Deveaud et al.,
-2014).
+2014). The regularized divergence penalizes topics smaller than \code{min_size}
+to avoid fragmentation (Watanabe & Baturo, forthcoming).
 }
 \references{
 Deveaud, Romain et al. (2014). "Accurate and Effective Latent
 Concept Modeling for Ad Hoc Information Retrieval".
 doi:10.3166/DN.17.1.61-84. \emph{Document Numérique}.
+
+Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA:
+A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+\emph{Social Science Computer Review}.
 }
 \seealso{
 \link{sizes}

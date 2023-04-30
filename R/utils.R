@@ -1,32 +1,36 @@
-#' \[Experimental\] Compute the divergence of topics
+#' Optimize the number of topics
 #'
-#' Compute the divergence of topics. This can be used to search the optimal
+#' `divergence()` computes the regularized topic divergence to find the optimal
 #' number of topics for LDA.
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()].
-#' @param weighted if `TRUE` weight the divergence scores by the sizes of
-#'   topics.
-#' @param min_size the minimum size of topics that can increase the average
-#'   divergence. Ignored when `weighted = FALSE`.
+#' @param regularize if `TRUE`, compute the regularized divergence.
+#' @param min_size the minimum size of topics for regularized topic divergence.
+#'   Ignored when `regularize = FALSE`.
 #' @param select names of topics for which the divergence is computed.
 #' @details `divergence()` computes the average Jensen-Shannon divergence
 #'   between all the pairs of topic vectors in `x$phi`. The divergence score
 #'   maximizes when the chosen number of topic `k` is optimal (Deveaud et al.,
-#'   2014).
+#'   2014). The regularized divergence penalizes topics smaller than `min_size`
+#'   to avoid fragmentation (Watanabe & Baturo, forthcoming).
 #' @seealso [sizes]
 #' @references Deveaud, Romain et al. (2014). "Accurate and Effective Latent
 #'   Concept Modeling for Ad Hoc Information Retrieval".
 #'   doi:10.3166/DN.17.1.61-84. *Document Numérique*.
+#'
+#'   Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA:
+#'   A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+#'   *Social Science Computer Review*.
 #' @export
-divergence <- function(x, weighted = TRUE, min_size = 0.01, select = NULL) {
+divergence <- function(x, regularize = TRUE, min_size = 0.01, select = NULL) {
     UseMethod("divergence")
 }
 
 #' @importFrom proxyC dist
 #' @export
-divergence.textmodel_lda <- function(x, weighted = TRUE, min_size = 0.01,
+divergence.textmodel_lda <- function(x, regularize = TRUE, min_size = 0.01,
                                      select = NULL) {
 
-    weighted <- check_logical(weighted)
+    regularize <- check_logical(regularize)
     min_size <- check_double(min_size, min = 0, max = 1)
 
     if (is.null(select)) {
@@ -40,7 +44,7 @@ divergence.textmodel_lda <- function(x, weighted = TRUE, min_size = 0.01,
 
     div <- proxyC::dist(x$phi, method = "jensen")
     diag(div) <- NA
-    if (weighted) {
+    if (regularize) {
         p <- colSums(x$words) / sum(x$words)
     } else {
         min_size <- 0

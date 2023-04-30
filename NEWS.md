@@ -2,6 +2,13 @@
 
 * Change the default value of `max_iter` from 2000 to 500.
 
+## Changes in v0.9.0
+
+* Add the gamma parameter to `textmodel_seededlda()` and `textmodel_lda()` for sequential classification.
+* Add `textmodel_seqlda` as as short cut for `textmodel_lda(gamma = 0.5)`.
+* Improve the calculation of weights for seed words.
+* Add the `regularize` argument to `divergence()` for the regularized topic divergence measure.
+
 ## Changes in v0.8.4
 
 * Fix for deprecation in Matrix 1.5-4.

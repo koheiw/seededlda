@@ -1,9 +1,10 @@
 #' Semisupervised Latent Dirichlet allocation
 #'
-#' `textmodel_seededlda()` implements semisupervised Latent Dirichlet allocation
-#' (seeded-LDA). The estimator's code adopted from the GibbsLDA++ library
-#' (Xuan-Hieu Phan, 2007). `textmodel_seededlda()` allows users to specify
-#' topics using a seed word dictionary.
+#' Implements semisupervised Latent Dirichlet allocation
+#' (Seeded LDA). `textmodel_seededlda()` allows users to specify
+#' topics using a seed word dictionary. Users can run Seeded Sequential LDA by
+#' setting `gamma > 0`.
+#' @inheritParams textmodel_lda
 #' @param dictionary a [quanteda::dictionary()] with seed words that define
 #'   topics.
 #' @param residual the number of undefined topics. They are named "other" by
@@ -24,6 +25,9 @@
 #'   Corpora: Semisupervised Topic Classification of the UN Speeches".
 #'   doi:10.1177/0894439320907027. *Social Science Computer Review*.
 #'
+#'   Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA:
+#'   A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+#'   *Social Science Computer Review*.
 #' @examples
 #' \donttest{
 #' require(seededlda)
@@ -36,14 +40,6 @@
 #'     dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile",
 #'              max_docfreq = 0.1, docfreq_type = "prop")
 #'
-#' # unsupervised LDA
-#' lda <- textmodel_lda(head(dfmt, 450), 6)
-#' terms(lda)
-#' topics(lda)
-#' lda2 <- textmodel_lda(tail(dfmt, 50), model = lda) # new documents
-#' topics(lda2)
-#'
-#' # semisupervised LDA
 #' dict <- dictionary(list(people = c("family", "couple", "kids"),
 #'                         space = c("alien", "planet", "space"),
 #'                         moster = c("monster*", "ghost*", "zombie*"),

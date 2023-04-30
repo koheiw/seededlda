@@ -1,7 +1,10 @@
-#' @rdname textmodel_seededlda
-#' @param x the dfm on which the model will be fit
-#' @param k the number of topics; determined automatically by the number of keys
-#'   in `dictionary` in `textmodel_seededlda()`.
+#' Unsupervised Latent Dirichlet allocation
+#'
+#' Implements unsupervised Latent Dirichlet allocation (LDA). Users can run
+#' Seeded LDA by setting `gamma > 0`.
+#'
+#' @param x the dfm on which the model will be fit.
+#' @param k the number of topics.
 #' @param max_iter the maximum number of iteration in Gibbs sampling.
 #' @param auto_iter if `TRUE`, stops Gibbs sampling on convergence before
 #'   reaching `max_iter`; a negative `delta` indicates convergence.
@@ -31,6 +34,24 @@
 #' @keywords textmodel
 #' @seealso [topicmodels][topicmodels::LDA]
 #' @export
+#' @examples
+#' \donttest{
+#' require(seededlda)
+#' require(quanteda)
+#'
+#' corp <- head(data_corpus_moviereviews, 500)
+#' toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE)
+#' dfmt <- dfm(toks) %>%
+#'     dfm_remove(stopwords('en'), min_nchar = 2) %>%
+#'     dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile",
+#'              max_docfreq = 0.1, docfreq_type = "prop")
+#'
+#' lda <- textmodel_lda(head(dfmt, 450), 6)
+#' terms(lda)
+#' topics(lda)
+#' lda2 <- textmodel_lda(tail(dfmt, 50), model = lda) # new documents
+#' topics(lda2)
+#' }
 textmodel_lda <- function(
     x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, gamma = 0,
     model = NULL, batch_size = 1.0, verbose = quanteda_options("verbose")
@@ -65,6 +86,11 @@ textmodel_lda.dfm <- function(
     }
     lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, NULL, words, batch_size, verbose)
 }
+
+is.textmodel_lda <- function(x) {
+    "textmodel_lda" %in% class(x)
+}
+
 
 #' @importFrom methods as
 #' @import quanteda
@@ -113,8 +139,4 @@ lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
     result$version <- utils::packageVersion("seededlda")
     class(result) <- c("textmodel_lda", "textmodel", "list")
     return(result)
-}
-
-is.textmodel_lda <- function(x) {
-    "textmodel_lda" %in% class(x)
 }
