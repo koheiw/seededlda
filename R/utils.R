@@ -1,6 +1,6 @@
-#' Compute the regularized divergence of topics
+#' Optimize the number of topics
 #'
-#' Compute the regularized topic divergence to find the optimal
+#' `divergence()` computes the regularized topic divergence to find the optimal
 #' number of topics for LDA.
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()].
 #' @param regularize if `TRUE`, compute the regularized divergence.

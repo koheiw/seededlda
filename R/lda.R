@@ -1,10 +1,9 @@
 #' Unsupervised Latent Dirichlet allocation
 #'
-#' `textmodel_lda()` implements unsupervised Latent Dirichlet allocation (LDA).
-#' The estimator's code adopted from the GibbsLDA++ library (Phan & Nguyen,
-#' 2007).
+#' Implements unsupervised Latent Dirichlet allocation (LDA). Users can run
+#' Seeded LDA by setting `gamma > 0`.
 #'
-#' @param x the dfm on which the model will be fit
+#' @param x the dfm on which the model will be fit.
 #' @param k the number of topics.
 #' @param max_iter the maximum number of iteration in Gibbs sampling.
 #' @param verbose logical; if `TRUE` print diagnostic information during

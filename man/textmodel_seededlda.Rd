@@ -21,7 +21,7 @@ textmodel_seededlda(
 )
 }
 \arguments{
-\item{x}{the dfm on which the model will be fit}
+\item{x}{the dfm on which the model will be fit.}
 
 \item{dictionary}{a \code{\link[quanteda:dictionary]{quanteda::dictionary()}} with seed words that define
 topics.}
@@ -57,10 +57,9 @@ dictionary match too many words.}
 fitting.}
 }
 \description{
-\code{textmodel_seededlda()} implements semisupervised Latent Dirichlet allocation
-(Seeded LDA). The estimator's code adopted from the GibbsLDA++ library
-(Phan & Nguyen, 2007). \code{textmodel_seededlda()} allows users to specify
-topics using a seed word dictionary. Users can run Seed Sequential LDA by
+Implements semisupervised Latent Dirichlet allocation
+(Seeded LDA). \code{textmodel_seededlda()} allows users to specify
+topics using a seed word dictionary. Users can run Seeded Sequential LDA by
 setting \code{gamma > 0}.
 }
 \examples{

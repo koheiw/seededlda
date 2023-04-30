@@ -1,8 +1,10 @@
 #' Sequential Latent Dirichlet allocation
 #'
-#' Sequential LDA considered the words in previous and current documents in
-#' inferring topics. `textmodel_seqlda()` is a shortcut function for Sequential
-#' LDA, equivalent to `textmodel_lda(gamma = 0.5)`. Seeded Sequential LDA is
+#' Implements Sequential Latent Dirichlet allocation (Sequential LDA).
+#' `textmodel_seqlda()` allows the users to classify sentences of texts. It
+#' considers the topics of previous document in inferring the topics of currency
+#' document. `textmodel_seqlda()` is a shortcut equivalent to
+#' `textmodel_lda(gamma = 0.5)`. Seeded Sequential LDA is
 #' `textmodel_seededlda(gamma = 0.5)`.
 #' @inheritParams textmodel_lda
 #' @export
@@ -11,8 +13,9 @@
 #' Du, Lan et al. (2012). "Sequential Latent Dirichlet Allocation".
 #' doi.org/10.1007/s10115-011-0425-1. *Knowledge and Information Systems*.
 #'
-#' Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA:
-#' A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+#' Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA: A
+#' Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+#' *Social Science Computer Review*.
 #'
 textmodel_seqlda <- function(
         x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1,

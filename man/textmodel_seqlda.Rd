@@ -15,7 +15,7 @@ textmodel_seqlda(
 )
 }
 \arguments{
-\item{x}{the dfm on which the model will be fit}
+\item{x}{the dfm on which the model will be fit.}
 
 \item{k}{the number of topics.}
 
@@ -32,15 +32,18 @@ parameters from an existing model. See details.}
 fitting.}
 }
 \description{
-Sequential LDA considered the words in previous and current documents in
-inferring topics. \code{textmodel_seqlda()} is a shortcut function for Sequential
-LDA, equivalent to \code{textmodel_lda(gamma = 0.5)}. Seeded Sequential LDA is
+Implements Sequential Latent Dirichlet allocation (Sequential LDA).
+\code{textmodel_seqlda()} allows the users to classify sentences of texts. It
+considers the topics of previous document in inferring the topics of currency
+document. \code{textmodel_seqlda()} is a shortcut equivalent to
+\code{textmodel_lda(gamma = 0.5)}. Seeded Sequential LDA is
 \code{textmodel_seededlda(gamma = 0.5)}.
 }
 \references{
 Du, Lan et al. (2012). "Sequential Latent Dirichlet Allocation".
 doi.org/10.1007/s10115-011-0425-1. \emph{Knowledge and Information Systems}.
 
-Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA:
-A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA: A
+Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+\emph{Social Science Computer Review}.
 }

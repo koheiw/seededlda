@@ -16,7 +16,7 @@ textmodel_lda(
 )
 }
 \arguments{
-\item{x}{the dfm on which the model will be fit}
+\item{x}{the dfm on which the model will be fit.}
 
 \item{k}{the number of topics.}
 
@@ -45,9 +45,8 @@ respectively, in Gibbs sampling. Other elements in the list subject to
 change.
 }
 \description{
-\code{textmodel_lda()} implements unsupervised Latent Dirichlet allocation (LDA).
-The estimator's code adopted from the GibbsLDA++ library (Phan & Nguyen,
-2007).
+Implements unsupervised Latent Dirichlet allocation (LDA). Users can run
+Seeded LDA by setting \code{gamma > 0}.
 }
 \details{
 To predict topics of new documents (i.e. out-of-sample), first,
@@ -76,6 +75,6 @@ topics(lda2)
 }
 }
 \seealso{
-\link[topicmodels:LDA]{topicmodels}
+\link[topicmodels:lda]{topicmodels}
 }
 \keyword{textmodel}
