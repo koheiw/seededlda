@@ -6,7 +6,7 @@
  * 	Graduate School of Information Sciences
  * 	Tohoku University
  *
- * Copyright (C) 2020 by
+ * Copyright (C) 2020-2023 by
  *
  * 	Kohei Watanabe
  * 	watanabe.kohei@gmail.com
