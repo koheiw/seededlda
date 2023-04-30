@@ -1,6 +1,7 @@
 ## Changes in v1.0.0
 
-* Change the default value of `max_iter` from 2000 to 500.
+* Add `auto_iter` to stop Gibbs sampling automatically before `max_iter` is reached.
+* Add `batch_size` to enable the distributed LDA algorithm for parallel computing.
 
 ## Changes in v0.9.0
 
