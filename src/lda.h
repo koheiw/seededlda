@@ -217,27 +217,23 @@ int LDA::initialize() {
             }
         }
     }
-
-    tbb::task_arena arena(thread);
-    arena.execute([&]{
-        tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
-            for (int m = r.begin(); m < r.end(); ++m) {
-                if (texts[m].size() == 0) continue;
-                for (std::size_t i = 0; i < texts[m].size(); i++) {
-                    int topic = random_topic(generator);
-                    int w = texts[m][i];
-                    z[m][i] = topic;
-                    // number of instances of word i assigned to topic j
-                    nw.at(w, topic) += 1;
-                    // number of words in document i assigned to topic j
-                    nd.at(m, topic) += 1;
-                    // total number of words assigned to topic j
-                    nwsum.at(topic) += 1;
-                }
-            }
-        }, tbb::auto_partitioner());
-        //dev::stop_timer("Set z", timer);
-    });
+    //dev::Timer timer;
+    //dev::start_timer("Set z", timer);
+    for (int m = 0; m < M; ++m) {
+        if (texts[m].size() == 0) continue;
+        for (std::size_t i = 0; i < texts[m].size(); i++) {
+            int topic = random_topic(generator);
+            int w = texts[m][i];
+            z[m][i] = topic;
+            // number of words in document m assigned to topic j
+            nd.at(m, topic) += 1;
+            // number of instances of word w assigned to topic j
+            nw.at(w, topic) += 1;
+            // total number of words assigned to topic j
+            nwsum.at(topic) += 1;
+        }
+    }
+    //dev::stop_timer("Set z", timer);
     return 0;
 }
 
@@ -253,6 +249,7 @@ void LDA::estimate() {
     int change, change_pv = 0;
     auto start = std::chrono::high_resolution_clock::now();
     int iter_inc = 10;
+    tbb::mutex mutex_sync;
     while (true) {
 
         checkUserInterrupt();
@@ -260,7 +257,6 @@ void LDA::estimate() {
             Rprintf(" ......iteration %d", iter);
 
         change = 0;
-        Mutex mutex;
         tbb::task_arena arena(thread);
         arena.execute([&]{
             tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
@@ -289,11 +285,11 @@ void LDA::estimate() {
                         }
                     }
                 }
-                mutex.lock();
+                mutex_sync.lock();
                 change += change_tp;
                 nw += nw_tp;
                 nwsum += nwsum_tp;
-                mutex.unlock();
+                mutex_sync.unlock();
             }, tbb::auto_partitioner());
         });
         if (iter > 0 && iter % 100 == 0) {
