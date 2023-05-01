@@ -244,7 +244,7 @@ void LDA::estimate() {
         Rprintf(" ......allocating %d documents to each thread\n", batch);
     }
     if (verbose)
-        Rprintf(" ...Gibbs sampling in %d itterations\n", max_iter);
+        Rprintf(" ...Gibbs sampling in %d iterations\n", max_iter);
 
     int change, change_pv = 0;
     auto start = std::chrono::high_resolution_clock::now();
