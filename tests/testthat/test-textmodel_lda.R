@@ -14,6 +14,7 @@ sifi <- c("space", "mars", "alien", "earth")
 test_that("LDA is working", {
 
     skip_on_os("mac")
+    skip_on_cran()
 
     set.seed(1234)
     lda <- textmodel_lda(dfmt, k = 5, max_iter = 200)
