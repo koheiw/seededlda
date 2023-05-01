@@ -7,10 +7,10 @@
 #' @param k the number of topics.
 #' @param max_iter the maximum number of iteration in Gibbs sampling.
 #' @param auto_iter if `TRUE`, stops Gibbs sampling on convergence before
-#'   reaching `max_iter`; a negative `delta` indicates convergence.
+#'   reaching `max_iter`. See details.
 #' @param batch_size split the corpus into the smaller batches (specified in
 #'   proportion) for distributed computing; it is disabled when a batch include
-#'   all the documents `batch_size = 1.0`.
+#'   all the documents `batch_size = 1.0`. See details.
 #' @param verbose logical; if `TRUE` print diagnostic information during
 #'   fitting.
 #' @param alpha the value to smooth topic-document distribution.
@@ -25,12 +25,31 @@
 #'   `textmodel_lda()`; second, apply [topics()] to the new model. The `model`
 #'   argument takes objects created either by `textmodel_lda()` or
 #'   `textmodel_seededlda()`.
+#'
+#'   If `batch_size < 1.0`, the corpus is partitioned into sub-corpora of
+#'   `ndoc(x) * batch_size` documents for Gibbs sampling in sub-processes with
+#'   synchronization of parameters in every 10 iteration. Parallel processing is
+#'   more efficient when `batch_size` is small (e.g. 0.01) but the sub-corpora
+#'   should be sufficiently large to produce results similar to those from
+#'   serial processing. The algorithm is the Approximate Distributed LDA
+#'   proposed by  Newman et al. (2009)
+#'
+#'   If `auto_iter = TRUE`, the iteration stops even before `max_iter` when
+#'   `delta <= 0`. `delta` is computed to measure the changes in the number of
+#'   words whose topics are updated by the Gibbs sampler in every 100 iteration
+#'   as shown in the verbose message.
+#'
 #' @return `textmodel_seededlda()` and `textmodel_lda()` returns a list of model
 #'   parameters. `theta` is the distribution of topics over documents; `phi` is
 #'   the distribution of words over topics. `alpha` and `beta` are the small
 #'   constant added to the frequency of words to estimate `theta` and `phi`,
 #'   respectively, in Gibbs sampling. Other elements in the list subject to
 #'   change.
+#' @references
+#'
+#' Newman, D., Asuncion, A., Smyth, P., & Welling, M. (2009). Distributed
+#' Algorithms for Topic Models. The Journal of Machine Learning Research, 10,
+#' 1801–1828.
 #' @keywords textmodel
 #' @seealso [topicmodels][topicmodels::LDA]
 #' @export
