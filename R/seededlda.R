@@ -28,6 +28,7 @@
 #'   Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA:
 #'   A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
 #'   *Social Science Computer Review*.
+#' @seealso [keyATM][keyATM::keyATM]
 #' @examples
 #' \donttest{
 #' require(seededlda)

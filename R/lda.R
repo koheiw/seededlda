@@ -51,7 +51,7 @@
 #' Algorithms for Topic Models. The Journal of Machine Learning Research, 10,
 #' 1801–1828.
 #' @keywords textmodel
-#' @seealso [topicmodels][topicmodels::LDA]
+#' @seealso [LDA][topicmodels::LDA] [weightedLDA][keyATM::weightedLDA]
 #' @export
 #' @examples
 #' \donttest{
