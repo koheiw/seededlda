@@ -22,6 +22,6 @@ LinkingTo: Rcpp, RcppParallel, RcppArmadillo (>= 0.7.600.1.0), quanteda, testtha
 Suggests:
     testthat,
     topicmodels,
-    xml2
+    keyATM
 RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
