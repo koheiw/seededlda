@@ -25,7 +25,7 @@ textmodel_lda(
 \item{max_iter}{the maximum number of iteration in Gibbs sampling.}
 
 \item{auto_iter}{if \code{TRUE}, stops Gibbs sampling on convergence before
-reaching \code{max_iter}; a negative \code{delta} indicates convergence.}
+reaching \code{max_iter}. See details.}
 
 \item{alpha}{the value to smooth topic-document distribution.}
 
@@ -40,7 +40,7 @@ parameters from an existing model. See details.}
 
 \item{batch_size}{split the corpus into the smaller batches (specified in
 proportion) for distributed computing; it is disabled when a batch include
-all the documents \code{batch_size = 1.0}.}
+all the documents \code{batch_size = 1.0}. See details.}
 
 \item{verbose}{logical; if \code{TRUE} print diagnostic information during
 fitting.}
@@ -58,11 +58,20 @@ Implements unsupervised Latent Dirichlet allocation (LDA). Users can run
 Seeded LDA by setting \code{gamma > 0}.
 }
 \details{
-To predict topics of new documents (i.e. out-of-sample), first,
-create a new LDA model from a existing LDA model passed to \code{model} in
-\code{textmodel_lda()}; second, apply \code{\link[=topics]{topics()}} to the new model. The \code{model}
-argument takes objects created either by \code{textmodel_lda()} or
-\code{textmodel_seededlda()}.
+If \code{auto_iter = TRUE}, the iteration stops even before \code{max_iter}
+when \code{delta <= 0}. \code{delta} is computed to measure the changes in the number
+of words whose topics are updated by the Gibbs sampler in every 100 iteration
+as shown in the verbose message.
+
+If \code{batch_size < 1.0}, the corpus is partitioned into sub-corpora of `ndoc(x)
+\itemize{
+\item batch_size\verb{documents for Gibbs sampling in sub-processes with synchronization of parameters in every 10 iteration. Parallel processing is more efficient when}batch_size\verb{is small (e.g. 0.01) but the sub-corpora should be sufficiently large to produce results similar to those from serial processing. The algorithm is the Approximate Distributed LDA proposed by Newman et al. (2009). User can changed the number of sub-processes used for the parallel computing via}base::options(seededlda_threads)`.
+}
+
+To predict topics of new documents (i.e. out-of-sample), first, create a new
+LDA model from a existing LDA model passed to \code{model} in \code{textmodel_lda()};
+second, apply \code{\link[=topics]{topics()}} to the new model. The \code{model} argument takes objects
+created either by \code{textmodel_lda()} or \code{textmodel_seededlda()}.
 }
 \examples{
 \donttest{
@@ -83,7 +92,12 @@ lda2 <- textmodel_lda(tail(dfmt, 50), model = lda) # new documents
 topics(lda2)
 }
 }
+\references{
+Newman, D., Asuncion, A., Smyth, P., & Welling, M. (2009). Distributed
+Algorithms for Topic Models. The Journal of Machine Learning Research, 10,
+1801–1828.
+}
 \seealso{
-\link[topicmodels:lda]{topicmodels}
+\link[topicmodels:lda]{LDA} \link[keyATM:weightedLDA]{weightedLDA}
 }
 \keyword{textmodel}

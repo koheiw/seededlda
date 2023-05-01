@@ -43,7 +43,7 @@ total amount equal across topics.}
 \item{max_iter}{the maximum number of iteration in Gibbs sampling.}
 
 \item{auto_iter}{if \code{TRUE}, stops Gibbs sampling on convergence before
-reaching \code{max_iter}; a negative \code{delta} indicates convergence.}
+reaching \code{max_iter}. See details.}
 
 \item{alpha}{the value to smooth topic-document distribution.}
 
@@ -55,7 +55,7 @@ document is affected by the previous document's topics.}
 
 \item{batch_size}{split the corpus into the smaller batches (specified in
 proportion) for distributed computing; it is disabled when a batch include
-all the documents \code{batch_size = 1.0}.}
+all the documents \code{batch_size = 1.0}. See details.}
 
 \item{...}{passed to \link[quanteda:dfm_trim]{quanteda::dfm_trim} to restrict seed words based on
 their term or document frequency. This is useful when glob patterns in the
@@ -105,4 +105,7 @@ doi:10.1177/0894439320907027. \emph{Social Science Computer Review}.
 Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA:
 A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
 \emph{Social Science Computer Review}.
+}
+\seealso{
+\link[keyATM:keyATM]{keyATM}
 }
