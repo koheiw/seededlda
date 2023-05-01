@@ -18,16 +18,16 @@
 #' *Social Science Computer Review*.
 #'
 textmodel_seqlda <- function(
-        x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1,
+        x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, batch_size = 1.0,
         model = NULL, verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_sequentiallda")
 }
 #' @export
 textmodel_seqlda.dfm <- function(
-        x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1,
+        x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, batch_size = 1.0,
         model = NULL, verbose = quanteda_options("verbose")
 ) {
-    textmodel_lda(x, k = k, max_iter = max_iter, alpha = alpha, beta = beta,
-                  gamma = 0.5, model = model, verbose = verbose)
+    textmodel_lda(x, k = k, max_iter = max_iter, auto_iter = auto_iter, alpha = alpha, beta = beta,
+                  gamma = 0.5, batch_size = batch_size, model = model, verbose = verbose)
 }
