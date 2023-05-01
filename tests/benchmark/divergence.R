@@ -20,22 +20,22 @@ for (k in seq(10, 50, by = 10)) {
     cat(k, "\n")
     set.seed(1234)
     slda1 <- textmodel_lda(dfmt, k = k, max_iter = 2000, auto_iter = FALSE, verbose = TRUE) %>%
-             divergence(0.05)
+             divergence()
     set.seed(1234)
     slda2 <- textmodel_lda(dfmt, k = k, max_iter = 2000, auto_iter = TRUE, verbose = TRUE) %>%
-             divergence(0.05)
+             divergence()
     set.seed(1234)
     slda3 <- textmodel_lda(dfmt, k = k, max_iter = 2000, auto_iter = FALSE, verbose = TRUE,
                            batch_size = 0.1) %>%
-             divergence(0.05)
+             divergence()
     set.seed(1234)
     slda4 <- textmodel_lda(dfmt, k = k, max_iter = 2000, auto_iter = TRUE, verbose = TRUE,
                            batch_size = 0.1) %>%
-             divergence(0.05)
+             divergence()
     tmp <- cbind(k, slda1, slda2, slda3, slda4)
     print(tmp)
     dat <- rbind(dat, tmp)
 }
 
-matplot(dat)
+matplot(dat[1], dat[-1], type = "b")
 
