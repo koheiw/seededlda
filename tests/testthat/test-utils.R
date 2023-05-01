@@ -20,6 +20,7 @@ slda <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.02,
 
 test_that("divergence() is working", {
 
+    # LDA
     expect_equal(divergence(lda),
                  0.34, tolerance = 0.01)
 
@@ -31,6 +32,12 @@ test_that("divergence() is working", {
 
     expect_equal(divergence(slda),
                  0.29, tolerance = 0.01)
+
+    expect_true(divergence(lda, 0.05) != divergence(lda, 0.01))
+    expect_error(
+        divergence(lda, regularize = 1),
+        "The type of regularize must be logical"
+    )
 
     expect_silent(divergence(lda, select = c("topic1", "topic2")))
     expect_error(
@@ -46,11 +53,18 @@ test_that("divergence() is working", {
         "Selected topics must be in the model"
     )
 
+    # Seeded LDA
     expect_gt(divergence(slda, regularize = FALSE),
               divergence(slda, regularize = TRUE))
 
     expect_gt(divergence(slda),
               divergence(slda, min_size = 0.1))
+
+    expect_true(divergence(slda, 0.05) != divergence(slda, 0.01))
+    expect_error(
+        divergence(slda, regularize = 1),
+        "The type of regularize must be logical"
+    )
 
     expect_silent(divergence(slda, select = c("romance", "sifi")))
     expect_error(
