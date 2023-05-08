@@ -33,7 +33,7 @@ matplot(lda1$theta[1:100,], type = "l", lty = 1)
 
 microbenchmark::microbenchmark(
     para = textmodel_lda(dfmt, k = 20, verbose = TRUE, batch_size = 0.01),
-    auto = textmodel_lda(dfmt, k = 20, verbose = TRUE, batch_size = 0.01, auto_iter = 0),
+    auto = textmodel_lda(dfmt, k = 20, verbose = TRUE, batch_size = 0.01, auto_iter = TRUE),
     seri = textmodel_lda(dfmt, k = 20, verbose = TRUE),
     times = 1
 )

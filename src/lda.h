@@ -266,8 +266,8 @@ void LDA::estimate() {
                     while (begin != 0 && !first[begin]) begin--;
                     while (end != M && !first[end]) end--;
                 }
-                //Rcout << begin << " " << r.begin() << "\n";
-                //Rcout << end << " " << r.end() << "\n";
+                // Rcout << "begin: " << begin - r.begin() << "\n";
+                // Rcout << "end: " << end - r.end() << "\n";
 
                 Array nw_tp(V, K);
                 Array nwsum_tp(K);
