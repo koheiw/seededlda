@@ -65,7 +65,6 @@ class LDA {
     // topic transition
     double gamma; // parameter for topic transition
     std::vector<bool> first; // first[i], documents i are first sentence, size M
-    std::vector<double> q; // temp variable for previous document
 
     arma::sp_mat data; // transposed document-feature matrix
     Texts texts; // individual words
@@ -104,7 +103,7 @@ class LDA {
 
     // estimate LDA model using Gibbs sampling
     void estimate();
-    int sample(int m, int n, int w, Array &nw_tp, Array &nwsum_tp);
+    int sample(int m, int n, int w, std::vector<double> &prob, Array &nw_tp, Array &nwsum_tp);
     void compute_theta();
     void compute_phi();
 
@@ -195,7 +194,6 @@ int LDA::initialize() {
     nwsum = Array(K);
     ndsum = Array(arma::sum(data, 0));
 
-    q.assign(K, 1.0);
     Vbeta = V * beta;
     Kalpha = K * alpha;
 
@@ -261,23 +259,41 @@ void LDA::estimate() {
         arena.execute([&]{
             tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
 
+                int begin = r.begin();
+                int end = r.end();
+                // partitions must match first documents when gamma > 0
+                if (gamma > 0) {
+                    while (true) {
+                        if (begin == 0 || first[begin]) break;
+                        begin--;
+                    }
+                    while (true) {
+                        if (end == M || first[end]) break;
+                        end--;
+                    }
+                }
+                //Rcout << begin << " " << r.begin() << "\n";
+                //Rcout << end << " " << r.end() << "\n";
+
                 Array nw_tp(V, K);
                 Array nwsum_tp(K);
                 int change_tp = 0;
                 for (int i = 0; i < iter_inc; i++) {
-                    for (int m = r.begin(); m < r.end(); ++m) {
+                    //for (int m = r.begin(); m < r.end(); ++m) {
+                    for (int m = begin; m < end; ++m) {
                         // topic of the previous document
+                        std::vector<double> prob(K);
                         for (int k = 0; k < K; k++) {
                             if (gamma == 0 || first[m] || m == 0) {
-                                q[k] = 1.0;
+                                prob[k] = 1.0 / K;
                             } else {
-                                q[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum.at(m - 1) + K * alpha), gamma);
+                                prob[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum.at(m - 1) + K * alpha), gamma);
                             }
                         }
                         if (texts[m].size() == 0) continue;
                         for (std::size_t n = 0; n < texts[m].size(); n++) {
                             int w = texts[m][n];
-                            unsigned int topic = sample(m, n, w, nw_tp, nwsum_tp);
+                            unsigned int topic = sample(m, n, w, prob, nw_tp, nwsum_tp);
                             if (z[m][n] != topic) {
                                 change_tp++;
                                 z[m][n] = topic;
@@ -314,7 +330,9 @@ void LDA::estimate() {
         Rprintf(" ...complete\n");
 }
 
-int LDA::sample(int m, int n, int w, Array &nw_tp, Array &nwsum_tp) {
+int LDA::sample(int m, int n, int w,
+                std::vector<double> &prob,
+                Array &nw_tp, Array &nwsum_tp) {
 
     // remove z_i from the count variables
     int topic = z[m][n];
@@ -328,7 +346,7 @@ int LDA::sample(int m, int n, int w, Array &nw_tp, Array &nwsum_tp) {
     for (int k = 0; k < K; k++) {
         p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta) /
                 (nwsum.at(k) + nwsum_tp.at(k) + nwsum_ft.at(k) + Vbeta)) *
-                ((nd.at(m, k) + alpha) / (ndsum.at(m) + Kalpha)) * q[k];
+                ((nd.at(m, k) + alpha) / (ndsum.at(m) + Kalpha)) * prob[k];
     }
     // cumulate multinomial parameters
     for (int k = 1; k < K; k++) {
