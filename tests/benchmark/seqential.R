@@ -28,8 +28,8 @@ sizes(lda1)
 sizes(lda2)
 sizes(lda3)
 
-matplot(lda3$theta[1:100,], type = "l")
-
+matplot(lda0$theta[1:100,], type = "l", lty = 1)
+matplot(lda1$theta[1:100,], type = "l", lty = 1)
 
 microbenchmark::microbenchmark(
     para = textmodel_lda(dfmt, k = 20, verbose = TRUE, batch_size = 0.01),
