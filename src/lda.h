@@ -263,14 +263,8 @@ void LDA::estimate() {
                 int end = r.end();
                 // partitions must match first documents when gamma > 0
                 if (gamma > 0) {
-                    while (true) {
-                        if (begin == 0 || first[begin]) break;
-                        begin--;
-                    }
-                    while (true) {
-                        if (end == M || first[end]) break;
-                        end--;
-                    }
+                    while (begin != 0 && !first[begin]) begin--;
+                    while (end != M && !first[end]) end--;
                 }
                 //Rcout << begin << " " << r.begin() << "\n";
                 //Rcout << end << " " << r.end() << "\n";
