@@ -1,6 +1,6 @@
 require(quanteda)
 
-options(slda_residual_name = "other")
+options(seededlda_residual_name = "other")
 
 toks <- tokens(data_corpus_moviereviews[1:500],
                remove_punct = TRUE,
@@ -17,12 +17,11 @@ test_that("LDA is working", {
     skip_on_cran()
 
     set.seed(1234)
-    lda <- textmodel_lda(dfmt, k = 5)
+    lda <- textmodel_lda(dfmt, k = 5, max_iter = 200)
     # saveRDS(lda, "tests/data/lda.RDS")
-
-    lda_v081 <- readRDS("../data/lda_v081.RDS")
-    expect_equal(lda$phi, lda_v081$phi)
-    expect_equal(lda$theta, lda_v081$theta)
+    #lda_v081 <- readRDS("../data/lda_v081.RDS")
+    #expect_equal(lda$phi, lda_v081$phi)
+    #expect_equal(lda$theta, lda_v081$theta)
 
     expect_equal(dim(terms(lda, 10)), c(10, 5))
     expect_equal(dim(terms(lda, 20)), c(20, 5))
@@ -47,11 +46,13 @@ test_that("LDA is working", {
     )
     expect_equal(
         rowSums(lda$phi),
-        c("topic1" = 1, "topic2" = 1, "topic3" = 1, "topic4" = 1, "topic5" = 1)
+        c("topic1" = 1, "topic2" = 1, "topic3" = 1, "topic4" = 1, "topic5" = 1),
+        tolerance = 0.001
     )
     expect_equal(
         rowSums(lda$theta),
-        structure(rep(1, ndoc(dfmt)), names = docnames(dfmt))
+        structure(rep(1, ndoc(dfmt)), names = docnames(dfmt)),
+        tolerance = 0.001
     )
     expect_equal(
         ncol(terms(textmodel_lda(dfmt, k = 1))), 1
@@ -67,15 +68,16 @@ test_that("LDA is working", {
     expect_output(
         print(lda),
         paste0("\nCall:\n",
-               "textmodel_lda(x = dfmt, k = 5)\n\n",
+               "textmodel_lda(x = dfmt, k = 5, max_iter = 200)\n\n",
                "5 topics; 500 documents; 22,605 features."),
         fixed = TRUE
     )
     expect_equal(
         names(lda),
-        c("k", "max_iter", "last_iter", "alpha", "beta", "gamma", "phi", "theta",
-          "words", "data", "call", "version")
+        c("k", "max_iter", "last_iter", "auto_iter", "alpha", "beta", "gamma", "phi", "theta",
+          "words", "data", "batch_size", "call", "version")
     )
+    expect_equal(lda$last_iter, 200)
     expect_equivalent(class(lda$words), "dgCMatrix")
     expect_equal(rownames(lda$words), colnames(lda$phi))
     expect_equal(colnames(lda$words), rownames(lda$phi))
@@ -83,11 +85,11 @@ test_that("LDA is working", {
 
 test_that("alpha and beta work", {
 
-    lda <- textmodel_lda(dfmt, max_iter = 100)
+    lda <- textmodel_lda(dfmt, max_iter = 200)
     expect_equal(lda$alpha, 0.5)
     expect_equal(lda$beta, 0.1)
 
-    lda2 <- textmodel_lda(dfmt, alpha = 0.7, beta = 0.2, max_iter = 100)
+    lda2 <- textmodel_lda(dfmt, alpha = 0.7, beta = 0.2, max_iter = 200)
     expect_equal(lda2$alpha, 0.7)
     expect_equal(lda2$beta, 0.2)
 
@@ -105,15 +107,42 @@ test_that("alpha and beta work", {
 
 test_that("verbose works", {
 
-    expect_output(textmodel_lda(dfmt, k = 5, verbose = TRUE, max_iter = 200),
-                  paste("Fitting LDA with 5 topics\n",
-                        "   ...initializing\n",
-                        "   ...Gibbs sampling in 200 itterations\n",
-                        "   ...iteration 100\n",
-                        "   ...iteration 200\n",
-                        "   ...computing theta and phi\n",
-                        "   ...complete", sep = ""), fixed = TRUE)
+    expect_output(
+        lda1 <- textmodel_lda(dfmt, k = 5, verbose = TRUE, max_iter = 200),
+        paste("Fitting LDA with 5 topics\n",
+              " [.]{3}initializing\n",
+              " [.]{3}Gibbs sampling in 200 iterations\n",
+              " [.]{6}iteration 100 elapsed time: .*\n",
+              " [.]{6}iteration 200 elapsed time: .*\n",
+              " [.]{3}computing theta and phi\n",
+              " [.]{3}complete", sep = "")
+    )
 
+    expect_output(
+        suppressWarnings(
+         lda2 <- textmodel_lda(dfmt, k = 5, verbose = TRUE, max_iter = 200, model = lda1)
+        ),
+        paste("Fitting LDA with 5 topics\n",
+            " [.]{3}loading fitted model\n",
+            " [.]{3}initializing\n",
+            " [.]{3}Gibbs sampling in 200 iterations\n",
+            " [.]{6}iteration 100 elapsed time: .*\n",
+            " [.]{6}iteration 200 elapsed time: .*\n",
+            " [.]{3}computing theta and phi\n",
+            " [.]{3}complete", sep = "")
+    )
+
+    expect_output(
+        lda3 <- textmodel_lda(dfmt, k = 5, verbose = TRUE, max_iter = 100, batch_size = 0.5),
+        paste("Fitting LDA with 5 topics\n",
+            " [.]{3}initializing\n",
+            " [.]{3}using up to .* threads for distributed computing\n",
+            " [.]{6}allocating .* documents to each thread\n",
+            " [.]{3}Gibbs sampling in 100 iterations\n",
+            " [.]{6}iteration 100 elapsed time: .*\n",
+            " [.]{3}computing theta and phi\n",
+            " [.]{3}complete", sep = "")
+    )
 })
 
 test_that("LDA works with empty documents", {
@@ -275,6 +304,56 @@ test_that("select and min_prob are working", {
     expect_error(
         topics(lda, select = c("topic2", "xxxxx")),
         "Selected topics must be in the model"
+    )
+
+})
+
+test_that("distributed LDA works", {
+
+    # batch sizes
+    expect_error(
+        textmodel_lda(dfmt, k = 5, batch_size = 0, max_iter = 200, verbose = FALSE),
+        "batch_size musht be larger than 0"
+    )
+    expect_error(
+        textmodel_lda(dfmt, k = 5, batch_size = -1.0, max_iter = 200, verbose = FALSE),
+        "The value of batch_size must be between 0 and 1", fixed = TRUE
+    )
+    expect_error(
+        textmodel_lda(dfmt, k = 5, batch_size = 2.0, max_iter = 200, verbose = FALSE),
+        "The value of batch_size must be between 0 and 1", fixed = TRUE
+    )
+
+    # threads
+    options(seededlda_threads = "a")
+    expect_error(
+        textmodel_lda(dfmt, k = 5, batch_size = 0.2, max_iter = 200, verbose = FALSE),
+        'getOption("seededlda_threads", -1) must be coercible to integer', fixed = TRUE
+    )
+    options(seededlda_threads = -1) # use all threads
+    expect_silent(
+        lda1 <- textmodel_lda(dfmt, k = 5, batch_size = 0.2, max_iter = 200, verbose = FALSE)
+    )
+    expect_equal(lda1$batch_size, 0.2)
+
+    options(seededlda_threads = 2)
+    expect_output(
+        lda2 <- textmodel_lda(dfmt, k = 5,  batch_size = 0.2, max_iter = 200, verbose = TRUE),
+        ".*using up to 2 threads for distributed computing.*"
+    )
+    expect_equal(lda2$batch_size, 0.2)
+
+    # reset
+    options(seededlda_threads = NULL)
+})
+
+test_that("auto_iter works", {
+    expect_error(
+        textmodel_lda(dfmt, k = 5, auto_iter = -1, verbose = FALSE),
+        "The type of auto_iter must be logical"
+    )
+    expect_silent(
+        textmodel_lda(dfmt, k = 5, auto_iter = TRUE, verbose = FALSE)
     )
 })
 

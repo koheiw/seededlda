@@ -6,6 +6,11 @@
 #' @param x the dfm on which the model will be fit.
 #' @param k the number of topics.
 #' @param max_iter the maximum number of iteration in Gibbs sampling.
+#' @param auto_iter if `TRUE`, stops Gibbs sampling on convergence before
+#'   reaching `max_iter`. See details.
+#' @param batch_size split the corpus into the smaller batches (specified in
+#'   proportion) for distributed computing; it is disabled when a batch include
+#'   all the documents `batch_size = 1.0`. See details.
 #' @param verbose logical; if `TRUE` print diagnostic information during
 #'   fitting.
 #' @param alpha the value to smooth topic-document distribution.
@@ -15,19 +20,38 @@
 #'   document is affected by the previous document's topics.
 #' @param model a fitted LDA model; if provided, `textmodel_lda()` inherits
 #'   parameters from an existing model. See details.
-#' @details To predict topics of new documents (i.e. out-of-sample), first,
-#'   create a new LDA model from a existing LDA model passed to `model` in
-#'   `textmodel_lda()`; second, apply [topics()] to the new model. The `model`
-#'   argument takes objects created either by `textmodel_lda()` or
-#'   `textmodel_seededlda()`.
+#' @details If `auto_iter = TRUE`, the iteration stops even before `max_iter`
+#' when `delta <= 0`. `delta` is computed to measure the changes in the number
+#' of words whose topics are updated by the Gibbs sampler in every 100 iteration
+#' as shown in the verbose message.
+#'
+#' If `batch_size < 1.0`, the corpus is partitioned into sub-corpora of `ndoc(x)
+#' * batch_size` documents for Gibbs sampling in sub-processes with
+#' synchronization of parameters in every 10 iteration. Parallel processing is
+#' more efficient when `batch_size` is small (e.g. 0.01) but the sub-corpora
+#' should be sufficiently large to produce results similar to those from serial
+#' processing. The algorithm is the Approximate Distributed LDA proposed by
+#' Newman et al. (2009). User can changed the number of sub-processes used for the
+#' parallel computing via `base::options(seededlda_threads)`.
+#'
+#' To predict topics of new documents (i.e. out-of-sample), first, create a new
+#' LDA model from a existing LDA model passed to `model` in `textmodel_lda()`;
+#' second, apply [topics()] to the new model. The `model` argument takes objects
+#' created either by `textmodel_lda()` or `textmodel_seededlda()`.
+#'
 #' @return `textmodel_seededlda()` and `textmodel_lda()` returns a list of model
 #'   parameters. `theta` is the distribution of topics over documents; `phi` is
 #'   the distribution of words over topics. `alpha` and `beta` are the small
 #'   constant added to the frequency of words to estimate `theta` and `phi`,
 #'   respectively, in Gibbs sampling. Other elements in the list subject to
 #'   change.
+#' @references
+#'
+#' Newman, D., Asuncion, A., Smyth, P., & Welling, M. (2009). Distributed
+#' Algorithms for Topic Models. The Journal of Machine Learning Research, 10,
+#' 1801–1828.
 #' @keywords textmodel
-#' @seealso [topicmodels][topicmodels::LDA]
+#' @seealso [LDA][topicmodels::LDA] [weightedLDA][keyATM::weightedLDA]
 #' @export
 #' @examples
 #' \donttest{
@@ -48,16 +72,16 @@
 #' topics(lda2)
 #' }
 textmodel_lda <- function(
-    x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
-    model = NULL, verbose = quanteda_options("verbose")
+    x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, gamma = 0,
+    model = NULL, batch_size = 1.0, verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_lda")
 }
 
 #' @export
 textmodel_lda.dfm <- function(
-    x, k = 10, max_iter = 2000, alpha = 0.5, beta = 0.1, gamma = 0,
-    model = NULL, verbose = quanteda_options("verbose")
+    x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, gamma = 0,
+    model = NULL, batch_size = 1.0, verbose = quanteda_options("verbose")
 ) {
 
     if (!is.null(model)) {
@@ -79,7 +103,7 @@ textmodel_lda.dfm <- function(
         label <- paste0("topic", seq_len(k))
         words <- NULL
     }
-    lda(x, k, label, max_iter, alpha, beta, gamma, NULL, words, verbose)
+    lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, NULL, words, batch_size, verbose)
 }
 
 is.textmodel_lda <- function(x) {
@@ -90,33 +114,46 @@ is.textmodel_lda <- function(x) {
 #' @importFrom methods as
 #' @import quanteda
 #' @useDynLib seededlda, .registration = TRUE
-lda <- function(x, k, label, max_iter, alpha, beta, gamma, seeds, words, verbose) {
+lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
+                seeds, words, batch_size, verbose) {
 
     k <- check_integer(k, min = 1, max = 1000)
+    max_iter <- check_integer(max_iter, min = 100)
+    auto_iter <- check_logical(auto_iter, strict = TRUE)
     alpha <- check_double(alpha, min = 0)
     beta <- check_double(beta, min = 0)
     gamma <- check_double(gamma, min = 0, max = 1)
-    verbose <- check_logical(verbose)
-    max_iter <- check_integer(max_iter)
+    batch_size <- check_double(batch_size, min = 0, max = 1)
+    verbose <- check_logical(verbose, strict = TRUE)
 
     if (is.null(seeds))
         seeds <- Matrix::Matrix(0, nrow = nfeat(x), ncol = k)
     if (is.null(words))
         words <- Matrix::Matrix(0, nrow = nfeat(x), ncol = k)
+    if (auto_iter) {
+        min_delta <- 0.0
+    } else {
+        min_delta <- -1.0
+    }
 
     first <- !duplicated(docid(x))
     if (all(first) && gamma)
         warning("gamma has no effect when docid are all unique.", call. = FALSE, immediate. = TRUE)
-
+    if (batch_size == 0)
+        stop("batch_size musht be larger than 0", call. = FALSE)
     random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
-    result <- cpp_lda(x, k, max_iter, alpha, beta, gamma,
+    batch <- ceiling(ndoc(x) * batch_size)
+    thread <- check_integer(getOption("seededlda_threads", -1))
+
+    result <- cpp_lda(x, k, max_iter, min_delta, alpha, beta, gamma,
                       as(seeds, "dgCMatrix"), as(words, "dgCMatrix"),
-                      first, random, verbose)
+                      first, random, batch, verbose, thread)
 
     dimnames(result$words) <- list(colnames(x), label)
     dimnames(result$phi) <- list(label, colnames(x))
     dimnames(result$theta) <- list(rownames(x), label)
     result$data <- x
+    result$batch_size <- batch_size
     result$call <- match.call(sys.function(-2), call = sys.call(-2))
     result$version <- utils::packageVersion("seededlda")
     class(result) <- c("textmodel_lda", "textmodel", "list")

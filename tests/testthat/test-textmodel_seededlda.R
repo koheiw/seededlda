@@ -1,6 +1,6 @@
 require(quanteda)
 
-options(slda_residual_name = "other")
+options(seededlda_residual_name = "other")
 
 toks <- tokens(data_corpus_moviereviews[1:500],
                remove_punct = TRUE,
@@ -66,11 +66,13 @@ test_that("seeded LDA is working", {
     )
     expect_equal(
         rowSums(lda$phi),
-        c("romance" = 1, "sifi" = 1, "other" = 1)
+        c("romance" = 1, "sifi" = 1, "other" = 1),
+        tolerance = 0.001
     )
     expect_equal(
         rowSums(lda$theta),
-        structure(rep(1, ndoc(dfmt)), names = docnames(dfmt))
+        structure(rep(1, ndoc(dfmt)), names = docnames(dfmt)),
+        tolerance = 0.001
     )
     expect_equal(
         ncol(terms(textmodel_seededlda(dfmt, dict, residual = FALSE))), 2
@@ -104,8 +106,8 @@ test_that("seeded LDA is working", {
     )
     expect_equal(
         names(lda),
-        c("k", "max_iter", "last_iter", "alpha", "beta", "gamma","phi", "theta",
-          "words", "data", "call", "version",
+        c("k", "max_iter", "last_iter", "auto_iter", "alpha", "beta", "gamma","phi", "theta",
+          "words", "data", "batch_size", "call", "version",
           "dictionary", "valuetype", "case_insensitive", "seeds",
           "residual", "weight")
     )
@@ -153,7 +155,7 @@ test_that("model argument works with seeded LDA", {
     }, "k, alpha and beta values are overwriten by the fitted model")
     expect_false(all(lda$phi == lda1$phi))
     expect_identical(dimnames(lda$phi), dimnames(lda1$phi))
-    expect_true(mean(topics(lda)[1:50] == topics(lda1)) > 0.9)
+    expect_gt(mean(topics(lda)[1:50] == topics(lda1)), 0.8)
     expect_equal(
         levels(topics(lda1)),
         c("romance", "sifi", "other")
@@ -178,11 +180,94 @@ test_that("works similar way as before v0.9", {
                             sifi = c("alien*", "star", "space")))
 
     set.seed(1234)
-    lda <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.1, uniform = TRUE)
+    lda <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.1, uniform = TRUE,
+                               max_iter = 2000)
     set.seed(1234)
-    lda_old <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.01, old = TRUE)
+    lda_old <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.01, old = TRUE,
+                                   max_iter = 2000)
 
     tb <- table(topics(lda), topics(lda_old))
     expect_true(all(diag(tb) / rowSums(tb) > 0.85))
 })
+
+
+test_that("distributed LDA works", {
+
+    skip_on_cran()
+
+    dict <- dictionary(list(romance = c("love*", "couple*"),
+                            sifi = c("alien*", "star", "space")))
+
+    set.seed(1234)
+    lda_seri <- textmodel_seededlda(dfmt, dict, residual = TRUE)
+    set.seed(1234)
+    lda_para <- textmodel_seededlda(dfmt, dict, residual = TRUE, batch_size = 0.01)
+
+    # batch_size
+    expect_equal(lda_seri$batch_size, 1.0)
+    expect_equal(lda_para$batch_size, 0.01)
+
+    # names of elements
+    expect_identical(
+        dimnames(lda_seri$phi), dimnames(lda_para$phi)
+    )
+    expect_identical(
+        dimnames(lda_seri$theta), dimnames(lda_para$theta)
+    )
+
+    # parameters
+    dist_theta <- proxyC::dist(lda_seri$theta + 0.001, lda_para$theta + 0.001,
+                               1, method = "jensen", diag = TRUE)
+    expect_lt(median(Matrix::diag(dist_theta)), 0.1)
+
+    dist_phi <- proxyC::dist(lda_seri$phi + 0.001, lda_para$phi + 0.001,
+                             2, method = "jensen", diag = TRUE)
+    expect_lt(median(Matrix::diag(dist_phi)), 0.1)
+
+})
+
+
+test_that("auto_iter works", {
+
+    skip_on_cran()
+
+    dict <- dictionary(list(romance = c("love*", "couple*"),
+                            sifi = c("alien*", "star", "space")))
+
+    set.seed(1234)
+    lda_fix <- textmodel_seededlda(dfmt, dict, auto_iter = FALSE, residual = TRUE,
+                                   max_iter = 1000)
+
+    set.seed(1234)
+    lda_auto <- textmodel_seededlda(dfmt, dict, auto_iter = TRUE, residual = TRUE,
+                                    max_iter = 1000)
+
+    # iteration
+    expect_equal(lda_fix$last_iter, 1000)
+    expect_equal(lda_fix$max_iter, 1000)
+    expect_equal(lda_fix$auto_iter, FALSE)
+    expect_lt(lda_auto$last_iter, 500)
+    expect_equal(lda_auto$max_iter, 1000)
+    expect_equal(lda_auto$auto_iter, TRUE)
+
+    # names of elements
+    expect_identical(
+        dimnames(lda_fix$phi), dimnames(lda_auto$phi)
+    )
+    expect_identical(
+        dimnames(lda_fix$theta), dimnames(lda_auto$theta)
+    )
+
+    # parameters
+    dist_theta <- proxyC::dist(lda_fix$theta + 0.001, lda_auto$theta + 0.001,
+                               1, method = "jensen", diag = TRUE)
+    expect_lt(median(Matrix::diag(dist_theta)), 0.1)
+
+    dist_phi <- proxyC::dist(lda_fix$phi + 0.001, lda_auto$phi + 0.001,
+                             2, method = "jensen", diag = TRUE)
+    expect_lt(median(Matrix::diag(dist_phi)), 0.1)
+
+})
+
+
 

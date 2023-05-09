@@ -13,9 +13,11 @@ textmodel_seededlda(
   weight = 0.01,
   uniform = TRUE,
   max_iter = 2000,
+  auto_iter = FALSE,
   alpha = 0.5,
   beta = 0.1,
   gamma = 0,
+  batch_size = 1,
   ...,
   verbose = quanteda_options("verbose")
 )
@@ -31,15 +33,17 @@ topics.}
 \item{case_insensitive}{see \link[quanteda:valuetype]{quanteda::valuetype}}
 
 \item{residual}{the number of undefined topics. They are named "other" by
-default, but it can be changed via \code{base::options(slda_residual_name)}.}
+default, but it can be changed via \code{base::options(seededlda_residual_name)}.}
 
-\item{weight}{determines the size of pseudo counts given to matched seed
-words.}
+\item{weight}{determines the size of pseudo counts given to matched seed words.}
 
 \item{uniform}{if \code{FALSE}, adjusts the weights of seed words to make their
 total amount equal across topics.}
 
 \item{max_iter}{the maximum number of iteration in Gibbs sampling.}
+
+\item{auto_iter}{if \code{TRUE}, stops Gibbs sampling on convergence before
+reaching \code{max_iter}. See details.}
 
 \item{alpha}{the value to smooth topic-document distribution.}
 
@@ -48,6 +52,10 @@ total amount equal across topics.}
 \item{gamma}{a parameter to determine change of topics between sentences or
 paragraphs. When \code{gamma > 0}, Gibbs sampling of topics for the current
 document is affected by the previous document's topics.}
+
+\item{batch_size}{split the corpus into the smaller batches (specified in
+proportion) for distributed computing; it is disabled when a batch include
+all the documents \code{batch_size = 1.0}. See details.}
 
 \item{...}{passed to \link[quanteda:dfm_trim]{quanteda::dfm_trim} to restrict seed words based on
 their term or document frequency. This is useful when glob patterns in the
@@ -97,4 +105,7 @@ doi:10.1177/0894439320907027. \emph{Social Science Computer Review}.
 Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA:
 A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
 \emph{Social Science Computer Review}.
+}
+\seealso{
+\link[keyATM:keyATM]{keyATM}
 }

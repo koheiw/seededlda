@@ -8,8 +8,10 @@ textmodel_seqlda(
   x,
   k = 10,
   max_iter = 2000,
+  auto_iter = FALSE,
   alpha = 0.5,
   beta = 0.1,
+  batch_size = 1,
   model = NULL,
   verbose = quanteda_options("verbose")
 )
@@ -21,9 +23,16 @@ textmodel_seqlda(
 
 \item{max_iter}{the maximum number of iteration in Gibbs sampling.}
 
+\item{auto_iter}{if \code{TRUE}, stops Gibbs sampling on convergence before
+reaching \code{max_iter}. See details.}
+
 \item{alpha}{the value to smooth topic-document distribution.}
 
 \item{beta}{the value to smooth topic-word distribution.}
+
+\item{batch_size}{split the corpus into the smaller batches (specified in
+proportion) for distributed computing; it is disabled when a batch include
+all the documents \code{batch_size = 1.0}. See details.}
 
 \item{model}{a fitted LDA model; if provided, \code{textmodel_lda()} inherits
 parameters from an existing model. See details.}
