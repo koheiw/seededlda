@@ -241,8 +241,13 @@ void LDA::estimate() {
         Rprintf(" ...using up to %d threads for distributed computing\n", thread);
         Rprintf(" ......allocating %d documents to each thread\n", batch);
     }
-    if (verbose)
-        Rprintf(" ...Gibbs sampling in %d iterations\n", max_iter);
+    if (verbose) {
+        if (min_delta == -1) {
+            Rprintf(" ...Gibbs sampling in %d iterations\n", max_iter);
+        } else {
+            Rprintf(" ...Gibbs sampling in up to %d iterations\n", max_iter);
+        }
+    }
 
     int change, change_pv = 0;
     auto start = std::chrono::high_resolution_clock::now();
