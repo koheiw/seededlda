@@ -201,7 +201,7 @@ tfm <- function(x, dictionary,
     x <- dfm_group(x, rep("text", ndoc(x)))
     result <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
     for (i in seq_along(dictionary)) {
-        temp <- dfm_select(x, pattern = dictionary[i])
+        temp <- dfm_select(x, pattern = dictionary[i], verbose = FALSE)
         temp <- dfm_match(temp, features = feat)
         result <- rbind(result, as(temp, "dgCMatrix"))
     }
