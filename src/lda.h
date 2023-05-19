@@ -305,7 +305,7 @@ void LDA::estimate() {
                 nw += nw_tp;
                 nwsum += nwsum_tp;
                 mutex_sync.unlock();
-            }, tbb::auto_partitioner());
+            }, tbb::static_partitioner());
         });
         if (iter > 0 && iter % 100 == 0) {
             double delta = (double)(change_pv - change) / (double)(iter_inc * N);
