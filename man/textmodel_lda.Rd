@@ -69,7 +69,7 @@ synchronization of parameters in every 10 iteration. Parallel processing is
 more efficient when \code{batch_size} is small (e.g. 0.01). The algorithm is the
 Approximate Distributed LDA proposed by Newman et al. (2009). User can
 changed the number of sub-processes used for the parallel computing via
-\code{base::options(seededlda_threads)}.
+\code{options(seededlda_threads)}.
 
 To predict topics of new documents (i.e. out-of-sample), first, create a
 new LDA model from a existing LDA model passed to \code{model} in
