@@ -60,18 +60,22 @@ Seeded LDA by setting \code{gamma > 0}.
 \details{
 If \code{auto_iter = TRUE}, the iteration stops even before \code{max_iter}
 when \code{delta <= 0}. \code{delta} is computed to measure the changes in the number
-of words whose topics are updated by the Gibbs sampler in every 100 iteration
-as shown in the verbose message.
+of words whose topics are updated by the Gibbs sampler in every 100
+iteration as shown in the verbose message.
 
-If \code{batch_size < 1.0}, the corpus is partitioned into sub-corpora of `ndoc(x)
-\itemize{
-\item batch_size\verb{documents for Gibbs sampling in sub-processes with synchronization of parameters in every 10 iteration. Parallel processing is more efficient when}batch_size\verb{is small (e.g. 0.01) but the sub-corpora should be sufficiently large to produce results similar to those from serial processing. The algorithm is the Approximate Distributed LDA proposed by Newman et al. (2009). User can changed the number of sub-processes used for the parallel computing via}base::options(seededlda_threads)`.
-}
+If \code{batch_size < 1.0}, the corpus is partitioned into sub-corpora of
+\code{ndoc(x) * batch_size} documents for Gibbs sampling in sub-processes with
+synchronization of parameters in every 10 iteration. Parallel processing is
+more efficient when \code{batch_size} is small (e.g. 0.01). The algorithm is the
+Approximate Distributed LDA proposed by Newman et al. (2009). User can
+changed the number of sub-processes used for the parallel computing via
+\code{base::options(seededlda_threads)}.
 
-To predict topics of new documents (i.e. out-of-sample), first, create a new
-LDA model from a existing LDA model passed to \code{model} in \code{textmodel_lda()};
-second, apply \code{\link[=topics]{topics()}} to the new model. The \code{model} argument takes objects
-created either by \code{textmodel_lda()} or \code{textmodel_seededlda()}.
+To predict topics of new documents (i.e. out-of-sample), first, create a
+new LDA model from a existing LDA model passed to \code{model} in
+\code{textmodel_lda()}; second, apply \code{\link[=topics]{topics()}} to the new model. The \code{model}
+argument takes objects created either by \code{textmodel_lda()} or
+\code{textmodel_seededlda()}.
 }
 \examples{
 \donttest{

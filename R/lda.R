@@ -21,23 +21,23 @@
 #' @param model a fitted LDA model; if provided, `textmodel_lda()` inherits
 #'   parameters from an existing model. See details.
 #' @details If `auto_iter = TRUE`, the iteration stops even before `max_iter`
-#' when `delta <= 0`. `delta` is computed to measure the changes in the number
-#' of words whose topics are updated by the Gibbs sampler in every 100 iteration
-#' as shown in the verbose message.
+#'   when `delta <= 0`. `delta` is computed to measure the changes in the number
+#'   of words whose topics are updated by the Gibbs sampler in every 100
+#'   iteration as shown in the verbose message.
 #'
-#' If `batch_size < 1.0`, the corpus is partitioned into sub-corpora of `ndoc(x)
-#' * batch_size` documents for Gibbs sampling in sub-processes with
-#' synchronization of parameters in every 10 iteration. Parallel processing is
-#' more efficient when `batch_size` is small (e.g. 0.01) but the sub-corpora
-#' should be sufficiently large to produce results similar to those from serial
-#' processing. The algorithm is the Approximate Distributed LDA proposed by
-#' Newman et al. (2009). User can changed the number of sub-processes used for the
-#' parallel computing via `base::options(seededlda_threads)`.
+#'   If `batch_size < 1.0`, the corpus is partitioned into sub-corpora of
+#'   `ndoc(x) * batch_size` documents for Gibbs sampling in sub-processes with
+#'   synchronization of parameters in every 10 iteration. Parallel processing is
+#'   more efficient when `batch_size` is small (e.g. 0.01). The algorithm is the
+#'   Approximate Distributed LDA proposed by Newman et al. (2009). User can
+#'   changed the number of sub-processes used for the parallel computing via
+#'   `base::options(seededlda_threads)`.
 #'
-#' To predict topics of new documents (i.e. out-of-sample), first, create a new
-#' LDA model from a existing LDA model passed to `model` in `textmodel_lda()`;
-#' second, apply [topics()] to the new model. The `model` argument takes objects
-#' created either by `textmodel_lda()` or `textmodel_seededlda()`.
+#'   To predict topics of new documents (i.e. out-of-sample), first, create a
+#'   new LDA model from a existing LDA model passed to `model` in
+#'   `textmodel_lda()`; second, apply [topics()] to the new model. The `model`
+#'   argument takes objects created either by `textmodel_lda()` or
+#'   `textmodel_seededlda()`.
 #'
 #' @return `textmodel_seededlda()` and `textmodel_lda()` returns a list of model
 #'   parameters. `theta` is the distribution of topics over documents; `phi` is
