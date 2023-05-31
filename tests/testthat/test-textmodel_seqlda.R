@@ -52,8 +52,8 @@ test_that("sequential LDA is working", {
 test_that("shortcut function works", {
 
     lda <- textmodel_seqlda(dfmt, k = 5, max_iter = 500)
-    expect_equal(lda1$gamma, 0.5)
-    expect_equal(lda1$max_iter, 500)
+    expect_equal(lda$gamma, 0.5)
+    expect_equal(lda$max_iter, 500)
 
 })
 
