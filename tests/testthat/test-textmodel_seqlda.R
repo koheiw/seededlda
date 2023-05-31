@@ -9,16 +9,14 @@ dfmt <- dfm(toks) %>%
     dfm_remove(stopwords(), min_nchar = 2) %>%
     dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
 
+test_that("sequential LDA is working", {
 
-test_that("gamma is working", {
-
+    set.seed(1234)
+    lda1 <- textmodel_lda(dfmt, k = 5, gamma = 0)
 
     # make docid all unique
     dfmt2 <- dfmt
     dfmt2@docvars$docid_ <- dfmt2@docvars$docname_
-
-    set.seed(1234)
-    lda1 <- textmodel_lda(dfmt, k = 5, gamma = 0)
 
     set.seed(1234)
     expect_warning(
@@ -49,10 +47,6 @@ test_that("gamma is working", {
         "The value of gamma must be between 0 and 1"
     )
 
-    set.seed(1234)
-    lda1 <- textmodel_lda(dfmt, k = 5, gamma = 0.5, max_iter = 500)
-    set.seed(1234)
-    lda2 <- textmodel_seqlda(dfmt, k = 5, max_iter = 500)
 })
 
 test_that("shortcut function works", {
