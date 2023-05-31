@@ -48,6 +48,23 @@ document. \code{textmodel_seqlda()} is a shortcut equivalent to
 \code{textmodel_lda(gamma = 0.5)}. Seeded Sequential LDA is
 \code{textmodel_seededlda(gamma = 0.5)}.
 }
+\examples{
+\donttest{
+require(seededlda)
+require(quanteda)
+
+corp <- head(data_corpus_moviereviews, 500) \%>\%
+    corpus_reshape()
+toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE)
+dfmt <- dfm(toks) \%>\%
+    dfm_remove(stopwords("en"), min_nchar = 2) \%>\%
+    dfm_trim(max_docfreq = 0.01, docfreq_type = "prop")
+
+lda_seq <- textmodel_seqlda(dfmt, k = 6, max_iter = 500) # 6 topics
+terms(lda_seq)
+topics(lda_seq)
+}
+}
 \references{
 Du, Lan et al. (2012). "Sequential Latent Dirichlet Allocation".
 doi.org/10.1007/s10115-011-0425-1. \emph{Knowledge and Information Systems}.
