@@ -102,9 +102,9 @@ Watanabe, Kohei & Zhou, Yuan (2020). "Theory-Driven Analysis of Large
 Corpora: Semisupervised Topic Classification of the UN Speeches".
 doi:10.1177/0894439320907027. \emph{Social Science Computer Review}.
 
-Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA:
+Watanabe, Kohei & Baturo, Alexander. (2023). "Seeded Sequential LDA:
 A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
-\emph{Social Science Computer Review}.
+doi:10.1177/08944393231178605. \emph{Social Science Computer Review}.
 }
 \seealso{
 \link[keyATM:keyATM]{keyATM}

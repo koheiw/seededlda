@@ -32,9 +32,9 @@ Deveaud, Romain et al. (2014). "Accurate and Effective Latent
 Concept Modeling for Ad Hoc Information Retrieval".
 doi:10.3166/DN.17.1.61-84. \emph{Document Numérique}.
 
-Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA:
+Watanabe, Kohei & Baturo, Alexander. (2023). "Seeded Sequential LDA:
 A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
-\emph{Social Science Computer Review}.
+doi:10.1177/08944393231178605. \emph{Social Science Computer Review}.
 }
 \seealso{
 \link{sizes}

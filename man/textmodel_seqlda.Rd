@@ -52,7 +52,7 @@ document. \code{textmodel_seqlda()} is a shortcut equivalent to
 Du, Lan et al. (2012). "Sequential Latent Dirichlet Allocation".
 doi.org/10.1007/s10115-011-0425-1. \emph{Knowledge and Information Systems}.
 
-Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA: A
-Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
-\emph{Social Science Computer Review}.
+Watanabe, Kohei & Baturo, Alexander. (2023). "Seeded Sequential LDA:
+A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+doi:10.1177/08944393231178605. \emph{Social Science Computer Review}.
 }

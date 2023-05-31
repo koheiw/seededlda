@@ -25,9 +25,9 @@
 #'   Corpora: Semisupervised Topic Classification of the UN Speeches".
 #'   doi:10.1177/0894439320907027. *Social Science Computer Review*.
 #'
-#'   Watanabe, Kohei & Baturo, Alexander. (forthcoming). "Seeded Sequential LDA:
+#'   Watanabe, Kohei & Baturo, Alexander. (2023). "Seeded Sequential LDA:
 #'   A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
-#'   *Social Science Computer Review*.
+#'   doi:10.1177/08944393231178605. *Social Science Computer Review*.
 #' @seealso [keyATM][keyATM::keyATM]
 #' @examples
 #' \donttest{
