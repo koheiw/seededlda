@@ -38,11 +38,11 @@ print(dfmt)
 
 
 ```{r}
-lda_para <- textmodel_lda(dfmt, k = 10, batch_size = 0.1, verbose = TRUE)
+lda_dist <- textmodel_lda(dfmt, k = 10, batch_size = 0.1, verbose = TRUE)
 ```
 
-```{r}
-terms(lda_para)
+```{r, results='asis'}
+knitr::kable(terms(lda_dist))
 ```
 
 ### Distributed LDA with convergence detection
@@ -52,8 +52,8 @@ lda_auto <- textmodel_lda(dfmt, k = 10, batch_size = 0.1, auto_iter = TRUE,
                       verbose = TRUE)
 ```
 
-```{r}
-terms(lda_auto)
+```{r, results='asis'}
+knitr::kable(terms(lda_auto))
 ```
 
 ### References

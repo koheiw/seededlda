@@ -61,7 +61,7 @@ dat$topic <- topics(lda)
 ```
 
 ```{r, results='asis'}
-knitr::kable(head(dat[,c("topic", "date", "head")], 10))
+knitr::kable(head(dat[,c("date", "topic", "head")], 10))
 ```
 
 ### References
