@@ -1,0 +1,70 @@
+---
+title: "Introduction to seededlda"
+subtitle: "The package for semisupervised topic modeling"
+output: 
+  html_document:
+    toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = FALSE, comment = "#>", 
+                      fig.width = 8, fig.height = 4, dpi = 150, out.width = 760)
+```
+
+
+```{r message=FALSE}
+library(seededlda)
+library(quanteda)
+```
+
+### Preperation
+
+
+```{r include=FALSE}
+if (!file.exists("data_corpus_sputnik2022.rds")) {
+    download.file("https://www.dropbox.com/s/abme18nlrwxgmz8/data_corpus_sputnik2022.rds?dl=1",
+                  "data_corpus_sputnik2022.rds", mode = "wb")
+}
+```
+
+```{r}
+corp <- readRDS("data_corpus_sputnik2022.rds")
+toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, 
+               remove_numbers = TRUE, remove_url = TRUE)
+dfmt <- dfm(toks) |> 
+    dfm_remove(stopwords("en")) |>
+    dfm_remove("*@*") |>
+    dfm_trim(max_docfreq = 1000)
+print(dfmt)
+```
+
+
+### Standard LDA
+
+```{r}
+lda <- textmodel_lda(dfmt, k = 10, verbose = TRUE)
+```
+
+### Topic terms
+
+```{r, results='asis'}
+knitr::kable(terms(lda))
+```
+
+### Document topics
+
+```{r}
+dat <- docvars(lda$data)
+dat$topic <- topics(lda)
+```
+
+```{r, results='asis'}
+knitr::kable(head(dat[,c("topic", "date", "head")], 10))
+```
+
+### References
+
+- Heinrich, G. (2008). Parameter estimation for text analysis. http://www.arbylon.net/publications/text-est.pdf
+- Watanabe, K., & Baturo, A. (2023). Seeded Sequential LDA: A Semi-Supervised Algorithm for Topic-Specific Analysis of Sentences. Social Science Computer Review. https://doi.org/10.1177/08944393231178605

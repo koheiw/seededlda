@@ -1,0 +1,84 @@
+---
+title: "Sequential LDA"
+subtitle: "LDA for sentence-level topic classification"
+output: 
+  html_document:
+    toc: true
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", 
+                      fig.width = 8, fig.height = 4, dpi = 150, out.width = 760)
+```
+
+
+```{r message=FALSE}
+library(seededlda)
+library(quanteda)
+library(ggmatplot)
+```
+
+### Preperation
+
+We will analyze the same [corpus](https://www.dropbox.com/s/5tlux53aukf3uqs/data_corpus_sputnik2022.rds?dl=1) as the [introduction](./introduction.html), so too the pre-processing.
+
+```{r}
+corp <- readRDS("data_corpus_sputnik2022.rds") |>
+    corpus_reshape()
+toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, 
+               remove_numbers = TRUE, remove_url = TRUE)
+dfmt <- dfm(toks) |> 
+    dfm_remove("*@*") |>
+    dfm_remove(stopwords("en"))
+print(dfmt)
+```
+
+### Sequential LDA
+
+```{r}
+lda_seq <- textmodel_lda(dfmt, k = 10, gamma = 0.5, 
+                         batch_size = 0.1, auto_iter = TRUE,
+                         verbose = TRUE)
+```
+
+```{r, results='asis'}
+knitr::kable(terms(lda_seq))
+```
+
+```{r}
+ggmatplot(lda_seq$theta[paste0("s1104078647.", 1:100),], 
+          plot_type = "line", linetype = 1,
+          xlab = "Sentence", ylab = "Probability")
+```
+
+
+### Seeded Sequential LDA
+
+```{r}
+dict <- dictionary(file = "dictionary.yml")
+print(dict)
+```
+
+```{r}
+lda_seed <- textmodel_seededlda(dfmt, dict, residual = 2, gamma = 0.5, 
+                                batch_size = 0.1, auto_iter = TRUE,
+                                verbose = TRUE)
+```
+
+```{r, results='asis'}
+knitr::kable(terms(lda_seed))
+```
+
+
+```{r}
+ggmatplot(lda_seed$theta[paste0("s1104078647.", 1:100),], 
+          plot_type = "line", linetype = 1, 
+          xlab = "Sentence", ylab = "Probability")
+```
+
+
+### References
+
+- Du, L., Buntine, W., Jin, H., & Chen, C. (2012). Sequential latent Dirichlet allocation. Knowledge and Information Systems, 31(3), 475–503. https://doi.org/10.1007/s10115-011-0425-1
+- Watanabe, K., & Baturo, A. (2023). Seeded Sequential LDA: A Semi-Supervised Algorithm for Topic-Specific Analysis of Sentences. Social Science Computer Review. https://doi.org/10.1177/08944393231178605
+

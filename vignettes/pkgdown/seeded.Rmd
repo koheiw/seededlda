@@ -1,0 +1,70 @@
+---
+title: "Seeded LDA"
+subtitle: "LDA for semi-supervised topic classification"
+output: 
+  html_document:
+    toc: true
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = FALSE, comment = "#>", 
+                      fig.width = 8, fig.height = 4, dpi = 150, out.width = 760)
+```
+
+In this example, we will analyze how much the proposition of [the European Gas Demand Reduction Plan](https://ec.europa.eu/commission/presscorner/detail/en/ip_22_4608) on 20 July affected Sputnik's coverage of energy issues in the United States and the European Union.
+
+```{r message=FALSE}
+library(seededlda)
+library(quanteda)
+library(ggplot2)
+```
+
+### Preperation
+
+```{r}
+corp <- readRDS("data_corpus_sputnik2022.rds")
+toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, 
+               remove_numbers = TRUE, remove_url = TRUE)
+dfmt <- dfm(toks) |> 
+    dfm_group() |>
+    dfm_remove("*@*") |>
+    dfm_remove(stopwords("en")) |>
+    dfm_trim(max_docfreq = 1000)
+print(dfmt)
+```
+
+We will use a [dictionary](https://github.com/koheiw/seededlda/tree/master/vignettes) of keywords in this example. 
+
+```{r}
+dict <- dictionary(file = "dictionary.yml")
+print(dict)
+```
+
+### Seeded LDA
+
+```{r}
+lda_seed <- textmodel_seededlda(dfmt, dict, batch_size = 0.1, auto_iter = TRUE,
+                                verbose = TRUE)
+```
+
+```{r, results='asis'}
+knitr::kable(terms(lda_seed))
+```
+
+### Seeded LDA with residual topics
+
+```{r}
+lda_res <- textmodel_seededlda(dfmt, dict, residual = 2, batch_size = 0.1, auto_iter = TRUE,
+                                verbose = TRUE)
+```
+
+```{r, results='asis'}
+knitr::kable(terms(lda_res))
+```
+
+### References
+
+- Lu, B., Ott, M., Cardie, C., & Tsou, B. K. (2011). Multi-aspect sentiment analysis with topic models. 2011 IEEE 11th International Conference on Data Mining Workshops, 81–88.
+- Watanabe, K., & Baturo, A. (2023). Seeded Sequential LDA: A Semi-Supervised Algorithm for Topic-Specific Analysis of Sentences. Social Science Computer Review. https://doi.org/10.1177/08944393231178605
+
+

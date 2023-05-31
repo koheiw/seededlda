@@ -1,0 +1,62 @@
+---
+title: "Distributed LDA"
+subtitle: "LDA with parallel computing"
+output: 
+  html_document:
+    toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", 
+                      fig.width = 8, fig.height = 4, dpi = 150, out.width = 760)
+```
+
+In this example, we will analyze how much the proposition of [the European Gas Demand Reduction Plan](https://ec.europa.eu/commission/presscorner/detail/en/ip_22_4608) on 20 July affected Sputnik's coverage of energy issues in the United States and the European Union.
+
+```{r message=FALSE}
+library(seededlda)
+library(quanteda)
+```
+
+### Preperation
+
+```{r}
+corp <- readRDS("data_corpus_sputnik2022.rds")
+toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, 
+               remove_numbers = TRUE, remove_url = TRUE)
+dfmt <- dfm(toks) |> 
+    dfm_remove(stopwords("en")) |>
+    dfm_remove("*@*") |>
+    dfm_trim(max_docfreq = 1000)
+print(dfmt)
+```
+
+
+### Distributed LDA
+
+
+```{r}
+lda_para <- textmodel_lda(dfmt, k = 10, batch_size = 0.1, verbose = TRUE)
+```
+
+```{r}
+terms(lda_para)
+```
+
+### Distributed LDA with convergence detection
+
+```{r}
+lda_auto <- textmodel_lda(dfmt, k = 10, batch_size = 0.1, auto_iter = TRUE,
+                      verbose = TRUE)
+```
+
+```{r}
+terms(lda_auto)
+```
+
+### References
+
+- Newman, D., Asuncion, A., Smyth, P., & Welling, M. (2009). Distributed Algorithms for Topic Models. The Journal of Machine Learning Research, 10, 1801–1828.
+- Watanabe, K. (2023). Speed Up Topic Modeling: Distributed Computing and Convergence Detection for LDA, working paper.
