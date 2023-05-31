@@ -21,7 +21,7 @@ textmodel_seqlda <- function(
         x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, batch_size = 1.0,
         model = NULL, verbose = quanteda_options("verbose")
 ) {
-    UseMethod("textmodel_sequentiallda")
+    UseMethod("textmodel_seqlda")
 }
 #' @export
 textmodel_seqlda.dfm <- function(
