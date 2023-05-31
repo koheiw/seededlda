@@ -61,15 +61,12 @@
 #' corp <- head(data_corpus_moviereviews, 500)
 #' toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE)
 #' dfmt <- dfm(toks) %>%
-#'     dfm_remove(stopwords('en'), min_nchar = 2) %>%
-#'     dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile",
-#'              max_docfreq = 0.1, docfreq_type = "prop")
+#'     dfm_remove(stopwords("en"), min_nchar = 2) %>%
+#'     dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
 #'
-#' lda <- textmodel_lda(head(dfmt, 450), 6)
+#' lda <- textmodel_lda(dfmt, k = 6, max_iter = 500) # 6 topics
 #' terms(lda)
 #' topics(lda)
-#' lda2 <- textmodel_lda(tail(dfmt, 50), model = lda) # new documents
-#' topics(lda2)
 #' }
 textmodel_lda <- function(
     x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, gamma = 0,

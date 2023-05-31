@@ -1,3 +1,7 @@
+## Changes in v1.0.1
+
+* Fix the error when `textmodel_seqlda()` is called.
+
 ## Changes in v1.0.0
 
 * Add `auto_iter` to `textmodel_seededlda()` and `textmodel_lda()` to stop Gibbs sampling automatically before `max_iter` is reached.
