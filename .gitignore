@@ -4,3 +4,4 @@
 .Ruserdata
 src/*.o
 src/*.dll
+docs
