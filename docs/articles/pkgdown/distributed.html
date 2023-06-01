@@ -317,11 +317,11 @@ LDA</a>.</p>
 <div class="section level3">
 <h3 id="distributed-lda-with-convergence-detection">Distributed LDA with convergence detection<a class="anchor" aria-label="anchor" href="#distributed-lda-with-convergence-detection"></a>
 </h3>
-<p>The algorithm fits LDA through 2000 iterations by default to produce
-reliable results, but we can can minimize the number using the
+<p>By default, the algorithm fits LDA through as many as 2000 iterations
+for reliable results, but we can minimize the number using the
 convergence detection mechanism to further speed up your analysis. When
 <code>auto_iter = TRUE</code>, the algorithm stop inference on
-convergence (<code>delta &lt; 0</code>) and return the results.</p>
+convergence (<code>delta &lt; 0</code>) and return the result.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lda_auto</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/textmodel_lda.html">textmodel_lda</a></span><span class="op">(</span><span class="va">dfmt</span>, k <span class="op">=</span> <span class="fl">10</span>, batch_size <span class="op">=</span> <span class="fl">0.01</span>, auto_iter <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                          verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>

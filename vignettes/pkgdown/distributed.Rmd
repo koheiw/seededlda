@@ -50,7 +50,7 @@ knitr::kable(terms(lda_dist))
 
 ### Distributed LDA with convergence detection
 
-The algorithm fits LDA through 2000 iterations by default to produce reliable results, but we can can minimize the number using the convergence detection mechanism to further speed up your analysis. When `auto_iter = TRUE`, the algorithm stop inference on convergence (`delta < 0`) and return the results.
+By default, the algorithm fits LDA through as many as 2000 iterations for reliable results, but we can minimize the number using the convergence detection mechanism to further speed up your analysis. When `auto_iter = TRUE`, the algorithm stop inference on convergence (`delta < 0`) and return the result.
 
 ```{r, cache=TRUE}
 lda_auto <- textmodel_lda(dfmt, k = 10, batch_size = 0.01, auto_iter = TRUE,
