@@ -13,7 +13,7 @@ knitr::opts_chunk$set(collapse = FALSE, comment = "#>",
                       fig.width = 8, fig.height = 4, dpi = 150, out.width = 760)
 ```
 
-**seededlda** was crated mainly for semi-supervised topic modeling but it can perform unsupervised topic modeling too. I explain the basic functions of the package taking unsupervised topic modeling as an example in this page and discuss semi-supervised topic modeling in [a separate page](seeded.html).
+**seededlda** was created mainly for semi-supervised topic modeling but it can perform unsupervised topic modeling too. I explain the basic functions of the package taking unsupervised topic modeling as an example in this page and discuss semi-supervised topic modeling in [a separate page](seeded.html).
 
 ### Preperation
 
@@ -42,7 +42,7 @@ print(dfmt)
 
 ### Standard LDA
 
-You can fit LDA on the DFM only by setting the number of topics `k = 10` to identify. When `verbose = TRUE`, it shows the progress of the inference through iterations. It takes long to fit LDA on a large corpus, but [distributed algorithm](distributed.html) will speed up your analysis dramatically.
+You can fit LDA on the DFM only by setting the number of topics `k = 10` to identify. When `verbose = TRUE`, it shows the progress of the inference through iterations. It takes long time to fit LDA on a large corpus, but the [distributed algorithm](distributed.html) will speed up your analysis dramatically.
 
 ```{r, cache=TRUE}
 lda <- textmodel_lda(dfmt, k = 10, verbose = TRUE)
@@ -50,7 +50,7 @@ lda <- textmodel_lda(dfmt, k = 10, verbose = TRUE)
 
 ### Topic terms
 
-Once model is fit, you can can interpret the topics by reading the most salient words in the topics. `terms()` shows words that are most frequent in each topic at the top of the matrix.
+Once the model is fit, you can can interpret the topics by reading the most salient words in the topics. `terms()` shows words that are most frequent in each topic at the top of the matrix.
 
 ```{r, results='asis'}
 knitr::kable(terms(lda))

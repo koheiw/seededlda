@@ -85,7 +85,7 @@ semi-supervised topic modeling</h3>
 
     
     
-<p><strong>seededlda</strong> was crated mainly for semi-supervised
+<p><strong>seededlda</strong> was created mainly for semi-supervised
 topic modeling but it can perform unsupervised topic modeling too. I
 explain the basic functions of the package taking unsupervised topic
 modeling as an example in this page and discuss semi-supervised topic
@@ -135,9 +135,9 @@ matrix (DFM).</p>
 </h3>
 <p>You can fit LDA on the DFM only by setting the number of topics
 <code>k = 10</code> to identify. When <code>verbose = TRUE</code>, it
-shows the progress of the inference through iterations. It takes long to
-fit LDA on a large corpus, but <a href="distributed.html">distributed
-algorithm</a> will speed up your analysis dramatically.</p>
+shows the progress of the inference through iterations. It takes long
+time to fit LDA on a large corpus, but the <a href="distributed.html">distributed algorithm</a> will speed up your
+analysis dramatically.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lda</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/textmodel_lda.html">textmodel_lda</a></span><span class="op">(</span><span class="va">dfmt</span>, k <span class="op">=</span> <span class="fl">10</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; Fitting LDA with 10 topics</span></span>
@@ -169,9 +169,9 @@ algorithm</a> will speed up your analysis dramatically.</p>
 <div class="section level3">
 <h3 id="topic-terms">Topic terms<a class="anchor" aria-label="anchor" href="#topic-terms"></a>
 </h3>
-<p>Once model is fit, you can can interpret the topics by reading the
-most salient words in the topics. <code><a href="../../reference/terms.html">terms()</a></code> shows words that
-are most frequent in each topic at the top of the matrix.</p>
+<p>Once the model is fit, you can can interpret the topics by reading
+the most salient words in the topics. <code><a href="../../reference/terms.html">terms()</a></code> shows words
+that are most frequent in each topic at the top of the matrix.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../../reference/terms.html">terms</a></span><span class="op">(</span><span class="va">lda</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
