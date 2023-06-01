@@ -4,5 +4,4 @@
 .Ruserdata
 src/*.o
 src/*.dll
-docs
 *_cache
