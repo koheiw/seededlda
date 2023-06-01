@@ -13,7 +13,7 @@ knitr::opts_chunk$set(collapse = FALSE, comment = "#>",
                       fig.width = 8, fig.height = 4, dpi = 150, out.width = 760)
 ```
 
-**seededlda** was crated mainly for semi-supervised topic modeling but it can perform unsupervised topic modeling too. I explain the basic functions of the package taking unsupervised topic modeling as an example in this page and discuss semi-supervised topic modeling in [a separate page](seeded.html).
+**seededlda** was created mainly for semi-supervised topic modeling but it can perform unsupervised topic modeling too. I explain the basic functions of the package taking unsupervised topic modeling as an example in this page and discuss semi-supervised topic modeling in [a separate page](seeded.html).
 
 ### Preperation
 
