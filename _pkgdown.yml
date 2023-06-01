@@ -1,4 +1,4 @@
 url: ~
 template:
   bootstrap: 5
-  bootswatch: flatly
+  bootswatch: litera

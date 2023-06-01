@@ -1,6 +1,6 @@
 ---
 title: "Distributed LDA"
-subtitle: "LDA with parallel computing"
+subtitle: "Topic modeling with parallel computing"
 output: 
   html_document:
     toc: true

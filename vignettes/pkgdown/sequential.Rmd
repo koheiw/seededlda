@@ -1,6 +1,6 @@
 ---
 title: "Sequential LDA"
-subtitle: "LDA for sentence-level topic classification"
+subtitle: "Sentence-level topic modeling"
 output: 
   html_document:
     toc: true

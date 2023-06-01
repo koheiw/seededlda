@@ -49,7 +49,7 @@ devtools::install_github("koheiw/seededlda")
 Please visit the package website for examples:
 
 - [Introduction](https://koheiw.github.io/seededlda/articles/pkgdown/basic.html): basic functions of the package
-- [Distributed LDA](https://koheiw.github.io/seededlda/articles/pkgdown/distributed.html): fast topic modeling
+- [Distributed LDA](https://koheiw.github.io/seededlda/articles/pkgdown/distributed.html): topic modeling with parallel computing
 - [Seeded LDA](https://koheiw.github.io/seededlda/articles/pkgdown/seeded.html): semi-supervised topic modeling
 - [Sequential LDA](https://koheiw.github.io/seededlda/articles/pkgdown/sequential.html): sentence-level topic modeling
 

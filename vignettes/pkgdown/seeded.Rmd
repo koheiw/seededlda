@@ -1,6 +1,6 @@
 ---
 title: "Seeded LDA"
-subtitle: "LDA for semi-supervised topic classification"
+subtitle: "Semi-supervised topic modeling"
 output: 
   html_document:
     toc: true
