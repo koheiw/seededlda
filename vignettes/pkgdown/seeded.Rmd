@@ -11,29 +11,27 @@ knitr::opts_chunk$set(collapse = FALSE, comment = "#>",
                       fig.width = 8, fig.height = 4, dpi = 150, out.width = 760)
 ```
 
-In this example, we will analyze how much the proposition of [the European Gas Demand Reduction Plan](https://ec.europa.eu/commission/presscorner/detail/en/ip_22_4608) on 20 July affected Sputnik's coverage of energy issues in the United States and the European Union.
+Seeded LDA can identify pre-defined topics in the corpus with a small number of seed words. Seeded LDA is useful when you want to match topics with theoretical concepts in deductive analysis.
+
+### Preperation
+
+We prepare the Sputnik corpus on Ukraine in the same way as in [the introduction](basic.html).
 
 ```{r message=FALSE}
 library(seededlda)
 library(quanteda)
-library(ggplot2)
-```
 
-### Preperation
-
-```{r}
 corp <- readRDS("data_corpus_sputnik2022.rds")
 toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, 
                remove_numbers = TRUE, remove_url = TRUE)
 dfmt <- dfm(toks) |> 
-    dfm_group() |>
-    dfm_remove("*@*") |>
     dfm_remove(stopwords("en")) |>
-    dfm_trim(max_docfreq = 1000)
+    dfm_remove("*@*") |>
+    dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
 print(dfmt)
 ```
 
-We will use a [dictionary](https://github.com/koheiw/seededlda/tree/master/vignettes) of keywords in this example. 
+We will use seed words in a [dictionary](https://github.com/koheiw/seededlda/tree/master/vignettes) to define the topics.
 
 ```{r}
 dict <- dictionary(file = "dictionary.yml")
@@ -42,8 +40,10 @@ print(dict)
 
 ### Seeded LDA
 
-```{r}
-lda_seed <- textmodel_seededlda(dfmt, dict, batch_size = 0.1, auto_iter = TRUE,
+The function does not have `k` because it determines the number of topics based on the keys. You can use the distributed algorithm `batch_size = 0.01` and convergence detection `auto_iter = TRUE` to speed up analysis.
+
+```{r, cache=TRUE}
+lda_seed <- textmodel_seededlda(dfmt, dict, batch_size = 0.01, auto_iter = TRUE,
                                 verbose = TRUE)
 ```
 
@@ -53,8 +53,10 @@ knitr::kable(terms(lda_seed))
 
 ### Seeded LDA with residual topics
 
-```{r}
-lda_res <- textmodel_seededlda(dfmt, dict, residual = 2, batch_size = 0.1, auto_iter = TRUE,
+Seeded LDA can have both seeded and unseeded topics. If `residula = 2`, two unseeded topics are added to the model. You can change the name of these topics through `options(seededlda_residual_name)`.
+
+```{r, cache=TRUE}
+lda_res <- textmodel_seededlda(dfmt, dict, residual = 2, batch_size = 0.01, auto_iter = TRUE,
                                 verbose = TRUE)
 ```
 
