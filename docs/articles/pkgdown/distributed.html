@@ -86,10 +86,9 @@ parallel computing</h3>
     
     
 <p>Distributed LDA can dramatically speeds up your analysis by using
-multiple processors on your computer. The corpus and the number of topic
-is small in this example, but the distributed algorithm is highly
-effective in identifying many topics (<code>k &gt; 100</code>) in a
-large corpus.</p>
+multiple processors on your computer. The number of topic is small in
+this example, but the distributed algorithm is highly effective in
+identifying many topics (<code>k &gt; 100</code>) in a large corpus.</p>
 <div class="section level3">
 <h3 id="preperation">Preperation<a class="anchor" aria-label="anchor" href="#preperation"></a>
 </h3>
@@ -320,9 +319,9 @@ LDA</a>.</p>
 </h3>
 <p>The algorithm fits LDA through 2000 iterations by default to produce
 reliable results, but we can can minimize the number using the
-convergence detection mechanism. When <code>auto_iter = TRUE</code>, the
-algorithm stop inference on convergence (<code>delta &lt; 0</code>) and
-return the results to further speed up your analysis.</p>
+convergence detection mechanism to further speed up your analysis. When
+<code>auto_iter = TRUE</code>, the algorithm stop inference on
+convergence (<code>delta &lt; 0</code>) and return the results.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lda_auto</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/textmodel_lda.html">textmodel_lda</a></span><span class="op">(</span><span class="va">dfmt</span>, k <span class="op">=</span> <span class="fl">10</span>, batch_size <span class="op">=</span> <span class="fl">0.01</span>, auto_iter <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                          verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>

@@ -86,17 +86,18 @@ modeling</h3>
     
     
 <p>Sequential LDA can identify topics of sentences more accurately than
-the standard LDA, because it considers the topics of the previous
-sentence to classify the current sentence. The topics of earlier
+the standard LDA, because it considers the topics of the preceding
+sentence to classify the current sentence. The topics of the preceding
 sentences not only make the transition of topics smoother but help to
 mitigate the data sparsity.</p>
 <div class="section level3">
 <h3 id="preperation">Preperation<a class="anchor" aria-label="anchor" href="#preperation"></a>
 </h3>
-<p>We use the Sputnik corpus on Ukraine, but preparation is slightly
-different from <a href="basic.html">the introduction</a>. Since
-Sequential LDA is created for classification of sentences, we apply
-<code><a href="https://quanteda.io/reference/corpus_reshape.html" class="external-link">corpus_reshape()</a></code> to the corpus to segment the texts</p>
+<p>We use the Sputnik corpus on Ukraine, but preparation in this example
+is slightly different from <a href="basic.html">the introduction</a>.
+Since Sequential LDA is created for classification of sentences, we
+apply <code><a href="https://quanteda.io/reference/corpus_reshape.html" class="external-link">corpus_reshape()</a></code> to the corpus to segment the
+texts</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/koheiw/seededlda" class="external-link">seededlda</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://quanteda.io" class="external-link">quanteda</a></span><span class="op">)</span></span>
@@ -112,7 +113,7 @@ Sequential LDA is created for classification of sentences, we apply
 <span>    <span class="fu"><a href="https://quanteda.io/reference/dfm_trim.html" class="external-link">dfm_trim</a></span><span class="op">(</span>max_docfreq <span class="op">=</span> <span class="fl">0.1</span>, docfreq_type <span class="op">=</span> <span class="st">"prop"</span><span class="op">)</span></span></code></pre></div>
 <p>As a result, the DFM has more documents (150925) with sentence number
 appended to the document names. The sentences make the sparsity of the
-DFM very high (0.999).</p>
+DFM very high (99.98%).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dfmt</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Document-feature matrix of: 150,925 documents, 58,838 features (99.98% sparse) and 4 docvars.</span></span>
@@ -138,8 +139,9 @@ DFM very high (0.999).</p>
 <h3 id="sequential-lda">Sequential LDA<a class="anchor" aria-label="anchor" href="#sequential-lda"></a>
 </h3>
 <p>You can enable the sequential algorithm only by setting
-<code>gamma = 0.5</code>. If the value is smaller, the topics of the
-previous sentence affect less in classifying the current sentence.</p>
+<code>gamma = 0.5</code>. If the value is smaller than this, the topics
+of the previous sentence affect less in classifying the current
+sentence.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lda_seq</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/textmodel_lda.html">textmodel_lda</a></span><span class="op">(</span><span class="va">dfmt</span>, k <span class="op">=</span> <span class="fl">10</span>, gamma <span class="op">=</span> <span class="fl">0.5</span>, </span>
 <span>                         batch_size <span class="op">=</span> <span class="fl">0.01</span>, auto_iter <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -459,8 +461,8 @@ previous sentence affect less in classifying the current sentence.</p>
 </tbody>
 </table>
 <p>The plot show the topic probability of the first 100 sentences from
-an article. Thanks to the sequential algorithm, adjacent sentences are
-classified into the same topics.</p>
+an article in the corpus. Thanks to the sequential algorithm, adjacent
+sentences are classified into the same topics.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="url/reference/ggmatplot.html">ggmatplot</a></span><span class="op">(</span><span class="va">lda_seed</span><span class="op">$</span><span class="va">theta</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"s1104078647."</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">)</span>,<span class="op">]</span>, </span>
 <span>          plot_type <span class="op">=</span> <span class="st">"line"</span>, linetype <span class="op">=</span> <span class="fl">1</span>, </span>

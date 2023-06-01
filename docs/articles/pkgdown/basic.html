@@ -85,15 +85,16 @@ semi-supervised topic modeling</h3>
 
     
     
-<p><strong>seededlda</strong> is crated mianly for semi-supervided topic
-modeling but it can perform unsupervided topic modeling too. I explain
-the basic functions of the package taking unsupervided topic modeling as
-an example in this page and discuss semi-supervised topic modeling in <a href="seeded.html">a separate page</a>.</p>
+<p><strong>seededlda</strong> was crated mainly for semi-supervised
+topic modeling but it can perform unsupervised topic modeling too. I
+explain the basic functions of the package taking unsupervised topic
+modeling as an example in this page and discuss semi-supervised topic
+modeling in <a href="seeded.html">a separate page</a>.</p>
 <div class="section level3">
 <h3 id="preperation">Preperation<a class="anchor" aria-label="anchor" href="#preperation"></a>
 </h3>
-<p>We use <a href="https://www.dropbox.com/s/abme18nlrwxgmz8/data_corpus_sputnik2022.rds?dl=1" class="external-link">download</a>
-the corpus of Sputnik articles about Ukraine in the articles. In the
+<p>We use <a href="https://www.dropbox.com/s/abme18nlrwxgmz8/data_corpus_sputnik2022.rds?dl=1" class="external-link">the
+corpus of Sputnik articles</a> about Ukraine in the examples. In the
 preprocessing, we remove grammatical words <code>stopwords("en")</code>,
 email addresses <code>"*@*</code> and words that occur in more than 10%
 of documents <code>max_docfreq = 0.1</code> from the document-feature
@@ -132,11 +133,11 @@ matrix (DFM).</p>
 <div class="section level3">
 <h3 id="standard-lda">Standard LDA<a class="anchor" aria-label="anchor" href="#standard-lda"></a>
 </h3>
-<p>You can analyze the DFM only by specifying the number of topics
+<p>You can analyze the DFM only by setting the number of topics
 <code>k = 10</code> to identify. When <code>verbose = TRUE</code>, it
 shows the progress of the inference through iterations. It takes long to
 fit LDA on a large corpus, but <a href="distributed.html">distributed
-algorithm</a> will speed up the function dramatically.</p>
+algorithm</a> will speed up your analysis dramatically.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lda</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/textmodel_lda.html">textmodel_lda</a></span><span class="op">(</span><span class="va">dfmt</span>, k <span class="op">=</span> <span class="fl">10</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; Fitting LDA with 10 topics</span></span>

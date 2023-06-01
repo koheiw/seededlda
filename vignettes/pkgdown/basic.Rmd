@@ -13,11 +13,11 @@ knitr::opts_chunk$set(collapse = FALSE, comment = "#>",
                       fig.width = 8, fig.height = 4, dpi = 150, out.width = 760)
 ```
 
-**seededlda** is crated mainly for semi-supervised topic modeling but it can perform unsupervised topic modeling too. I explain the basic functions of the package taking unsupervised topic modeling as an example in this page and discuss semi-supervised topic modeling in [a separate page](seeded.html).
+**seededlda** was crated mainly for semi-supervised topic modeling but it can perform unsupervised topic modeling too. I explain the basic functions of the package taking unsupervised topic modeling as an example in this page and discuss semi-supervised topic modeling in [a separate page](seeded.html).
 
 ### Preperation
 
-We use [download](https://www.dropbox.com/s/abme18nlrwxgmz8/data_corpus_sputnik2022.rds?dl=1) the corpus of Sputnik articles about Ukraine in the articles. In the preprocessing, we remove grammatical words `stopwords("en")`, email addresses `"*@*` and words that occur in more than 10% of documents `max_docfreq = 0.1` from the document-feature matrix (DFM).
+We use [the corpus of Sputnik articles](https://www.dropbox.com/s/abme18nlrwxgmz8/data_corpus_sputnik2022.rds?dl=1) about Ukraine in the examples. In the preprocessing, we remove grammatical words `stopwords("en")`, email addresses `"*@*` and words that occur in more than 10% of documents `max_docfreq = 0.1` from the document-feature matrix (DFM).
 
 ```{r include=FALSE}
 if (!file.exists("data_corpus_sputnik2022.rds")) {
@@ -42,7 +42,7 @@ print(dfmt)
 
 ### Standard LDA
 
-You can analyze the DFM only by specifying the number of topics `k = 10` to identify. When `verbose = TRUE`, it shows the progress of the inference through iterations. It takes long to fit LDA on a large corpus, but [distributed algorithm](distributed.html) will speed up the function dramatically.
+You can analyze the DFM only by setting the number of topics `k = 10` to identify. When `verbose = TRUE`, it shows the progress of the inference through iterations. It takes long to fit LDA on a large corpus, but [distributed algorithm](distributed.html) will speed up your analysis dramatically.
 
 ```{r, cache=TRUE}
 lda <- textmodel_lda(dfmt, k = 10, verbose = TRUE)

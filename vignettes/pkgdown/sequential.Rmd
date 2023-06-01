@@ -13,11 +13,11 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>",
                       fig.width = 8, fig.height = 4, dpi = 150, out.width = 760)
 ```
 
-Sequential LDA can identify topics of sentences more accurately than the standard LDA, because it considers the topics of the previous sentence to classify the current sentence. The topics of earlier sentences not only make the transition of topics smoother but help to mitigate the data sparsity.
+Sequential LDA can identify topics of sentences more accurately than the standard LDA, because it considers the topics of the preceding sentence to classify the current sentence. The topics of the preceding sentences not only make the transition of topics smoother but help to mitigate the data sparsity.
 
 ### Preperation
 
-We use the Sputnik corpus on Ukraine, but preparation is slightly different from [the introduction](basic.html). Since Sequential LDA is created for classification of sentences, we apply `corpus_reshape()` to the corpus to segment the texts 
+We use the Sputnik corpus on Ukraine, but preparation in this example is slightly different from [the introduction](basic.html). Since Sequential LDA is created for classification of sentences, we apply `corpus_reshape()` to the corpus to segment the texts 
 
 ```{r message=FALSE}
 library(seededlda)
@@ -34,7 +34,7 @@ dfmt <- dfm(toks) |>
     dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
 ```
 
-As a result, the DFM has more documents (`r ndoc(dfmt)`) with sentence number appended to the document names. The sentences make the sparsity of the DFM very high (`r trunc(sparsity(dfmt) * 1000) / 1000`).
+As a result, the DFM has more documents (`r ndoc(dfmt)`) with sentence number appended to the document names. The sentences make the sparsity of the DFM very high (`r round(sparsity(dfmt) * 100, 2)`%).
 
 ```{r}
 print(dfmt)
@@ -42,7 +42,7 @@ print(dfmt)
 
 ### Sequential LDA
 
-You can enable the sequential algorithm only by setting `gamma = 0.5`. If the value is smaller, the topics of the previous sentence affect less in classifying the current sentence.
+You can enable the sequential algorithm only by setting `gamma = 0.5`. If the value is smaller than this, the topics of the previous sentence affect less in classifying the current sentence.
 
 ```{r, cache=TRUE}
 lda_seq <- textmodel_lda(dfmt, k = 10, gamma = 0.5, 
@@ -73,7 +73,7 @@ lda_seed <- textmodel_seededlda(dfmt, dict, residual = 2, gamma = 0.5,
 knitr::kable(terms(lda_seed))
 ```
 
-The plot show the topic probability of the first 100 sentences from an article. Thanks to the sequential algorithm, adjacent sentences are classified into the same topics.
+The plot show the topic probability of the first 100 sentences from an article in the corpus. Thanks to the sequential algorithm, adjacent sentences are classified into the same topics.
 
 ```{r}
 ggmatplot(lda_seed$theta[paste0("s1104078647.", 1:100),], 
