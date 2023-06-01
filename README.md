@@ -23,8 +23,8 @@ sequential classification (Sequential LDA) and parallel computing
 (Distributed LDA) capabilities and released as version 1.0 in 2023.
 
 [**keyATM**](https://github.com/keyATM/keyATM) is the latest addition to
-the semi-supervised topic models. The users of seeded-LDA are also
-encouraged to use that package.
+the semi-supervised topic models. The users of Seeded LDA are also
+encouraged to download that package.
 
 ## Installation
 
