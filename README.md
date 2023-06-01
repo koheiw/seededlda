@@ -71,7 +71,7 @@ Please read the following papers on the algorithms.
 Please read the following papers for how to apply seeded-LDA in social
 science research:
 
-Curini, Luigi and Vignoli, Valerio. 2021. [Committed Moderates and
-Uncommitted Extremists: Ideological Leaning and Parties’ Narratives on
-Military Interventions in Italy](https://doi.org/10.1093/fpa/orab016),
-*Foreign Policy Analysis*.
+- Curini, L., & Vignoli, V. (2021). Committed Moderates and Uncommitted
+  Extremists: Ideological Leaning and Parties’ Narratives on Military
+  Interventions in Italy. Foreign Policy Analysis, 17(3), 1–20.
+  <https://doi.org/10.1093/fpa/orab016>
