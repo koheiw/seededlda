@@ -13,21 +13,14 @@ status](https://github.com/koheiw/seededlda/workflows/R-CMD-check/badge.svg)](ht
 [![codecov](https://codecov.io/gh/koheiw/seededlda/branch/master/graph/badge.svg)](https://codecov.io/gh/koheiw/seededlda)
 <!-- badges: end -->
 
-**seededlda** is an R package that implements the seeded-LDA for
-semi-supervised topic modeling using **quanteda**. The seeded-LDA model
-was proposed by [Lu et
-al. (2010)](https://dl.acm.org/citation.cfm?id=2119585). Until version
-0.3, that packages has been a simple wrapper around the **topicmodels**
-package, but the LDA estimator is newly implemented in C++ using the
-[GibbsLDA++](http://gibbslda.sourceforge.net/) library to be submitted
-to CRAN in August 2020. The author believes this package implements the
-seeded-LDA model more closely to the original proposal.
-
-Please see [*Theory-Driven Analysis of Large Corpora: Semisupervised
-Topic Classification of the UN
-Speeches*](https://journals.sagepub.com/doi/full/10.1177/0894439320907027)
-for the overview of semi-supervised topic classification techniques and
-their advantages in social science research.
+**seededlda** is an R package that implements Seeded LDA for
+semi-supervised topic modeling based on **quanteda**. Initially, the
+package was a simple wrapper around the **topicmodels** package, but it
+was fully rewritten in C++ using the [GibbsLDA++
+library](http://gibbslda.sourceforge.net/) and submitted to CRAN as
+version 0.5 in 2020. The package was further developed to add the
+sequential classification (Sequential LDA) and parallel computing
+(Distributed LDA) capabilities and released as version 1.0 in 2023.
 
 [**keyATM**](https://github.com/keyATM/keyATM) is the latest addition to
 the semi-supervised topic models. The users of seeded-LDA are also
