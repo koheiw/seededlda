@@ -1,0 +1,89 @@
+---
+title: "Sequential LDA"
+subtitle: "Sentence-level topic modeling"
+output: 
+  html_document:
+    toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", 
+                      fig.width = 8, fig.height = 4, dpi = 150, out.width = 760)
+```
+
+Sequential LDA can identify topics of sentences more accurately than the standard LDA, because it considers the topics of the previous sentence to classify the current sentence. The topics of earlier sentences not only make the transition of topics smoother but help to mitigate the data sparsity.
+
+### Preperation
+
+We use the Sputnik corpus on Ukraine, but preparation is slightly different from [the introduction](basic.html). Since Sequential LDA is created for classification of sentences, we apply `corpus_reshape()` to the corpus to segment the texts 
+
+```{r message=FALSE}
+library(seededlda)
+library(quanteda)
+library(ggmatplot)
+
+corp <- readRDS("data_corpus_sputnik2022.rds") |>
+    corpus_reshape(to = "sentences")
+toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, 
+               remove_numbers = TRUE, remove_url = TRUE)
+dfmt <- dfm(toks) |> 
+    dfm_remove(stopwords("en")) |>
+    dfm_remove("*@*") |>
+    dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
+```
+
+As a result, the DFM has more documents (`r ndoc(dfmt)`) with sentence number appended to the document names. The sentences make the sparsity of the DFM very high (`r trunc(sparsity(dfmt) * 1000) / 1000`).
+
+```{r}
+print(dfmt)
+```
+
+### Sequential LDA
+
+You can enable the sequential algorithm only by setting `gamma = 0.5`. If the value is smaller, the topics of the previous sentence affect less in classifying the current sentence.
+
+```{r, cache=TRUE}
+lda_seq <- textmodel_lda(dfmt, k = 10, gamma = 0.5, 
+                         batch_size = 0.01, auto_iter = TRUE,
+                         verbose = TRUE)
+```
+
+```{r, results='asis'}
+knitr::kable(terms(lda_seq))
+```
+
+### Seeded Sequential LDA
+
+You can also enable the sequential algorithm in [Seeded LDA](seeded.html) only by setting `gamma > 0`.
+
+```{r}
+dict <- dictionary(file = "dictionary.yml")
+print(dict)
+```
+
+```{r, cache=TRUE}
+lda_seed <- textmodel_seededlda(dfmt, dict, residual = 2, gamma = 0.5, 
+                                batch_size = 0.01, auto_iter = TRUE,
+                                verbose = TRUE)
+```
+
+```{r, results='asis'}
+knitr::kable(terms(lda_seed))
+```
+
+The plot show the topic probability of the first 100 sentences from an article. Thanks to the sequential algorithm, adjacent sentences are classified into the same topics.
+
+```{r}
+ggmatplot(lda_seed$theta[paste0("s1104078647.", 1:100),], 
+          plot_type = "line", linetype = 1, 
+          xlab = "Sentence", ylab = "Probability", legend_title = "Topic")
+```
+
+
+### References
+
+- Du, L., Buntine, W., Jin, H., & Chen, C. (2012). Sequential latent Dirichlet allocation. Knowledge and Information Systems, 31(3), 475–503. https://doi.org/10.1007/s10115-011-0425-1
+- Watanabe, K., & Baturo, A. (2023). Seeded Sequential LDA: A Semi-Supervised Algorithm for Topic-Specific Analysis of Sentences. Social Science Computer Review. https://doi.org/10.1177/08944393231178605
+

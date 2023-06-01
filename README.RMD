@@ -10,7 +10,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Seeded-LDA for semisupervised topic modeling
+# seededlda: the package for semi-supervised topic modeling
 
 <!-- badges: start -->
 
@@ -24,60 +24,42 @@ status](https://github.com/koheiw/seededlda/workflows/R-CMD-check/badge.svg)](ht
 [![codecov](https://codecov.io/gh/koheiw/seededlda/branch/master/graph/badge.svg)](https://codecov.io/gh/koheiw/seededlda)
 <!-- badges: end -->
 
-**seededlda** is an R package that implements the seeded-LDA for semisupervised topic modeling using **quanteda**. The seeded-LDA model was proposed by [Lu et al. (2010)](https://dl.acm.org/citation.cfm?id=2119585). Until version 0.3, that packages has been a simple wrapper around the **topicmodels** package, but the LDA estimator is newly implemented in C++ using the [GibbsLDA++](http://gibbslda.sourceforge.net/) library to be submitted to CRAN in August 2020. The author believes this package implements the seeded-LDA model more closely to the original proposal.
+**seededlda** is an R package that implements the seeded-LDA for semi-supervised topic modeling using **quanteda**. The seeded-LDA model was proposed by [Lu et al. (2010)](https://dl.acm.org/citation.cfm?id=2119585). Until version 0.3, that packages has been a simple wrapper around the **topicmodels** package, but the LDA estimator is newly implemented in C++ using the [GibbsLDA++](http://gibbslda.sourceforge.net/) library to be submitted to CRAN in August 2020. The author believes this package implements the seeded-LDA model more closely to the original proposal.
 
-Please see [*Theory-Driven Analysis of Large Corpora: Semisupervised Topic Classification of the UN Speeches*](https://journals.sagepub.com/doi/full/10.1177/0894439320907027) for the overview of semisupervised topic classification techniques and their advantages in social science research.
+Please see [*Theory-Driven Analysis of Large Corpora: Semisupervised Topic Classification of the UN Speeches*](https://journals.sagepub.com/doi/full/10.1177/0894439320907027) for the overview of semi-supervised topic classification techniques and their advantages in social science research.
 
-[**keyATM**](https://github.com/keyATM/keyATM) is the latest addition to the semisupervised topic models. The users of seeded-LDA are also encouraged to use that package.
+[**keyATM**](https://github.com/keyATM/keyATM) is the latest addition to the semi-supervised topic models. The users of seeded-LDA are also encouraged to use that package.
 
-## Install
+## Installation
 
-```{r eval=FALSE}
-install.packages("devtools")
-devtools::install_github("koheiw/seededlda") 
+From CRAN:
+
+```{r, eval=FALSE}
+install.packages("seededlda")
 ```
 
-## Example
+From Github:
 
-The corpus and seed words in this example are from [*Conspiracist propaganda: How Russia promotes anti-establishment sentiment online?*](https://koheiw.net/wp-content/uploads/2019/06/Sputnik-05-ECPR.pdf).
-
-```{r message=FALSE}
-require(quanteda)
-require(seededlda)
-```
-
-Users of seeded-LDA must provided a small dictionary of keywords (seed words) to define the desired topics.
-
-```{r}
-dict <- dictionary(file = "tests/data/topics.yml")
-print(dict)
-```
-
-```{r}
-corp <- readRDS("tests/data/data_corpus_sputnik.RDS")
-toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE) %>%
-        tokens_select(min_nchar = 2) %>% 
-        tokens_compound(dict) # for multi-word expressions
-dfmt <- dfm(toks) %>% 
-    dfm_remove(stopwords('en')) %>% 
-    dfm_trim(min_termfreq = 0.90, termfreq_type = "quantile", 
-             max_docfreq = 0.2, docfreq_type = "prop")
-```
-
-Many of the top terms of the seeded-LDA are seed words but related topic words are also identified. The result includes "other" as a junk topic because `residual = TRUE`.
-
-```{r}
-set.seed(1234)
-slda <- textmodel_seededlda(dfmt, dict, residual = TRUE)
-print(terms(slda, 20))
-```
-
-```{r}
-topic <- table(topics(slda))
-print(topic)
+```{r, eval=FALSE}
+devtools::install_github("koheiw/seededlda")
 ```
 
 ## Examples
+
+Please visit the package website for examples:
+
+- [Introduction](https://koheiw.github.io/seededlda/articles/pkgdown/basic.html): basic functions of the package
+- [Distributed LDA](https://koheiw.github.io/seededlda/articles/pkgdown/distributed.html): topic modeling with parallel computing
+- [Seeded LDA](https://koheiw.github.io/seededlda/articles/pkgdown/seeded.html): semi-supervised topic modeling
+- [Sequential LDA](https://koheiw.github.io/seededlda/articles/pkgdown/sequential.html): sentence-level topic modeling
+
+Please read the following papers on the algorithms.
+
+- Watanabe, K., & Baturo, A. (2023). Seeded Sequential LDA: A Semi-Supervised Algorithm for Topic-Specific Analysis of Sentences. Social Science Computer Review. https://doi.org/10.1177/08944393231178605
+- Watanabe, K. (2023). Speed Up Topic Modeling: Distributed Computing and Convergence Detection for LDA, [working paper](https://blog.koheiw.net/wp-content/uploads/2023/05/Distributed-LDA-02.pdf).
+
+
+## Other publications
 
 Please read the following papers for how to apply seeded-LDA in social science research:
 

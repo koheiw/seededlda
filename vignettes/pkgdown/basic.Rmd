@@ -1,0 +1,75 @@
+---
+title: "Introduction to seededlda"
+subtitle: "The package for semi-supervised topic modeling"
+output: 
+  html_document:
+    toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = FALSE, comment = "#>", 
+                      fig.width = 8, fig.height = 4, dpi = 150, out.width = 760)
+```
+
+**seededlda** is crated mainly for semi-supervised topic modeling but it can perform unsupervised topic modeling too. I explain the basic functions of the package taking unsupervised topic modeling as an example in this page and discuss semi-supervised topic modeling in [a separate page](seeded.html).
+
+### Preperation
+
+We use [download](https://www.dropbox.com/s/abme18nlrwxgmz8/data_corpus_sputnik2022.rds?dl=1) the corpus of Sputnik articles about Ukraine in the articles. In the preprocessing, we remove grammatical words `stopwords("en")`, email addresses `"*@*` and words that occur in more than 10% of documents `max_docfreq = 0.1` from the document-feature matrix (DFM).
+
+```{r include=FALSE}
+if (!file.exists("data_corpus_sputnik2022.rds")) {
+    download.file("https://www.dropbox.com/s/abme18nlrwxgmz8/data_corpus_sputnik2022.rds?dl=1",
+                  "data_corpus_sputnik2022.rds", mode = "wb")
+}
+```
+
+```{r message=FALSE}
+library(seededlda)
+library(quanteda)
+
+corp <- readRDS("data_corpus_sputnik2022.rds")
+toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, 
+               remove_numbers = TRUE, remove_url = TRUE)
+dfmt <- dfm(toks) |> 
+    dfm_remove(stopwords("en")) |>
+    dfm_remove("*@*") |>
+    dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
+print(dfmt)
+```
+
+### Standard LDA
+
+You can analyze the DFM only by specifying the number of topics `k = 10` to identify. When `verbose = TRUE`, it shows the progress of the inference through iterations. It takes long to fit LDA on a large corpus, but [distributed algorithm](distributed.html) will speed up the function dramatically.
+
+```{r, cache=TRUE}
+lda <- textmodel_lda(dfmt, k = 10, verbose = TRUE)
+```
+
+### Topic terms
+
+Once model is fit, you can can interpret the topics by reading the most salient words in the topics. `terms()` shows words that are most frequent in each topic at the top of the matrix.
+
+```{r, results='asis'}
+knitr::kable(terms(lda))
+```
+
+### Document topics
+
+You can also predict the topics of documents using `topics()`. I recommend extracting the document variables from the DFM in the fitted object `lda$data` and saving the topics in the data.frame. 
+
+```{r}
+dat <- docvars(lda$data)
+dat$topic <- topics(lda)
+```
+
+```{r, results='asis'}
+knitr::kable(head(dat[,c("date", "topic", "head")], 10))
+```
+
+### References
+
+- Heinrich, G. (2008). Parameter estimation for text analysis. http://www.arbylon.net/publications/text-est.pdf
+- Watanabe, K., & Baturo, A. (2023). Seeded Sequential LDA: A Semi-Supervised Algorithm for Topic-Specific Analysis of Sentences. Social Science Computer Review. https://doi.org/10.1177/08944393231178605

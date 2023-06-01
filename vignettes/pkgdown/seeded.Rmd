@@ -1,0 +1,72 @@
+---
+title: "Seeded LDA"
+subtitle: "Semi-supervised topic modeling"
+output: 
+  html_document:
+    toc: true
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = FALSE, comment = "#>", 
+                      fig.width = 8, fig.height = 4, dpi = 150, out.width = 760)
+```
+
+Seeded LDA can identify pre-defined topics in the corpus with a small number of seed words. Seeded LDA is useful when you want to match topics with theoretical concepts in deductive analysis.
+
+### Preperation
+
+We prepare the Sputnik corpus on Ukraine in the same way as in [the introduction](basic.html).
+
+```{r message=FALSE}
+library(seededlda)
+library(quanteda)
+
+corp <- readRDS("data_corpus_sputnik2022.rds")
+toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, 
+               remove_numbers = TRUE, remove_url = TRUE)
+dfmt <- dfm(toks) |> 
+    dfm_remove(stopwords("en")) |>
+    dfm_remove("*@*") |>
+    dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
+print(dfmt)
+```
+
+We will use seed words in a [dictionary](https://github.com/koheiw/seededlda/tree/master/vignettes) to define the topics.
+
+```{r}
+dict <- dictionary(file = "dictionary.yml")
+print(dict)
+```
+
+### Seeded LDA
+
+The function does not have `k` because it determines the number of topics based on the keys. You can use the distributed algorithm `batch_size = 0.01` and convergence detection `auto_iter = TRUE` to speed up analysis.
+
+```{r, cache=TRUE}
+lda_seed <- textmodel_seededlda(dfmt, dict, batch_size = 0.01, auto_iter = TRUE,
+                                verbose = TRUE)
+```
+
+```{r, results='asis'}
+knitr::kable(terms(lda_seed))
+```
+
+### Seeded LDA with residual topics
+
+Seeded LDA can have both seeded and unseeded topics. If `residula = 2`, two unseeded topics are added to the model. You can change the name of these topics through `options(seededlda_residual_name)`.
+
+```{r, cache=TRUE}
+lda_res <- textmodel_seededlda(dfmt, dict, residual = 2, batch_size = 0.01, auto_iter = TRUE,
+                                verbose = TRUE)
+```
+
+```{r, results='asis'}
+knitr::kable(terms(lda_res))
+```
+
+### References
+
+- Lu, B., Ott, M., Cardie, C., & Tsou, B. K. (2011). Multi-aspect sentiment analysis with topic models. 2011 IEEE 11th International Conference on Data Mining Workshops, 81–88.
+- Watanabe, K., & Baturo, A. (2023). Seeded Sequential LDA: A Semi-Supervised Algorithm for Topic-Specific Analysis of Sentences. Social Science Computer Review. https://doi.org/10.1177/08944393231178605
+
+

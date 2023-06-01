@@ -1,0 +1,5 @@
+economy: [market*, money, bank*, stock*, bond*, industry, company, shop*]
+politics: [parliament*, congress*, white house, party leader*, party member*, voter*, lawmaker*, politician*]
+society: [police, prison*, school*, hospital*]
+diplomacy: [ambassador*, diplomat*, embassy, treaty]
+military: [military, soldier*, terrorist*, air force, marine, navy, army]

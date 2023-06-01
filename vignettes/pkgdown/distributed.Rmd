@@ -1,0 +1,67 @@
+---
+title: "Distributed LDA"
+subtitle: "Topic modeling with parallel computing"
+output: 
+  html_document:
+    toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", 
+                      fig.width = 8, fig.height = 4, dpi = 150, out.width = 760)
+```
+
+Distributed LDA can dramatically speeds up your analysis by using multiple processors on your computer. The corpus and the number of topic is small in this example, but the distributed algorithm is highly effective in identifying many topics (`k > 100`) in a large corpus.
+
+### Preperation
+
+We prepare the Sputnik corpus on Ukraine in the same way as in [the introduction](basic.html).
+
+```{r message=FALSE}
+library(seededlda)
+library(quanteda)
+
+corp <- readRDS("data_corpus_sputnik2022.rds")
+toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, 
+               remove_numbers = TRUE, remove_url = TRUE)
+dfmt <- dfm(toks) |> 
+    dfm_remove(stopwords("en")) |>
+    dfm_remove("*@*") |>
+    dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
+print(dfmt)
+```
+
+
+### Distributed LDA
+
+When `batch_size = 0.01`, the distributed algorithm allocates 1% of the documents in the corpus to each processor. It uses all the processors by default, but you can limit the number through `options(seededlda_threads)`.
+
+```{r, cache=TRUE}
+lda_dist <- textmodel_lda(dfmt, k = 10, batch_size = 0.01, verbose = TRUE)
+```
+
+Despite the much shorter execution time, it identifies topic terms very similar to [the standard LDA](basic.html#topic-terms).
+
+```{r, results='asis'}
+knitr::kable(terms(lda_dist))
+```
+
+### Distributed LDA with convergence detection
+
+The algorithm fits LDA through 2000 iterations by default to produce reliable results, but we can can minimize the number using the convergence detection mechanism. When `auto_iter = TRUE`, the algorithm stop inference on convergence (`delta < 0`) and return the results to further speed up your analysis.
+
+```{r, cache=TRUE}
+lda_auto <- textmodel_lda(dfmt, k = 10, batch_size = 0.01, auto_iter = TRUE,
+                          verbose = TRUE)
+```
+
+```{r, results='asis'}
+knitr::kable(terms(lda_auto))
+```
+
+### References
+
+- Newman, D., Asuncion, A., Smyth, P., & Welling, M. (2009). Distributed Algorithms for Topic Models. The Journal of Machine Learning Research, 10, 1801–1828.
+- Watanabe, K. (2023). Speed Up Topic Modeling: Distributed Computing and Convergence Detection for LDA, [working paper](https://blog.koheiw.net/wp-content/uploads/2023/05/Distributed-LDA-02.pdf).
