@@ -42,7 +42,7 @@ print(dfmt)
 
 ### Standard LDA
 
-You can analyze the DFM only by setting the number of topics `k = 10` to identify. When `verbose = TRUE`, it shows the progress of the inference through iterations. It takes long to fit LDA on a large corpus, but [distributed algorithm](distributed.html) will speed up your analysis dramatically.
+You can fit LDA on the DFM only by setting the number of topics `k = 10` to identify. When `verbose = TRUE`, it shows the progress of the inference through iterations. It takes long to fit LDA on a large corpus, but [distributed algorithm](distributed.html) will speed up your analysis dramatically.
 
 ```{r, cache=TRUE}
 lda <- textmodel_lda(dfmt, k = 10, verbose = TRUE)
