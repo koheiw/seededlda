@@ -75,6 +75,19 @@ class Array {
         return arma::sp_mat(mt);
     }
 
+    // print data
+    void print(std::size_t nrow = 10, std::size_t ncol = 20) {
+        Rcout << "Array with " << row << " rows x " << col << " cols\n";
+        for (std::size_t i = 0; i < min(nrow, row); i++) {
+            Rcout << "[" << i << "] ";
+            for (std::size_t j = 0; j < min(ncol, col); j++) {
+                Rcout << data[i][j] << " ";
+            }
+            Rcout << "\n";
+        }
+        Rcout << "\n";
+    }
+
     private:
 
     Data to_data(arma::mat &mt) {
@@ -87,7 +100,11 @@ class Array {
         return temp;
     }
     Data to_data(arma::sp_mat &smt) {
+        //Rcout << "smt:";
+        //Rcout << arma::sum(smt, 0);
         arma::mat mt(smt);
+        //Rcout << "mt:";
+        //Rcout << arma::sum(mt, 0);
         return to_data(mt);
     }
 };
