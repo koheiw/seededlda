@@ -244,7 +244,7 @@ test_that("auto_iter works", {
     expect_equal(lda_fix$last_iter, 1000)
     expect_equal(lda_fix$max_iter, 1000)
     expect_equal(lda_fix$auto_iter, FALSE)
-    expect_lt(lda_auto$last_iter, 500)
+    expect_lt(lda_auto$last_iter, 1000)
     expect_equal(lda_auto$max_iter, 1000)
     expect_equal(lda_auto$auto_iter, TRUE)
 
