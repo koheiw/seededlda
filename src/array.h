@@ -10,26 +10,26 @@ class Array {
     public:
 
     std::size_t row, col;
-    typedef std::vector<int> Row;
+    typedef std::vector<double> Row;
     typedef std::vector<Row> Data;
     Data data;
 
     // constructors
-    Array(): row(0), col(0), data(0, std::vector<int>(0, 0)) {} // empty
-    Array(std::size_t n): row(1), col(n), data(1, std::vector<int>(n, 0)) {} // vector
-    Array(std::size_t r, std::size_t c): row(r), col(c), data(r, std::vector<int>(c, 0)) {} // matrix
+    Array(): row(0), col(0), data(0, std::vector<double>(0, 0)) {} // empty
+    Array(std::size_t n): row(1), col(n), data(1, std::vector<double>(n, 0)) {} // vector
+    Array(std::size_t r, std::size_t c): row(r), col(c), data(r, std::vector<double>(c, 0)) {} // matrix
     Array(arma::mat mt): row(mt.n_rows), col(mt.n_cols), data(to_data(mt)) {}
     Array(arma::sp_mat smt): row(smt.n_rows), col(smt.n_cols), data(to_data(smt)) {}
 
     // allow access by .at()
-    int & at(int i, int j) {
+    double & at(int i, int j) {
         // if (i < 0 || row <= i)
         //     throw std::range_error("Invalid row index");
         // if (j < 0 || row <= j)
         //     throw std::range_error("Invalid column index");
         return data[i][j];
     }
-    int & at(int j) {
+    double & at(int j) {
         //if (j < 0 || col <= j)
         //    throw std::range_error("Invalid index");
         return data[0][j];
@@ -58,7 +58,7 @@ class Array {
 
     //convert to arma::mat
     arma::mat to_mat() {
-        std::vector<int> temp;
+        std::vector<double> temp;
         temp.reserve(row * col);
         for (std::size_t i = 0;  i < data.size(); i++) {
             temp.insert(temp.end(), data[i].begin(), data[i].end());
@@ -75,10 +75,23 @@ class Array {
         return arma::sp_mat(mt);
     }
 
+    // print data
+    void print(std::size_t nrow = 10, std::size_t ncol = 20) {
+        Rcout << "Array with " << row << " rows x " << col << " cols\n";
+        for (std::size_t i = 0; i < min(nrow, row); i++) {
+            Rcout << "[" << i << "] ";
+            for (std::size_t j = 0; j < min(ncol, col); j++) {
+                Rcout << data[i][j] << " ";
+            }
+            Rcout << "\n";
+        }
+        Rcout << "\n";
+    }
+
     private:
 
     Data to_data(arma::mat &mt) {
-        Data temp(mt.n_rows, std::vector<int>(mt.n_cols, 0));
+        Data temp(mt.n_rows, std::vector<double>(mt.n_cols, 0));
         for (std::size_t i = 0;  i < mt.n_rows; i++) {
             for (std::size_t j = 0;  j < mt.n_cols; j++) {
                 temp[i][j] = mt.at(i, j);
@@ -87,7 +100,11 @@ class Array {
         return temp;
     }
     Data to_data(arma::sp_mat &smt) {
+        //Rcout << "smt:";
+        //Rcout << arma::sum(smt, 0);
         arma::mat mt(smt);
+        //Rcout << "mt:";
+        //Rcout << arma::sum(mt, 0);
         return to_data(mt);
     }
 };

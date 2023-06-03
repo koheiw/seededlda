@@ -1,6 +1,7 @@
 ## Changes in v1.0.1
 
 * Fix the error when `textmodel_seqlda()` is called.
+* Save values in the Array object in double to avoid rounding error (#60).
 
 ## Changes in v1.0.0
 
