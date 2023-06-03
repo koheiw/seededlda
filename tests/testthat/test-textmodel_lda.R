@@ -46,13 +46,11 @@ test_that("LDA is working", {
     )
     expect_equal(
         rowSums(lda$phi),
-        c("topic1" = 1, "topic2" = 1, "topic3" = 1, "topic4" = 1, "topic5" = 1),
-        tolerance = 0.001
+        c("topic1" = 1, "topic2" = 1, "topic3" = 1, "topic4" = 1, "topic5" = 1)
     )
     expect_equal(
         rowSums(lda$theta),
-        structure(rep(1, ndoc(dfmt)), names = docnames(dfmt)),
-        tolerance = 0.001
+        structure(rep(1, ndoc(dfmt)), names = docnames(dfmt))
     )
     expect_equal(
         ncol(terms(textmodel_lda(dfmt, k = 1))), 1

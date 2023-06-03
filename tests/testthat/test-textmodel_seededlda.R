@@ -66,13 +66,11 @@ test_that("seeded LDA is working", {
     )
     expect_equal(
         rowSums(lda$phi),
-        c("romance" = 1, "sifi" = 1, "other" = 1),
-        tolerance = 0.001
+        c("romance" = 1, "sifi" = 1, "other" = 1)
     )
     expect_equal(
         rowSums(lda$theta),
-        structure(rep(1, ndoc(dfmt)), names = docnames(dfmt)),
-        tolerance = 0.001
+        structure(rep(1, ndoc(dfmt)), names = docnames(dfmt))
     )
     expect_equal(
         ncol(terms(textmodel_seededlda(dfmt, dict, residual = FALSE))), 2
