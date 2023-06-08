@@ -13,7 +13,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>",
                       fig.width = 8, fig.height = 4, dpi = 150, out.width = 760)
 ```
 
-Sequential LDA can identify topics of sentences more accurately than the standard LDA, because it considers the topics of the preceding sentence to classify the current sentence. The topics of the preceding sentences not only make the transition of topics smoother but help to mitigate the data sparsity.
+Sequential LDA (Latent Dirichlet Allocation) can identify topics of sentences more accurately than the standard LDA, because it considers the topics of the preceding sentence to classify the current sentence. The topics of the preceding sentences not only make the transition of topics smoother but help to mitigate the data sparsity.
 
 ### Preperation
 
