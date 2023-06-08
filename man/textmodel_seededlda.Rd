@@ -7,6 +7,7 @@
 textmodel_seededlda(
   x,
   dictionary,
+  levels = 1,
   valuetype = c("glob", "regex", "fixed"),
   case_insensitive = TRUE,
   residual = 0,
@@ -28,14 +29,19 @@ textmodel_seededlda(
 \item{dictionary}{a \code{\link[quanteda:dictionary]{quanteda::dictionary()}} with seed words that define
 topics.}
 
+\item{levels}{levels of entities in a hierarchical dictionary to be used as
+seed words.}
+
 \item{valuetype}{see \link[quanteda:valuetype]{quanteda::valuetype}}
 
 \item{case_insensitive}{see \link[quanteda:valuetype]{quanteda::valuetype}}
 
 \item{residual}{the number of undefined topics. They are named "other" by
-default, but it can be changed via \code{base::options(seededlda_residual_name)}.}
+default, but it can be changed via
+\code{base::options(seededlda_residual_name)}.}
 
-\item{weight}{determines the size of pseudo counts given to matched seed words.}
+\item{weight}{determines the size of pseudo counts given to matched seed
+words.}
 
 \item{uniform}{if \code{FALSE}, adjusts the weights of seed words to make their
 total amount equal across topics.}
@@ -65,10 +71,9 @@ dictionary match too many words.}
 fitting.}
 }
 \description{
-Implements semisupervised Latent Dirichlet allocation
-(Seeded LDA). \code{textmodel_seededlda()} allows users to specify
-topics using a seed word dictionary. Users can run Seeded Sequential LDA by
-setting \code{gamma > 0}.
+Implements semisupervised Latent Dirichlet allocation (Seeded LDA).
+\code{textmodel_seededlda()} allows users to specify topics using a seed word
+dictionary. Users can run Seeded Sequential LDA by setting \code{gamma > 0}.
 }
 \examples{
 \donttest{
@@ -101,8 +106,8 @@ Watanabe, Kohei & Zhou, Yuan (2020). "Theory-Driven Analysis of Large
 Corpora: Semisupervised Topic Classification of the UN Speeches".
 doi:10.1177/0894439320907027. \emph{Social Science Computer Review}.
 
-Watanabe, Kohei & Baturo, Alexander. (2023). "Seeded Sequential LDA:
-A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+Watanabe, Kohei & Baturo, Alexander. (2023). "Seeded Sequential LDA: A
+Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
 doi:10.1177/08944393231178605. \emph{Social Science Computer Review}.
 }
 \seealso{

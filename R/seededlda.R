@@ -1,15 +1,18 @@
 #' Semisupervised Latent Dirichlet allocation
 #'
-#' Implements semisupervised Latent Dirichlet allocation
-#' (Seeded LDA). `textmodel_seededlda()` allows users to specify
-#' topics using a seed word dictionary. Users can run Seeded Sequential LDA by
-#' setting `gamma > 0`.
+#' Implements semisupervised Latent Dirichlet allocation (Seeded LDA).
+#' `textmodel_seededlda()` allows users to specify topics using a seed word
+#' dictionary. Users can run Seeded Sequential LDA by setting `gamma > 0`.
 #' @inheritParams textmodel_lda
 #' @param dictionary a [quanteda::dictionary()] with seed words that define
 #'   topics.
+#' @param levels levels of entities in a hierarchical dictionary to be used as
+#'   seed words.
 #' @param residual the number of undefined topics. They are named "other" by
-#'   default, but it can be changed via `base::options(seededlda_residual_name)`.
-#' @param weight determines the size of pseudo counts given to matched seed words.
+#'   default, but it can be changed via
+#'   `base::options(seededlda_residual_name)`.
+#' @param weight determines the size of pseudo counts given to matched seed
+#'   words.
 #' @param uniform if `FALSE`, adjusts the weights of seed words to make their
 #'   total amount equal across topics.
 #' @param valuetype see [quanteda::valuetype]
@@ -25,8 +28,8 @@
 #'   Corpora: Semisupervised Topic Classification of the UN Speeches".
 #'   doi:10.1177/0894439320907027. *Social Science Computer Review*.
 #'
-#'   Watanabe, Kohei & Baturo, Alexander. (2023). "Seeded Sequential LDA:
-#'   A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+#'   Watanabe, Kohei & Baturo, Alexander. (2023). "Seeded Sequential LDA: A
+#'   Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
 #'   doi:10.1177/08944393231178605. *Social Science Computer Review*.
 #' @seealso [keyATM][keyATM::keyATM]
 #' @examples
@@ -52,7 +55,7 @@
 #' }
 #' @export
 textmodel_seededlda <- function(
-    x, dictionary,
+    x, dictionary, levels = 1,
     valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
     residual = 0, weight = 0.01, uniform = TRUE, max_iter = 2000, auto_iter = FALSE,
     alpha = 0.5, beta = 0.1, gamma = 0, batch_size = 1.0,
@@ -63,7 +66,7 @@ textmodel_seededlda <- function(
 
 #' @export
 textmodel_seededlda.dfm <- function(
-    x, dictionary,
+    x, dictionary, levels = 1,
     valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
     residual = 0, weight = 0.01, uniform = TRUE, max_iter = 2000, auto_iter = FALSE,
     alpha = 0.5, beta = 0.1, gamma = 0, batch_size = 1.0,
@@ -72,7 +75,8 @@ textmodel_seededlda.dfm <- function(
 
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
     weight <- check_double(weight, min_len = 0, max_len = Inf, min = 0, max = 1)
-    seeds <- tfm(x, dictionary, weight = weight, residual = residual, uniform = uniform,
+    levels <- check_integer(levels, min_len = 1, max_len = 100, min = 1)
+    seeds <- tfm(x, dictionary, levels = levels,weight = weight, residual = residual, uniform = uniform,
                  ..., verbose = verbose)
     if (!identical(colnames(x), colnames(seeds)))
         stop("seeds must have the same features")
@@ -170,7 +174,7 @@ topics.textmodel_lda <- function(x, min_prob = 0, select = NULL) {
 #' Internal function to construct topic-feature matrix
 #' @noRd
 #' @importFrom Matrix Matrix
-tfm <- function(x, dictionary,
+tfm <- function(x, dictionary, levels = 1,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
                 weight = 0.01, residual = 1,
@@ -185,9 +189,11 @@ tfm <- function(x, dictionary,
     if (!quanteda::is.dictionary(dictionary))
         stop("dictionary must be a dictionary object", call. = FALSE)
 
-    key <- names(dictionary)
+    dict <- flatten_dictionary(dictionary, levels)
+    key <- names(dict)
     feat <- featnames(x)
     len <- length(key)
+    total <- sum(x)
 
     if (length(weight) == 1) {
         weight <- rep(weight, len)
@@ -196,11 +202,11 @@ tfm <- function(x, dictionary,
             stop("The length of weight must be 1 or equal to dictionary", call. = FALSE)
     }
 
-    x <- dfm_trim(x, ..., verbose = verbose)
+    x <- dfm_trim(x, ..., verbose = FALSE)
     x <- dfm_group(x, rep("text", ndoc(x)))
     result <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
-    for (i in seq_along(dictionary)) {
-        temp <- dfm_select(x, pattern = dictionary[i], verbose = FALSE)
+    for (i in seq_along(dict)) {
+        temp <- dfm_select(x, pattern = dict[i], verbose = FALSE)
         temp <- dfm_match(temp, features = feat)
         result <- rbind(result, as(temp, "dgCMatrix"))
     }
