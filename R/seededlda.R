@@ -222,10 +222,10 @@ tfm <- function(x, dictionary, levels = 1,
             }
             w <- tcrossprod(p, q)
             weight <- weight * 100 # for compatibility with pre v0.9
-            result <- (result > 0) * w * total * weight
+            result <- (result > 0) * w * s * weight
         }
     } else {
-        result <- (result > 0) * total * weight
+        result <- (result > 0) * s * weight
     }
 
     if (residual > 0) {
