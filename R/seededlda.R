@@ -190,6 +190,7 @@ tfm <- function(x, dictionary, levels = 1,
     key <- names(dict)
     feat <- featnames(x)
     len <- length(key)
+    total <- sum(x)
 
     if (length(weight) == 1) {
         weight <- rep(weight, len)
@@ -221,10 +222,10 @@ tfm <- function(x, dictionary, levels = 1,
             }
             w <- tcrossprod(p, q)
             weight <- weight * 100 # for compatibility with pre v0.9
-            result <- (result > 0) * w * s * weight
+            result <- (result > 0) * w * total * weight
         }
     } else {
-        result <- (result > 0) * s * weight
+        result <- (result > 0) * total * weight
     }
 
     if (residual > 0) {
