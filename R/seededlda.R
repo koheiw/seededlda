@@ -72,7 +72,7 @@ textmodel_seededlda.dfm <- function(
 
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
     weight <- check_double(weight, min_len = 0, max_len = Inf, min = 0, max = 1)
-    levels <- check_integer(levels, min_len = 1, min = 1)
+    levels <- check_integer(levels, min_len = 1, max_len = 100, min = 1)
     seeds <- tfm(x, dictionary, levels = levels,weight = weight, residual = residual, uniform = uniform,
                  ..., verbose = verbose)
     if (!identical(colnames(x), colnames(seeds)))
