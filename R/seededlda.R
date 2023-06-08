@@ -1,15 +1,18 @@
 #' Semisupervised Latent Dirichlet allocation
 #'
-#' Implements semisupervised Latent Dirichlet allocation
-#' (Seeded LDA). `textmodel_seededlda()` allows users to specify
-#' topics using a seed word dictionary. Users can run Seeded Sequential LDA by
-#' setting `gamma > 0`.
+#' Implements semisupervised Latent Dirichlet allocation (Seeded LDA).
+#' `textmodel_seededlda()` allows users to specify topics using a seed word
+#' dictionary. Users can run Seeded Sequential LDA by setting `gamma > 0`.
 #' @inheritParams textmodel_lda
 #' @param dictionary a [quanteda::dictionary()] with seed words that define
 #'   topics.
+#' @param levels levels of entities in a hierarchical dictionary to be used as
+#'   seed words.
 #' @param residual the number of undefined topics. They are named "other" by
-#'   default, but it can be changed via `base::options(seededlda_residual_name)`.
-#' @param weight determines the size of pseudo counts given to matched seed words.
+#'   default, but it can be changed via
+#'   `base::options(seededlda_residual_name)`.
+#' @param weight determines the size of pseudo counts given to matched seed
+#'   words.
 #' @param uniform if `FALSE`, adjusts the weights of seed words to make their
 #'   total amount equal across topics.
 #' @param valuetype see [quanteda::valuetype]
@@ -25,8 +28,8 @@
 #'   Corpora: Semisupervised Topic Classification of the UN Speeches".
 #'   doi:10.1177/0894439320907027. *Social Science Computer Review*.
 #'
-#'   Watanabe, Kohei & Baturo, Alexander. (2023). "Seeded Sequential LDA:
-#'   A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+#'   Watanabe, Kohei & Baturo, Alexander. (2023). "Seeded Sequential LDA: A
+#'   Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
 #'   doi:10.1177/08944393231178605. *Social Science Computer Review*.
 #' @seealso [keyATM][keyATM::keyATM]
 #' @examples
