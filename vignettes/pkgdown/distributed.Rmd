@@ -13,7 +13,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>",
                       fig.width = 8, fig.height = 4, dpi = 150, out.width = 760)
 ```
 
-Distributed LDA can dramatically speeds up your analysis by using multiple processors on your computer. The number of topic is small in this example, but the distributed algorithm is highly effective in identifying many topics (`k > 100`) in a large corpus.
+Distributed LDA (Latent Dirichlet Allocation) can dramatically speeds up your analysis by using multiple processors on your computer. The number of topic is small in this example, but the distributed algorithm is highly effective in identifying many topics (`k > 100`) in a large corpus.
 
 ### Preperation
 

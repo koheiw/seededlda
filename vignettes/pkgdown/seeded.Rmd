@@ -11,7 +11,7 @@ knitr::opts_chunk$set(collapse = FALSE, comment = "#>",
                       fig.width = 8, fig.height = 4, dpi = 150, out.width = 760)
 ```
 
-Seeded LDA can identify pre-defined topics in the corpus with a small number of seed words. Seeded LDA is useful when you want to match topics with theoretical concepts in deductive analysis.
+Seeded LDA (Latent Dirichlet Allocation) can identify pre-defined topics in the corpus with a small number of seed words. Seeded LDA is useful when you want to match topics with theoretical concepts in deductive analysis.
 
 ### Preperation
 
