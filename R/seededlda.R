@@ -6,8 +6,6 @@
 #' @inheritParams textmodel_lda
 #' @param dictionary a [quanteda::dictionary()] with seed words that define
 #'   topics.
-#' @param levels levels of entities in a hierarchical dictionary to be used as
-#'   seed words.
 #' @param residual the number of undefined topics. They are named "other" by
 #'   default, but it can be changed via
 #'   `base::options(seededlda_residual_name)`.
@@ -55,7 +53,7 @@
 #' }
 #' @export
 textmodel_seededlda <- function(
-    x, dictionary, levels = 1,
+    x, dictionary,
     valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
     residual = 0, weight = 0.01, uniform = TRUE, max_iter = 2000, auto_iter = FALSE,
     alpha = 0.5, beta = 0.1, gamma = 0, batch_size = 1.0,
@@ -66,7 +64,7 @@ textmodel_seededlda <- function(
 
 #' @export
 textmodel_seededlda.dfm <- function(
-    x, dictionary, levels = 1,
+    x, dictionary,
     valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
     residual = 0, weight = 0.01, uniform = TRUE, max_iter = 2000, auto_iter = FALSE,
     alpha = 0.5, beta = 0.1, gamma = 0, batch_size = 1.0,
@@ -75,7 +73,6 @@ textmodel_seededlda.dfm <- function(
 
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
     weight <- check_double(weight, min_len = 0, max_len = Inf, min = 0, max = 1)
-    levels <- check_integer(levels, min_len = 1, max_len = 100, min = 1)
     seeds <- tfm(x, dictionary, levels = levels,weight = weight, residual = residual, uniform = uniform,
                  ..., verbose = verbose)
     if (!identical(colnames(x), colnames(seeds)))

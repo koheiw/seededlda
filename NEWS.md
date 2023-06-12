@@ -2,7 +2,6 @@
 
 * Fix the error when `textmodel_seqlda()` is called.
 * Save values in the Array object in double to avoid rounding error (#60).
-* Add levels argument for hierarchical dictionaries.
 
 ## Changes in v1.0.0
 

@@ -7,7 +7,6 @@
 textmodel_seededlda(
   x,
   dictionary,
-  levels = 1,
   valuetype = c("glob", "regex", "fixed"),
   case_insensitive = TRUE,
   residual = 0,
@@ -28,9 +27,6 @@ textmodel_seededlda(
 
 \item{dictionary}{a \code{\link[quanteda:dictionary]{quanteda::dictionary()}} with seed words that define
 topics.}
-
-\item{levels}{levels of entities in a hierarchical dictionary to be used as
-seed words.}
 
 \item{valuetype}{see \link[quanteda:valuetype]{quanteda::valuetype}}
 
