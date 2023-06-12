@@ -196,7 +196,7 @@ tfm <- function(x, dictionary,
             stop("The length of weight must be 1 or equal to dictionary", call. = FALSE)
     }
 
-    x <- dfm_trim(x, ..., verbose = verbose)
+    x <- dfm_trim(x, ..., verbose = FALSE)
     x <- dfm_group(x, rep("text", ndoc(x)))
     result <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
     for (i in seq_along(dictionary)) {
