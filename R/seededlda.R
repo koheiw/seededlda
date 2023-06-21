@@ -188,6 +188,7 @@ tfm <- function(x, dictionary,
     key <- names(dictionary)
     feat <- featnames(x)
     len <- length(key)
+    total <- sum(x)
 
     if (length(weight) == 1) {
         weight <- rep(weight, len)
@@ -222,9 +223,9 @@ tfm <- function(x, dictionary,
             result <- (result > 0) * w * s * weight
         }
     } else {
-        result <- (result > 0) * s * weight
+        result <- result * total * weight
     }
-
+    print(result)
     if (residual > 0) {
         label <- getOption("seededlda_residual_name", "other")
         if (residual == 1) {
