@@ -210,7 +210,7 @@ tfm <- function(x, dictionary,
     if (old) {
     	result <- (y > 0) * total * weight
     } else {
-    	result <- (y / total) * weight * 100
+    	result <- y * weight * 100
     }
 
     if (residual > 0) {
