@@ -188,6 +188,7 @@ tfm <- function(x, dictionary,
     key <- names(dictionary)
     feat <- featnames(x)
     len <- length(key)
+    total <- sum(x)
 
     if (length(weight) == 1) {
         weight <- rep(weight, len)
@@ -198,31 +199,18 @@ tfm <- function(x, dictionary,
 
     x <- dfm_trim(x, ..., verbose = FALSE)
     x <- dfm_group(x, rep("text", ndoc(x)))
-    result <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
+    y <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
     for (i in seq_along(dictionary)) {
         temp <- dfm_select(x, pattern = dictionary[i], verbose = FALSE)
         temp <- dfm_match(temp, features = feat)
-        result <- rbind(result, as(temp, "dgCMatrix"))
+        y <- rbind(y, as(temp, "dgCMatrix"))
     }
-    rownames(result) <- key
+    rownames(y) <- key
 
-    s <- sum(result)
-    if (!old) {
-        if (s > 0) {
-            p <- rep(1, nrow(result))
-            q <- colSums(result) / s # column profile
-            if (!uniform) {
-                d <- colSums(result > 0)
-                d[d == 0] <- 1
-                # q <- q / sqrt(d)
-                q <- q / d
-            }
-            w <- tcrossprod(p, q)
-            weight <- weight * 100 # for compatibility with pre v0.9
-            result <- (result > 0) * w * s * weight
-        }
+    if (old) {
+    	result <- (y > 0) * total * weight
     } else {
-        result <- (result > 0) * s * weight
+    	result <- (y / total) * weight * 100
     }
 
     if (residual > 0) {
