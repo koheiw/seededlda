@@ -10,8 +10,6 @@
 #' @param residual the number of undefined topics. They are named "other" by
 #'   default, but it can be changed via `base::options(seededlda_residual_name)`.
 #' @param weight determines the size of pseudo counts given to matched seed words.
-#' @param uniform if `FALSE`, adjusts the weights of seed words to make their
-#'   total amount equal across topics.
 #' @param valuetype see [quanteda::valuetype]
 #' @param case_insensitive see [quanteda::valuetype]
 #' @param ... passed to [quanteda::dfm_trim] to restrict seed words based on
@@ -54,7 +52,7 @@
 textmodel_seededlda <- function(
     x, dictionary,
     valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
-    residual = 0, weight = 0.01, uniform = TRUE, max_iter = 2000, auto_iter = FALSE,
+    residual = 0, weight = 0.01, max_iter = 2000, auto_iter = FALSE,
     alpha = 0.5, beta = 0.1, gamma = 0, batch_size = 1.0,
     ..., verbose = quanteda_options("verbose")
 ) {
@@ -65,14 +63,14 @@ textmodel_seededlda <- function(
 textmodel_seededlda.dfm <- function(
     x, dictionary,
     valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
-    residual = 0, weight = 0.01, uniform = TRUE, max_iter = 2000, auto_iter = FALSE,
+    residual = 0, weight = 0.01, max_iter = 2000, auto_iter = FALSE,
     alpha = 0.5, beta = 0.1, gamma = 0, batch_size = 1.0,
     ..., verbose = quanteda_options("verbose")
 ) {
 
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
     weight <- check_double(weight, min_len = 0, max_len = Inf, min = 0, max = 1)
-    seeds <- tfm(x, dictionary, weight = weight, residual = residual, uniform = uniform,
+    seeds <- tfm(x, dictionary, weight = weight, residual = residual,
                  ..., verbose = verbose)
     if (!identical(colnames(x), colnames(seeds)))
         stop("seeds must have the same features")
@@ -174,7 +172,6 @@ tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
                 weight = 0.01, residual = 1,
-                uniform = TRUE,
                 old = FALSE,
                 ...,
                 verbose = quanteda_options("verbose")) {
