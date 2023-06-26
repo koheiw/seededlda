@@ -11,7 +11,6 @@ textmodel_seededlda(
   case_insensitive = TRUE,
   residual = 0,
   weight = 0.01,
-  uniform = TRUE,
   max_iter = 2000,
   auto_iter = FALSE,
   alpha = 0.5,
@@ -36,9 +35,6 @@ topics.}
 default, but it can be changed via \code{base::options(seededlda_residual_name)}.}
 
 \item{weight}{determines the size of pseudo counts given to matched seed words.}
-
-\item{uniform}{if \code{FALSE}, adjusts the weights of seed words to make their
-total amount equal across topics.}
 
 \item{max_iter}{the maximum number of iteration in Gibbs sampling.}
 
