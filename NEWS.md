@@ -1,3 +1,7 @@
+## Changes in v1.1.0
+
+* Remove `uniform` to simplify the computation of seed weights.
+
 ## Changes in v1.0.1
 
 * Fix the error when `textmodel_seqlda()` is called.

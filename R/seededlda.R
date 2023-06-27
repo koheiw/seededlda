@@ -10,8 +10,6 @@
 #' @param residual the number of undefined topics. They are named "other" by
 #'   default, but it can be changed via `base::options(seededlda_residual_name)`.
 #' @param weight determines the size of pseudo counts given to matched seed words.
-#' @param uniform if `FALSE`, adjusts the weights of seed words to make their
-#'   total amount equal across topics.
 #' @param valuetype see [quanteda::valuetype]
 #' @param case_insensitive see [quanteda::valuetype]
 #' @param ... passed to [quanteda::dfm_trim] to restrict seed words based on
@@ -54,7 +52,7 @@
 textmodel_seededlda <- function(
     x, dictionary,
     valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
-    residual = 0, weight = 0.01, uniform = TRUE, max_iter = 2000, auto_iter = FALSE,
+    residual = 0, weight = 0.01, max_iter = 2000, auto_iter = FALSE,
     alpha = 0.5, beta = 0.1, gamma = 0, batch_size = 1.0,
     ..., verbose = quanteda_options("verbose")
 ) {
@@ -65,14 +63,14 @@ textmodel_seededlda <- function(
 textmodel_seededlda.dfm <- function(
     x, dictionary,
     valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
-    residual = 0, weight = 0.01, uniform = TRUE, max_iter = 2000, auto_iter = FALSE,
+    residual = 0, weight = 0.01, max_iter = 2000, auto_iter = FALSE,
     alpha = 0.5, beta = 0.1, gamma = 0, batch_size = 1.0,
     ..., verbose = quanteda_options("verbose")
 ) {
 
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
     weight <- check_double(weight, min_len = 0, max_len = Inf, min = 0, max = 1)
-    seeds <- tfm(x, dictionary, weight = weight, residual = residual, uniform = uniform,
+    seeds <- tfm(x, dictionary, weight = weight, residual = residual,
                  ..., verbose = verbose)
     if (!identical(colnames(x), colnames(seeds)))
         stop("seeds must have the same features")
@@ -174,7 +172,6 @@ tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
                 weight = 0.01, residual = 1,
-                uniform = TRUE,
                 old = FALSE,
                 ...,
                 verbose = quanteda_options("verbose")) {
@@ -188,6 +185,7 @@ tfm <- function(x, dictionary,
     key <- names(dictionary)
     feat <- featnames(x)
     len <- length(key)
+    total <- sum(x)
 
     if (length(weight) == 1) {
         weight <- rep(weight, len)
@@ -198,31 +196,18 @@ tfm <- function(x, dictionary,
 
     x <- dfm_trim(x, ..., verbose = FALSE)
     x <- dfm_group(x, rep("text", ndoc(x)))
-    result <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
+    y <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
     for (i in seq_along(dictionary)) {
         temp <- dfm_select(x, pattern = dictionary[i], verbose = FALSE)
         temp <- dfm_match(temp, features = feat)
-        result <- rbind(result, as(temp, "dgCMatrix"))
+        y <- rbind(y, as(temp, "dgCMatrix"))
     }
-    rownames(result) <- key
+    rownames(y) <- key
 
-    s <- sum(result)
-    if (!old) {
-        if (s > 0) {
-            p <- rep(1, nrow(result))
-            q <- colSums(result) / s # column profile
-            if (!uniform) {
-                d <- colSums(result > 0)
-                d[d == 0] <- 1
-                # q <- q / sqrt(d)
-                q <- q / d
-            }
-            w <- tcrossprod(p, q)
-            weight <- weight * 100 # for compatibility with pre v0.9
-            result <- (result > 0) * w * s * weight
-        }
+    if (old) {
+    	result <- (y > 0) * total * weight
     } else {
-        result <- (result > 0) * s * weight
+    	result <- y * weight * 100
     }
 
     if (residual > 0) {

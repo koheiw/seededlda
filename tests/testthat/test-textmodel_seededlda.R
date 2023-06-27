@@ -178,14 +178,14 @@ test_that("works similar way as before v0.9", {
                             sifi = c("alien*", "star", "space")))
 
     set.seed(1234)
-    lda <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.1, uniform = TRUE,
+    lda <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.1,
                                max_iter = 2000)
     set.seed(1234)
     lda_old <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.01, old = TRUE,
                                    max_iter = 2000)
 
     tb <- table(topics(lda), topics(lda_old))
-    expect_true(all(diag(tb) / rowSums(tb) > 0.85))
+    expect_true(all(diag(tb) / rowSums(tb) > 0.80))
 })
 
 
