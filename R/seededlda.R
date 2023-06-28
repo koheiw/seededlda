@@ -7,6 +7,8 @@
 #' @inheritParams textmodel_lda
 #' @param dictionary a [quanteda::dictionary()] with seed words that define
 #'   topics.
+#' @param levels levels of entities in a hierarchical dictionary to be used as
+#'   seed words. See also [quanteda::flatten_dictionary].
 #' @param residual the number of undefined topics. They are named "other" by
 #'   default, but it can be changed via `base::options(seededlda_residual_name)`.
 #' @param weight determines the size of pseudo counts given to matched seed words.
@@ -50,7 +52,7 @@
 #' }
 #' @export
 textmodel_seededlda <- function(
-    x, dictionary,
+    x, dictionary, levels = 1,
     valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
     residual = 0, weight = 0.01, max_iter = 2000, auto_iter = FALSE,
     alpha = 0.5, beta = 0.1, gamma = 0, batch_size = 1.0,
@@ -61,7 +63,7 @@ textmodel_seededlda <- function(
 
 #' @export
 textmodel_seededlda.dfm <- function(
-    x, dictionary,
+    x, dictionary, levels = 1,
     valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
     residual = 0, weight = 0.01, max_iter = 2000, auto_iter = FALSE,
     alpha = 0.5, beta = 0.1, gamma = 0, batch_size = 1.0,
@@ -70,7 +72,8 @@ textmodel_seededlda.dfm <- function(
 
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
     weight <- check_double(weight, min_len = 0, max_len = Inf, min = 0, max = 1)
-    seeds <- tfm(x, dictionary, weight = weight, residual = residual,
+    levels <- check_integer(levels, min_len = 1, max_len = 100, min = 1)
+    seeds <- tfm(x, dictionary, levels = levels, weight = weight, residual = residual,
                  ..., verbose = verbose)
     if (!identical(colnames(x), colnames(seeds)))
         stop("seeds must have the same features")
@@ -168,7 +171,7 @@ topics.textmodel_lda <- function(x, min_prob = 0, select = NULL) {
 #' Internal function to construct topic-feature matrix
 #' @noRd
 #' @importFrom Matrix Matrix
-tfm <- function(x, dictionary,
+tfm <- function(x, dictionary, levels = 1,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
                 weight = 0.01, residual = 1,
@@ -182,7 +185,8 @@ tfm <- function(x, dictionary,
     if (!quanteda::is.dictionary(dictionary))
         stop("dictionary must be a dictionary object", call. = FALSE)
 
-    key <- names(dictionary)
+    dict <- flatten_dictionary(dictionary, levels)
+    key <- names(dict)
     feat <- featnames(x)
     len <- length(key)
     total <- sum(x)
@@ -197,8 +201,8 @@ tfm <- function(x, dictionary,
     x <- dfm_trim(x, ..., verbose = FALSE)
     x <- dfm_group(x, rep("text", ndoc(x)))
     y <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
-    for (i in seq_along(dictionary)) {
-        temp <- dfm_select(x, pattern = dictionary[i], verbose = FALSE)
+    for (i in seq_along(dict)) {
+        temp <- dfm_select(x, pattern = dict[i], verbose = FALSE)
         temp <- dfm_match(temp, features = feat)
         y <- rbind(y, as(temp, "dgCMatrix"))
     }

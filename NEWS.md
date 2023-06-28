@@ -1,6 +1,7 @@
 ## Changes in v1.1.0
 
-* Remove `uniform` to simplify the computation of seed weights.
+* Remove `uniform` to simplify the computation of seed word weights.
+* Add `levels` argument to better handle hierarchical dictionaries.
 
 ## Changes in v1.0.1
 

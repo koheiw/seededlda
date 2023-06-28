@@ -268,4 +268,37 @@ test_that("auto_iter works", {
 })
 
 
+test_that("levels is working", {
+
+	lis <- list(romance = c("love*", "couple*"),
+				sifi = list(space = c("star", "space"),
+							monster = c("alien*", "monster")))
+	dict <- dictionary(lis)
+
+	lda1 <- textmodel_seededlda(dfmt, dict, levels = 1, residual = TRUE,
+								min_termfreq = 10, max_iter = 100)
+	expect_equal(
+		levels(topics(lda1)),
+		c("romance", "sifi", "other")
+	)
+	lda2 <- textmodel_seededlda(dfmt, dict, levels = 1:2, residual = TRUE,
+								min_termfreq = 10, max_iter = 100)
+	expect_equal(
+		levels(topics(lda2)),
+		c("romance", "sifi.space", "sifi.monster", "other")
+	)
+	lda3 <- textmodel_seededlda(dfmt, dict, levels = 2, residual = TRUE,
+								min_termfreq = 10, max_iter = 100)
+	expect_equal(
+		levels(topics(lda3)),
+		c("space", "monster", "other")
+	)
+
+	expect_error(
+		textmodel_seededlda(dfmt, dict, levels = -1, residual = TRUE,
+							min_termfreq = 10, max_iter = 100),
+		"The value of levels must be between 1 and Inf"
+	)
+
+})
 
