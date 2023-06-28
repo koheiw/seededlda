@@ -8,7 +8,7 @@
 #' @param dictionary a [quanteda::dictionary()] with seed words that define
 #'   topics.
 #' @param levels levels of entities in a hierarchical dictionary to be used as
-#'   seed words. See also [quanteda::dictionary].
+#'   seed words. See also [quanteda::flatten_dictionary].
 #' @param residual the number of undefined topics. They are named "other" by
 #'   default, but it can be changed via `base::options(seededlda_residual_name)`.
 #' @param weight determines the size of pseudo counts given to matched seed words.
