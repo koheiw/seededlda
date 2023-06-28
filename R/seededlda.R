@@ -8,7 +8,7 @@
 #' @param dictionary a [quanteda::dictionary()] with seed words that define
 #'   topics.
 #' @param levels levels of entities in a hierarchical dictionary to be used as
-#'   seed words.
+#'   seed words. See also [quanteda::dictionary].
 #' @param residual the number of undefined topics. They are named "other" by
 #'   default, but it can be changed via `base::options(seededlda_residual_name)`.
 #' @param weight determines the size of pseudo counts given to matched seed words.
@@ -72,6 +72,7 @@ textmodel_seededlda.dfm <- function(
 
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
     weight <- check_double(weight, min_len = 0, max_len = Inf, min = 0, max = 1)
+    levels <- check_integer(levels, min_len = 1, max_len = 100, min = 1)
     seeds <- tfm(x, dictionary, levels = levels, weight = weight, residual = residual,
                  ..., verbose = verbose)
     if (!identical(colnames(x), colnames(seeds)))
