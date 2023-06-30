@@ -116,7 +116,7 @@ test_that("tfm works with ngrams", {
                  c("un" = 2, "icc" = 2, "other" = 0))
 })
 
-test_that("levels is working", {
+test_that("tfm works with flatten dictionary", {
 
 	dict <- dictionary(list(A = list(
 		A2 = c("aa", "aab"),
@@ -127,7 +127,7 @@ test_that("levels is working", {
 	txt <- c("a aa aa aaa abc", "b b bb bcd bcd")
 	dfmt <- dfm(tokens(txt))
 
-	tfm1 <- seededlda:::tfm(dfmt, dict)
+	tfm1 <- seededlda:::tfm(dfmt, flatten_dictionary(dict, 1))
 	expect_s4_class(tfm1, "dgCMatrix")
 	expect_equal(tfm1["A",], c("a" = 1, "aa" = 2, "aaa" = 1, "abc" = 1,
 							   "b" = 0, "bb" = 0, "bcd" = 0))
@@ -138,7 +138,7 @@ test_that("levels is working", {
 	expect_equal(tfm1["other",], c("a" = 0, "aa" = 0, "aaa" = 0, "abc" = 0,
 								   "b" = 0, "bb" = 0, "bcd" = 0))
 
-	tfm2 <- seededlda:::tfm(dfmt, dict, levels = 1:2)
+	tfm2 <- seededlda:::tfm(dfmt, flatten_dictionary(dict, 1:2))
 	expect_s4_class(tfm2, "dgCMatrix")
 	expect_equal(tfm2["A.A2",], c("a" = 0, "aa" = 2, "aaa" = 0, "abc" = 0,
 								  "b" = 0, "bb" = 0, "bcd" = 0))
@@ -151,7 +151,7 @@ test_that("levels is working", {
 	expect_equal(tfm2["other",], c("a" = 0, "aa" = 0, "aaa" = 0, "abc" = 0,
 								   "b" = 0, "bb" = 0, "bcd" = 0))
 
-	tfm3 <- seededlda:::tfm(dfmt, dict, levels = 2)
+	tfm3 <- seededlda:::tfm(dfmt, flatten_dictionary(dict, 2))
 	expect_s4_class(tfm3, "dgCMatrix")
 	expect_equal(tfm3["A2",], c("a" = 0, "aa" = 2, "aaa" = 0, "abc" = 0,
 								"b" = 0, "bb" = 0, "bcd" = 0))

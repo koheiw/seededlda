@@ -278,17 +278,31 @@ test_that("levels is working", {
 	lda1 <- textmodel_seededlda(dfmt, dict, levels = 1, residual = TRUE,
 								min_termfreq = 10, max_iter = 100)
 	expect_equal(
+		names(lda1$dictionary),
+		c("romance", "sifi")
+	)
+	expect_equal(
 		levels(topics(lda1)),
 		c("romance", "sifi", "other")
 	)
+
 	lda2 <- textmodel_seededlda(dfmt, dict, levels = 1:2, residual = TRUE,
 								min_termfreq = 10, max_iter = 100)
+	expect_equal(
+		names(lda2$dictionary),
+		c("romance", "sifi.space", "sifi.monster")
+	)
 	expect_equal(
 		levels(topics(lda2)),
 		c("romance", "sifi.space", "sifi.monster", "other")
 	)
+
 	lda3 <- textmodel_seededlda(dfmt, dict, levels = 2, residual = TRUE,
 								min_termfreq = 10, max_iter = 100)
+	expect_equal(
+		names(lda3$dictionary),
+		c("space", "monster")
+	)
 	expect_equal(
 		levels(topics(lda3)),
 		c("space", "monster", "other")
