@@ -73,7 +73,8 @@ textmodel_seededlda.dfm <- function(
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
     weight <- check_double(weight, min_len = 0, max_len = Inf, min = 0, max = 1)
     levels <- check_integer(levels, min_len = 1, max_len = 100, min = 1)
-    seeds <- tfm(x, dictionary, levels = levels, weight = weight, residual = residual,
+    dict <- flatten_dictionary(dictionary, levels)
+    seeds <- tfm(x, dict, levels = levels, weight = weight, residual = residual,
                  ..., verbose = verbose)
     if (!identical(colnames(x), colnames(seeds)))
         stop("seeds must have the same features")
@@ -81,7 +82,7 @@ textmodel_seededlda.dfm <- function(
     label <- rownames(seeds)
 
     result <- lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, t(seeds), NULL, batch_size, verbose)
-    result$dictionary <- dictionary
+    result$dictionary <- dict
     result$valuetype <- valuetype
     result$case_insensitive <- case_insensitive
     result$seeds <- seeds # TODO: change to omega?
@@ -171,7 +172,7 @@ topics.textmodel_lda <- function(x, min_prob = 0, select = NULL) {
 #' Internal function to construct topic-feature matrix
 #' @noRd
 #' @importFrom Matrix Matrix
-tfm <- function(x, dictionary, levels = 1,
+tfm <- function(x, dictionary,
                 valuetype = c("glob", "regex", "fixed"),
                 case_insensitive = TRUE,
                 weight = 0.01, residual = 1,
@@ -185,8 +186,7 @@ tfm <- function(x, dictionary, levels = 1,
     if (!quanteda::is.dictionary(dictionary))
         stop("dictionary must be a dictionary object", call. = FALSE)
 
-    dict <- flatten_dictionary(dictionary, levels)
-    key <- names(dict)
+    key <- names(dictionary)
     feat <- featnames(x)
     len <- length(key)
     total <- sum(x)
@@ -201,8 +201,8 @@ tfm <- function(x, dictionary, levels = 1,
     x <- dfm_trim(x, ..., verbose = FALSE)
     x <- dfm_group(x, rep("text", ndoc(x)))
     y <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
-    for (i in seq_along(dict)) {
-        temp <- dfm_select(x, pattern = dict[i], verbose = FALSE)
+    for (i in seq_along(dictionary)) {
+        temp <- dfm_select(x, pattern = dictionary[i], verbose = FALSE)
         temp <- dfm_match(temp, features = feat)
         y <- rbind(y, as(temp, "dgCMatrix"))
     }
