@@ -32,7 +32,7 @@
     
     <a class="navbar-brand me-2" href="../../index.html">seededlda</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,9 +93,9 @@ semi-supervised topic modeling</h3>
     
 <p><strong>seededlda</strong> was created mainly for semi-supervised
 topic modeling but it can perform unsupervised topic modeling too. I
-explain the basic functions of the package taking unsupervised topic
-modeling as an example in this page and discuss semi-supervised topic
-modeling in <a href="seeded.html">a separate page</a>.</p>
+explain the basic functions of the package taking unsupervised LDA
+(Latent Dirichlet Allocation) as an example in this page and discuss
+semi-supervised LDA in <a href="seeded.html">a separate page</a>.</p>
 <div class="section level3">
 <h3 id="preperation">Preperation<a class="anchor" aria-label="anchor" href="#preperation"></a>
 </h3>
@@ -149,26 +149,26 @@ analysis dramatically.</p>
 <pre><code><span><span class="co">#&gt; Fitting LDA with 10 topics</span></span>
 <span><span class="co">#&gt;  ...initializing</span></span>
 <span><span class="co">#&gt;  ...Gibbs sampling in 2000 iterations</span></span>
-<span><span class="co">#&gt;  ......iteration 100 elapsed time: 30.79 seconds (delta: -0.01%)</span></span>
-<span><span class="co">#&gt;  ......iteration 200 elapsed time: 58.19 seconds (delta: 0.03%)</span></span>
-<span><span class="co">#&gt;  ......iteration 300 elapsed time: 89.45 seconds (delta: 0.04%)</span></span>
-<span><span class="co">#&gt;  ......iteration 400 elapsed time: 119.05 seconds (delta: 0.03%)</span></span>
-<span><span class="co">#&gt;  ......iteration 500 elapsed time: 147.47 seconds (delta: -0.03%)</span></span>
-<span><span class="co">#&gt;  ......iteration 600 elapsed time: 176.00 seconds (delta: 0.04%)</span></span>
-<span><span class="co">#&gt;  ......iteration 700 elapsed time: 205.73 seconds (delta: -0.06%)</span></span>
-<span><span class="co">#&gt;  ......iteration 800 elapsed time: 235.70 seconds (delta: 0.03%)</span></span>
-<span><span class="co">#&gt;  ......iteration 900 elapsed time: 262.89 seconds (delta: 0.05%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1000 elapsed time: 303.78 seconds (delta: -0.05%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1100 elapsed time: 357.01 seconds (delta: -0.07%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1200 elapsed time: 400.85 seconds (delta: 0.01%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1300 elapsed time: 430.35 seconds (delta: -0.01%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1400 elapsed time: 459.54 seconds (delta: -0.02%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1500 elapsed time: 491.49 seconds (delta: -0.02%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1600 elapsed time: 542.42 seconds (delta: -0.00%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1700 elapsed time: 593.80 seconds (delta: -0.05%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1800 elapsed time: 644.49 seconds (delta: 0.06%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1900 elapsed time: 693.85 seconds (delta: 0.04%)</span></span>
-<span><span class="co">#&gt;  ......iteration 2000 elapsed time: 745.06 seconds (delta: -0.01%)</span></span>
+<span><span class="co">#&gt;  ......iteration 100 elapsed time: 31.30 seconds (delta: 0.07%)</span></span>
+<span><span class="co">#&gt;  ......iteration 200 elapsed time: 59.32 seconds (delta: 0.06%)</span></span>
+<span><span class="co">#&gt;  ......iteration 300 elapsed time: 87.70 seconds (delta: 0.02%)</span></span>
+<span><span class="co">#&gt;  ......iteration 400 elapsed time: 116.32 seconds (delta: 0.09%)</span></span>
+<span><span class="co">#&gt;  ......iteration 500 elapsed time: 144.43 seconds (delta: -0.01%)</span></span>
+<span><span class="co">#&gt;  ......iteration 600 elapsed time: 172.24 seconds (delta: -0.02%)</span></span>
+<span><span class="co">#&gt;  ......iteration 700 elapsed time: 200.09 seconds (delta: -0.04%)</span></span>
+<span><span class="co">#&gt;  ......iteration 800 elapsed time: 228.88 seconds (delta: -0.00%)</span></span>
+<span><span class="co">#&gt;  ......iteration 900 elapsed time: 259.56 seconds (delta: -0.02%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1000 elapsed time: 287.79 seconds (delta: 0.02%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1100 elapsed time: 315.80 seconds (delta: -0.06%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1200 elapsed time: 348.42 seconds (delta: 0.01%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1300 elapsed time: 377.44 seconds (delta: 0.01%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1400 elapsed time: 406.29 seconds (delta: 0.02%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1500 elapsed time: 434.34 seconds (delta: -0.01%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1600 elapsed time: 462.74 seconds (delta: 0.04%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1700 elapsed time: 491.06 seconds (delta: -0.03%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1800 elapsed time: 519.67 seconds (delta: -0.00%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1900 elapsed time: 548.42 seconds (delta: 0.02%)</span></span>
+<span><span class="co">#&gt;  ......iteration 2000 elapsed time: 578.71 seconds (delta: -0.01%)</span></span>
 <span><span class="co">#&gt;  ...computing theta and phi</span></span>
 <span><span class="co">#&gt;  ...complete</span></span></code></pre>
 </div>
@@ -183,15 +183,15 @@ that are most frequent in each topic at the top of the matrix.</p>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="8%">
-<col width="9%">
-<col width="10%">
-<col width="12%">
-<col width="9%">
-<col width="8%">
 <col width="11%">
+<col width="8%">
 <col width="9%">
 <col width="10%">
 <col width="9%">
+<col width="10%">
+<col width="9%">
+<col width="9%">
+<col width="10%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">topic1</th>
@@ -207,124 +207,124 @@ that are most frequent in each topic at the top of the matrix.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">azov</td>
-<td align="left">per</td>
-<td align="left">johnson</td>
-<td align="left">hunter</td>
-<td align="left">alliance</td>
-<td align="left">air</td>
+<td align="left">photo</td>
 <td align="left">german</td>
-<td align="left">joins</td>
+<td align="left">british</td>
+<td align="left">taiwan</td>
 <td align="left">india</td>
 <td align="left">dpr</td>
+<td align="left">per</td>
+<td align="left">joins</td>
+<td align="left">alliance</td>
+<td align="left">joined</td>
 </tr>
 <tr class="even">
-<td align="left">photo</td>
-<td align="left">fuel</td>
-<td align="left">british</td>
-<td align="left">twitter</td>
-<td align="left">lavrov</td>
-<td align="left">systems</td>
+<td align="left">azov</td>
 <td align="left">stream</td>
-<td align="left">joined</td>
-<td align="left">taiwan</td>
+<td align="left">johnson</td>
+<td align="left">air</td>
 <td align="left">grain</td>
+<td align="left">lpr</td>
+<td align="left">fuel</td>
+<td align="left">iran</td>
+<td align="left">lavrov</td>
+<td align="left">hour</td>
 </tr>
 <tr class="odd">
 <td align="left">mediabank</td>
-<td align="left">crude</td>
-<td align="left">trump</td>
-<td align="left">biological</td>
-<td align="left">proposals</td>
-<td align="left">missile</td>
 <td align="left">nord</td>
-<td align="left">journalist</td>
+<td align="left">french</td>
+<td align="left">systems</td>
 <td align="left">indian</td>
-<td align="left">lpr</td>
+<td align="left">civilians</td>
+<td align="left">crude</td>
+<td align="left">journalist</td>
+<td align="left">sweden</td>
+<td align="left">trump</td>
 </tr>
 <tr class="even">
-<td align="left">killed</td>
+<td align="left">human</td>
+<td align="left">pipeline</td>
+<td align="left">twitter</td>
+<td align="left">missile</td>
+<td align="left">cooperation</td>
+<td align="left">shelling</td>
 <td align="left">imports</td>
-<td align="left">truss</td>
-<td align="left">research</td>
-<td align="left">say</td>
-<td align="left">missiles</td>
-<td align="left">french</td>
-<td align="left">hour</td>
-<td align="left">chinese</td>
+<td align="left">israel</td>
 <td align="left">finland</td>
+<td align="left">talk</td>
 </tr>
 <tr class="odd">
-<td align="left">civilians</td>
+<td align="left">killed</td>
+<td align="left">commission</td>
+<td align="left">truss</td>
+<td align="left">missiles</td>
+<td align="left">trade</td>
+<td align="left">civilian</td>
 <td align="left">production</td>
-<td align="left">congress</td>
-<td align="left">intelligence</td>
-<td align="left">diplomatic</td>
-<td align="left">equipment</td>
-<td align="left">pipeline</td>
-<td align="left">talk</td>
-<td align="left">cooperation</td>
-<td align="left">turkey</td>
+<td align="left">professor</td>
+<td align="left">interests</td>
+<td align="left">hunter</td>
 </tr>
 <tr class="even">
 <td align="left">battalion</td>
-<td align="left">cap</td>
-<td align="left">boris</td>
-<td align="left">photo</td>
-<td align="left">borders</td>
-<td align="left">training</td>
+<td align="left">company</td>
 <td align="left">macron</td>
+<td align="left">training</td>
+<td align="left">turkey</td>
+<td align="left">plant</td>
+<td align="left">cap</td>
 <td align="left">author</td>
-<td align="left">beijing</td>
-<td align="left">sweden</td>
+<td align="left">say</td>
+<td align="left">democrats</td>
 </tr>
 <tr class="odd">
-<td align="left">human</td>
-<td align="left">companies</td>
-<td align="left">election</td>
-<td align="left">activities</td>
-<td align="left">interests</td>
-<td align="left">aircraft</td>
-<td align="left">france</td>
-<td align="left">analyst</td>
+<td align="left">refugees</td>
+<td align="left">restrictions</td>
+<td align="left">boris</td>
+<td align="left">equipment</td>
 <td align="left">africa</td>
-<td align="left">plant</td>
+<td align="left">zaporozhye</td>
+<td align="left">cost</td>
+<td align="left">saudi</td>
+<td align="left">diplomatic</td>
+<td align="left">spoke</td>
 </tr>
 <tr class="even">
 <td align="left">police</td>
-<td align="left">exports</td>
-<td align="left">democrats</td>
-<td align="left">company</td>
-<td align="left">zelensky</td>
-<td align="left">army</td>
-<td align="left">commission</td>
-<td align="left">professor</td>
-<td align="left">south</td>
-<td align="left">zaporozhye</td>
+<td align="left">assets</td>
+<td align="left">photo</td>
+<td align="left">chinese</td>
+<td align="left">african</td>
+<td align="left">kherson</td>
+<td align="left">costs</td>
+<td align="left">dr</td>
+<td align="left">proposals</td>
+<td align="left">republicans</td>
 </tr>
 <tr class="odd">
-<td align="left">mariupol</td>
-<td align="left">costs</td>
-<td align="left">bill</td>
-<td align="left">investigation</td>
-<td align="left">course</td>
-<td align="left">vehicles</td>
-<td align="left">restrictions</td>
-<td align="left">spoke</td>
-<td align="left">iran</td>
-<td align="left">shelling</td>
+<td align="left">children</td>
+<td align="left">berlin</td>
+<td align="left">zelensky</td>
+<td align="left">biological</td>
+<td align="left">sea</td>
+<td align="left">regions</td>
+<td align="left">natural</td>
+<td align="left">analyst</td>
+<td align="left">clear</td>
+<td align="left">congress</td>
 </tr>
 <tr class="even">
-<td align="left">refugees</td>
-<td align="left">cost</td>
-<td align="left">republicans</td>
-<td align="left">post</td>
-<td align="left">soviet</td>
-<td align="left">artillery</td>
-<td align="left">brussels</td>
-<td align="left">mark</td>
-<td align="left">trade</td>
-<td align="left">turkish</td>
+<td align="left">crimes</td>
+<td align="left">scholz</td>
+<td align="left">leader</td>
+<td align="left">pentagon</td>
+<td align="left">summit</td>
+<td align="left">kiev’s</td>
+<td align="left">electricity</td>
+<td align="left">east</td>
+<td align="left">membership</td>
+<td align="left">sean</td>
 </tr>
 </tbody>
 </table>
@@ -344,7 +344,7 @@ topics in the data.frame.</p>
 <table class="table">
 <colgroup>
 <col width="9%">
-<col width="5%">
+<col width="6%">
 <col width="84%">
 </colgroup>
 <thead><tr class="header">
@@ -355,61 +355,61 @@ topics in the data.frame.</p>
 <tbody>
 <tr class="odd">
 <td align="left">2022-01-31</td>
-<td align="left">topic5</td>
+<td align="left">topic9</td>
 <td align="left">Biden: US Desires Diplomacy But ‘Ready No Matter What
 Happens’ If Ukraine Tensions Worsen</td>
 </tr>
 <tr class="even">
 <td align="left">2022-01-31</td>
-<td align="left">topic7</td>
+<td align="left">topic2</td>
 <td align="left">EU Trade Commissioner Says Nord Stream 2 ‘on Pause’
 Pending Review of Compliance With European Laws</td>
 </tr>
 <tr class="odd">
 <td align="left">2022-01-31</td>
-<td align="left">topic5</td>
+<td align="left">topic9</td>
 <td align="left">Russian Assets in UK May Be Frozen in Accordance With
 New Sanctions Bill, Foreign Secretary Says</td>
 </tr>
 <tr class="even">
 <td align="left">2022-01-31</td>
-<td align="left">topic4</td>
+<td align="left">topic10</td>
 <td align="left">Hunter Biden Was Reportedly Subpoenaed Over Dealings
 With China a Year Before Presidential Election</td>
 </tr>
 <tr class="odd">
 <td align="left">2022-01-31</td>
-<td align="left">topic5</td>
+<td align="left">topic9</td>
 <td align="left">US Urges UN Security Council to Act on Ukraine Crisis
 as Russia Denies Invasion Claims</td>
 </tr>
 <tr class="even">
 <td align="left">2022-01-31</td>
-<td align="left">topic5</td>
+<td align="left">topic9</td>
 <td align="left">UN Security Council Holds Meeting on Ukrainian
 Crisis</td>
 </tr>
 <tr class="odd">
 <td align="left">2022-01-31</td>
-<td align="left">topic5</td>
+<td align="left">topic9</td>
 <td align="left">The Depth of US Cold War Thinking and Murder of
 JFK</td>
 </tr>
 <tr class="even">
 <td align="left">2022-01-31</td>
-<td align="left">topic5</td>
+<td align="left">topic9</td>
 <td align="left">UK PM Johnson Says He Will Tell Putin to ‘Step Back
 From the Brink’ in Ukraine</td>
 </tr>
 <tr class="odd">
 <td align="left">2022-01-31</td>
-<td align="left">topic5</td>
+<td align="left">topic9</td>
 <td align="left">Kremlin on UK Sanctions Threat: Attack on Russian
 Businesses Means There Will Be Retaliation</td>
 </tr>
 <tr class="even">
 <td align="left">2022-01-31</td>
-<td align="left">topic5</td>
+<td align="left">topic9</td>
 <td align="left">Ukraine Crisis Escalation Forces Boris Johnson to
 Cancel Visit to Japan, Reports Say</td>
 </tr>

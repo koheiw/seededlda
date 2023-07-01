@@ -32,7 +32,7 @@
     
     <a class="navbar-brand me-2" href="../../index.html">seededlda</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,11 +91,11 @@ modeling</h3>
 
     
     
-<p>Sequential LDA can identify topics of sentences more accurately than
-the standard LDA, because it considers the topics of the preceding
-sentence to classify the current sentence. The topics of the preceding
-sentences not only make the transition of topics smoother but help to
-mitigate the data sparsity.</p>
+<p>Sequential LDA (Latent Dirichlet Allocation) can identify topics of
+sentences more accurately than the standard LDA, because it considers
+the topics of the preceding sentence to classify the current sentence.
+The topics of the preceding sentences not only make the transition of
+topics smoother but help to mitigate the data sparsity.</p>
 <div class="section level3">
 <h3 id="preperation">Preperation<a class="anchor" aria-label="anchor" href="#preperation"></a>
 </h3>
@@ -157,9 +157,9 @@ sentence.</p>
 <span><span class="co">#&gt;  ...using up to 16 threads for distributed computing</span></span>
 <span><span class="co">#&gt;  ......allocating 1510 documents to each thread</span></span>
 <span><span class="co">#&gt;  ...Gibbs sampling in up to 2000 iterations</span></span>
-<span><span class="co">#&gt;  ......iteration 100 elapsed time: 10.02 seconds (delta: 0.21%)</span></span>
-<span><span class="co">#&gt;  ......iteration 200 elapsed time: 18.98 seconds (delta: 0.04%)</span></span>
-<span><span class="co">#&gt;  ......iteration 300 elapsed time: 28.02 seconds (delta: -0.07%)</span></span>
+<span><span class="co">#&gt;  ......iteration 100 elapsed time: 14.36 seconds (delta: 0.27%)</span></span>
+<span><span class="co">#&gt;  ......iteration 200 elapsed time: 27.44 seconds (delta: 0.03%)</span></span>
+<span><span class="co">#&gt;  ......iteration 300 elapsed time: 40.55 seconds (delta: -0.04%)</span></span>
 <span><span class="co">#&gt;  ...computing theta and phi</span></span>
 <span><span class="co">#&gt;  ...complete</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -167,13 +167,13 @@ sentence.</p>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="9%">
-<col width="9%">
-<col width="9%">
+<col width="13%">
 <col width="9%">
 <col width="9%">
 <col width="10%">
-<col width="10%">
 <col width="9%">
+<col width="9%">
+<col width="10%">
 <col width="9%">
 <col width="9%">
 </colgroup>
@@ -191,124 +191,124 @@ sentence.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">biden</td>
-<td align="left">ukrainian</td>
-<td align="left">ukrainian</td>
 <td align="left">gas</td>
-<td align="left">oil</td>
-<td align="left">sputnik</td>
-<td align="left">minister</td>
+<td align="left">world</td>
+<td align="left">moscow</td>
+<td align="left">biden</td>
+<td align="left">president</td>
+<td align="left">nato</td>
+<td align="left">operation</td>
+<td align="left">energy</td>
 <td align="left">military</td>
+<td align="left">ukrainian</td>
+</tr>
+<tr class="even">
+<td align="left">energy</td>
+<td align="left">people</td>
+<td align="left">security</td>
+<td align="left">discuss</td>
+<td align="left">china</td>
+<td align="left">finland</td>
+<td align="left">military</td>
+<td align="left">prices</td>
+<td align="left">weapons</td>
+<td align="left">sputnik</td>
+</tr>
+<tr class="odd">
+<td align="left">oil</td>
+<td align="left">war</td>
+<td align="left">foreign</td>
+<td align="left">joins</td>
+<td align="left">biden</td>
+<td align="left">sweden</td>
+<td align="left">ukrainian</td>
+<td align="left">inflation</td>
+<td align="left">ukrainian</td>
+<td align="left">media</td>
+</tr>
+<tr class="even">
+<td align="left">sanctions</td>
 <td align="left">discuss</td>
 <td align="left">nato</td>
-</tr>
-<tr class="even">
 <td align="left">president</td>
-<td align="left">military</td>
-<td align="left">war</td>
-<td align="left">energy</td>
-<td align="left">prices</td>
-<td align="left">ukrainian</td>
-<td align="left">prime</td>
-<td align="left">weapons</td>
-<td align="left">joins</td>
-<td align="left">security</td>
-</tr>
-<tr class="odd">
-<td align="left">house</td>
-<td align="left">operation</td>
-<td align="left">people</td>
-<td align="left">sanctions</td>
-<td align="left">energy</td>
-<td align="left">foreign</td>
-<td align="left">johnson</td>
-<td align="left">nato</td>
-<td align="left">sputnik</td>
-<td align="left">countries</td>
-</tr>
-<tr class="even">
-<td align="left">joe</td>
-<td align="left">forces</td>
-<td align="left">media</td>
-<td align="left">european</td>
-<td align="left">inflation</td>
-<td align="left">eu</td>
-<td align="left">uk</td>
-<td align="left">defense</td>
-<td align="left">joined</td>
-<td align="left">moscow</td>
-</tr>
-<tr class="odd">
-<td align="left">trump</td>
-<td align="left">donetsk</td>
-<td align="left">sputnik</td>
-<td align="left">eu</td>
-<td align="left">sanctions</td>
-<td align="left">european</td>
-<td align="left">government</td>
-<td align="left">ukrainian</td>
-<td align="left">get</td>
-<td align="left">president</td>
-</tr>
-<tr class="even">
-<td align="left">former</td>
-<td align="left">special</td>
-<td align="left">one</td>
-<td align="left">oil</td>
-<td align="left">percent</td>
-<td align="left">also</td>
-<td align="left">british</td>
-<td align="left">kiev</td>
-<td align="left">also</td>
-<td align="left">foreign</td>
-</tr>
-<tr class="odd">
-<td align="left">media</td>
-<td align="left">republics</td>
-<td align="left">military</td>
-<td align="left">europe</td>
-<td align="left">price</td>
-<td align="left">sanctions</td>
-<td align="left">truss</td>
-<td align="left">also</td>
-<td align="left">talk</td>
-<td align="left">also</td>
-</tr>
-<tr class="even">
-<td align="left">hunter</td>
-<td align="left">donbass</td>
-<td align="left">photo</td>
-<td align="left">countries</td>
-<td align="left">global</td>
-<td align="left">country</td>
-<td align="left">party</td>
-<td align="left">china</td>
-<td align="left">position</td>
-<td align="left">military</td>
-</tr>
-<tr class="odd">
-<td align="left">white</td>
-<td align="left">lugansk</td>
-<td align="left">also</td>
-<td align="left">prices</td>
-<td align="left">countries</td>
-<td align="left">moscow</td>
-<td align="left">biological</td>
 <td align="left">taiwan</td>
-<td align="left">love</td>
+<td align="left">military</td>
+<td align="left">donetsk</td>
+<td align="left">uk</td>
+<td align="left">nuclear</td>
+<td align="left">people</td>
+</tr>
+<tr class="odd">
+<td align="left">european</td>
+<td align="left">countries</td>
 <td align="left">minister</td>
+<td align="left">also</td>
+<td align="left">military</td>
+<td align="left">security</td>
+<td align="left">special</td>
+<td align="left">percent</td>
+<td align="left">defense</td>
+<td align="left">war</td>
 </tr>
 <tr class="even">
-<td align="left">new</td>
-<td align="left">kiev</td>
-<td align="left">western</td>
-<td align="left">stream</td>
-<td align="left">year</td>
-<td align="left">government</td>
-<td align="left">also</td>
-<td align="left">nuclear</td>
+<td align="left">countries</td>
 <td align="left">political</td>
-<td align="left">states</td>
+<td align="left">also</td>
+<td align="left">former</td>
+<td align="left">washington</td>
+<td align="left">countries</td>
+<td align="left">forces</td>
+<td align="left">oil</td>
+<td align="left">forces</td>
+<td align="left">one</td>
+</tr>
+<tr class="odd">
+<td align="left">eu</td>
+<td align="left">joined</td>
+<td align="left">countries</td>
+<td align="left">sputnik</td>
+<td align="left">war</td>
+<td align="left">joined</td>
+<td align="left">republics</td>
+<td align="left">government</td>
+<td align="left">kiev</td>
+<td align="left">also</td>
+</tr>
+<tr class="even">
+<td align="left">prices</td>
+<td align="left">international</td>
+<td align="left">military</td>
+<td align="left">get</td>
+<td align="left">also</td>
+<td align="left">alliance</td>
+<td align="left">donbass</td>
+<td align="left">year</td>
+<td align="left">also</td>
+<td align="left">photo</td>
+</tr>
+<tr class="odd">
+<td align="left">europe</td>
+<td align="left">sean</td>
+<td align="left">united</td>
+<td align="left">house</td>
+<td align="left">nato</td>
+<td align="left">hour</td>
+<td align="left">lugansk</td>
+<td align="left">crisis</td>
+<td align="left">ministry</td>
+<td align="left">military</td>
+</tr>
+<tr class="even">
+<td align="left">also</td>
+<td align="left">jacquie</td>
+<td align="left">president</td>
+<td align="left">new</td>
+<td align="left">security</td>
+<td align="left">turkey</td>
+<td align="left">february</td>
+<td align="left">price</td>
+<td align="left">according</td>
+<td align="left">kiev</td>
 </tr>
 </tbody>
 </table>
@@ -336,20 +336,13 @@ sentence.</p>
 <code class="sourceCode R"><span><span class="va">lda_seed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/textmodel_seededlda.html">textmodel_seededlda</a></span><span class="op">(</span><span class="va">dfmt</span>, <span class="va">dict</span>, residual <span class="op">=</span> <span class="fl">2</span>, gamma <span class="op">=</span> <span class="fl">0.5</span>, </span>
 <span>                                batch_size <span class="op">=</span> <span class="fl">0.01</span>, auto_iter <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                                verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; No features removed.</span></span>
 <span><span class="co">#&gt; Fitting LDA with 7 topics</span></span>
 <span><span class="co">#&gt;  ...initializing</span></span>
 <span><span class="co">#&gt;  ...using up to 16 threads for distributed computing</span></span>
 <span><span class="co">#&gt;  ......allocating 1510 documents to each thread</span></span>
 <span><span class="co">#&gt;  ...Gibbs sampling in up to 2000 iterations</span></span>
-<span><span class="co">#&gt;  ......iteration 100 elapsed time: 9.51 seconds (delta: 0.11%)</span></span>
-<span><span class="co">#&gt;  ......iteration 200 elapsed time: 18.08 seconds (delta: 0.02%)</span></span>
-<span><span class="co">#&gt;  ......iteration 300 elapsed time: 26.64 seconds (delta: 0.02%)</span></span>
-<span><span class="co">#&gt;  ......iteration 400 elapsed time: 35.36 seconds (delta: 0.07%)</span></span>
-<span><span class="co">#&gt;  ......iteration 500 elapsed time: 44.37 seconds (delta: 0.00%)</span></span>
-<span><span class="co">#&gt;  ......iteration 600 elapsed time: 53.96 seconds (delta: 0.02%)</span></span>
-<span><span class="co">#&gt;  ......iteration 700 elapsed time: 63.41 seconds (delta: 0.10%)</span></span>
-<span><span class="co">#&gt;  ......iteration 800 elapsed time: 72.62 seconds (delta: -0.03%)</span></span>
+<span><span class="co">#&gt;  ......iteration 100 elapsed time: 12.70 seconds (delta: 0.05%)</span></span>
+<span><span class="co">#&gt;  ......iteration 200 elapsed time: 24.17 seconds (delta: -0.01%)</span></span>
 <span><span class="co">#&gt;  ...computing theta and phi</span></span>
 <span><span class="co">#&gt;  ...complete</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -357,12 +350,12 @@ sentence.</p>
 <table class="table">
 <colgroup>
 <col width="13%">
-<col width="15%">
 <col width="13%">
 <col width="13%">
 <col width="13%">
-<col width="15%">
-<col width="15%">
+<col width="13%">
+<col width="18%">
+<col width="13%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">economy</th>
@@ -380,89 +373,89 @@ sentence.</p>
 <td align="left">ukrainian</td>
 <td align="left">nato</td>
 <td align="left">military</td>
-<td align="left">minister</td>
-<td align="left">discuss</td>
+<td align="left">china</td>
+<td align="left">nato</td>
 </tr>
 <tr class="even">
 <td align="left">gas</td>
-<td align="left">president</td>
-<td align="left">sputnik</td>
+<td align="left">discuss</td>
+<td align="left">people</td>
 <td align="left">security</td>
 <td align="left">ukrainian</td>
-<td align="left">prime</td>
-<td align="left">joins</td>
+<td align="left">countries</td>
+<td align="left">sputnik</td>
 </tr>
 <tr class="odd">
 <td align="left">oil</td>
-<td align="left">congress</td>
-<td align="left">people</td>
+<td align="left">president</td>
+<td align="left">police</td>
 <td align="left">moscow</td>
 <td align="left">operation</td>
-<td align="left">uk</td>
-<td align="left">sputnik</td>
+<td align="left">also</td>
+<td align="left">eu</td>
 </tr>
 <tr class="even">
 <td align="left">prices</td>
-<td align="left">house</td>
-<td align="left">media</td>
-<td align="left">countries</td>
+<td align="left">joins</td>
+<td align="left">one</td>
+<td align="left">military</td>
 <td align="left">forces</td>
+<td align="left">world</td>
 <td align="left">european</td>
-<td align="left">also</td>
 </tr>
 <tr class="odd">
 <td align="left">sanctions</td>
-<td align="left">washington</td>
-<td align="left">police</td>
-<td align="left">foreign</td>
-<td align="left">special</td>
-<td align="left">eu</td>
-<td align="left">joined</td>
-</tr>
-<tr class="even">
-<td align="left">market</td>
 <td align="left">also</td>
 <td align="left">war</td>
 <td align="left">president</td>
-<td align="left">kiev</td>
-<td align="left">government</td>
-<td align="left">get</td>
+<td align="left">special</td>
+<td align="left">india</td>
+<td align="left">finland</td>
+</tr>
+<tr class="even">
+<td align="left">market</td>
+<td align="left">congress</td>
+<td align="left">also</td>
+<td align="left">ukrainian</td>
+<td align="left">donetsk</td>
+<td align="left">president</td>
+<td align="left">countries</td>
 </tr>
 <tr class="odd">
 <td align="left">countries</td>
-<td align="left">joe</td>
-<td align="left">one</td>
-<td align="left">also</td>
-<td align="left">donetsk</td>
-<td align="left">johnson</td>
-<td align="left">political</td>
+<td align="left">sputnik</td>
+<td align="left">minister</td>
+<td align="left">foreign</td>
+<td align="left">kiev</td>
+<td align="left">new</td>
+<td align="left">sweden</td>
 </tr>
 <tr class="even">
 <td align="left">price</td>
-<td align="left">taiwan</td>
-<td align="left">also</td>
-<td align="left">states</td>
+<td align="left">political</td>
+<td align="left">sputnik</td>
+<td align="left">weapons</td>
 <td align="left">republics</td>
+<td align="left">economic</td>
 <td align="left">also</td>
-<td align="left">president</td>
 </tr>
 <tr class="odd">
 <td align="left">inflation</td>
-<td align="left">china</td>
+<td align="left">get</td>
 <td align="left">photo</td>
-<td align="left">military</td>
-<td align="left">moscow</td>
-<td align="left">president</td>
-<td align="left">hour</td>
+<td align="left">states</td>
+<td align="left">donbass</td>
+<td align="left">international</td>
+<td align="left">media</td>
 </tr>
 <tr class="even">
 <td align="left">european</td>
-<td align="left">according</td>
-<td align="left">kiev</td>
+<td align="left">joined</td>
+<td align="left">johnson</td>
 <td align="left">united</td>
-<td align="left">donbass</td>
-<td align="left">sanctions</td>
-<td align="left">journalist</td>
+<td align="left">lugansk</td>
+<td align="left">foreign</td>
+<td align="left">military</td>
 </tr>
 </tbody>
 </table>

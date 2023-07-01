@@ -32,7 +32,7 @@
     
     <a class="navbar-brand me-2" href="../../index.html">seededlda</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,9 +91,10 @@ modeling</h3>
 
     
     
-<p>Seeded LDA can identify pre-defined topics in the corpus with a small
-number of seed words. Seeded LDA is useful when you want to match topics
-with theoretical concepts in deductive analysis.</p>
+<p>Seeded LDA (Latent Dirichlet Allocation) can identify pre-defined
+topics in the corpus with a small number of seed words. Seeded LDA is
+useful when you want to match topics with theoretical concepts in
+deductive analysis.</p>
 <div class="section level3">
 <h3 id="preperation">Preperation<a class="anchor" aria-label="anchor" href="#preperation"></a>
 </h3>
@@ -155,18 +156,18 @@ algorithm <code>batch_size = 0.01</code> and convergence detection
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lda_seed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/textmodel_seededlda.html">textmodel_seededlda</a></span><span class="op">(</span><span class="va">dfmt</span>, <span class="va">dict</span>, batch_size <span class="op">=</span> <span class="fl">0.01</span>, auto_iter <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                                verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt; No features removed.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Fitting LDA with 5 topics</span></span>
 <span><span class="co">#&gt;  ...initializing</span></span>
 <span><span class="co">#&gt;  ...using up to 16 threads for distributed computing</span></span>
 <span><span class="co">#&gt;  ......allocating 81 documents to each thread</span></span>
 <span><span class="co">#&gt;  ...Gibbs sampling in up to 2000 iterations</span></span>
-<span><span class="co">#&gt;  ......iteration 100 elapsed time: 8.59 seconds (delta: 0.27%)</span></span>
-<span><span class="co">#&gt;  ......iteration 200 elapsed time: 17.14 seconds (delta: 0.07%)</span></span>
-<span><span class="co">#&gt;  ......iteration 300 elapsed time: 24.95 seconds (delta: -0.01%)</span></span>
+<span><span class="co">#&gt;  ......iteration 100 elapsed time: 7.37 seconds (delta: 0.18%)</span></span>
+<span><span class="co">#&gt;  ......iteration 200 elapsed time: 13.32 seconds (delta: 0.03%)</span></span>
+<span><span class="co">#&gt;  ......iteration 300 elapsed time: 19.19 seconds (delta: 0.00%)</span></span>
+<span><span class="co">#&gt;  ......iteration 400 elapsed time: 25.43 seconds (delta: -0.04%)</span></span>
 <span><span class="co">#&gt;  ...computing theta and phi</span></span>
 <span><span class="co">#&gt;  ...complete</span></span></code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../../reference/terms.html">terms</a></span><span class="op">(</span><span class="va">lda_seed</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
@@ -179,73 +180,73 @@ algorithm <code>batch_size = 0.01</code> and convergence detection
 <tbody>
 <tr class="odd">
 <td align="left">bank</td>
+<td align="left">congress</td>
 <td align="left">joins</td>
-<td align="left">police</td>
 <td align="left">diplomatic</td>
 <td align="left">army</td>
 </tr>
 <tr class="even">
-<td align="left">india</td>
-<td align="left">congress</td>
-<td align="left">photo</td>
+<td align="left">company</td>
+<td align="left">trump</td>
+<td align="left">police</td>
 <td align="left">ambassador</td>
 <td align="left">soldiers</td>
 </tr>
 <tr class="odd">
-<td align="left">company</td>
-<td align="left">joined</td>
-<td align="left">twitter</td>
+<td align="left">money</td>
+<td align="left">johnson</td>
+<td align="left">journalist</td>
 <td align="left">cooperation</td>
 <td align="left">dpr</td>
 </tr>
 <tr class="even">
-<td align="left">money</td>
-<td align="left">journalist</td>
-<td align="left">human</td>
+<td align="left">industry</td>
+<td align="left">politicians</td>
+<td align="left">joined</td>
 <td align="left">taiwan</td>
 <td align="left">terrorist</td>
 </tr>
 <tr class="odd">
-<td align="left">industry</td>
-<td align="left">trump</td>
-<td align="left">rights</td>
+<td align="left">markets</td>
+<td align="left">hour</td>
+<td align="left">author</td>
 <td align="left">alliance</td>
 <td align="left">air</td>
 </tr>
 <tr class="even">
-<td align="left">markets</td>
-<td align="left">hour</td>
-<td align="left">know</td>
+<td align="left">per</td>
+<td align="left">british</td>
+<td align="left">rights</td>
 <td align="left">lavrov</td>
 <td align="left">civilians</td>
 </tr>
 <tr class="odd">
-<td align="left">per</td>
-<td align="left">analyst</td>
-<td align="left">israel</td>
+<td align="left">companies</td>
+<td align="left">parliament</td>
+<td align="left">professor</td>
 <td align="left">embassy</td>
 <td align="left">lpr</td>
 </tr>
 <tr class="even">
-<td align="left">grain</td>
-<td align="left">johnson</td>
-<td align="left">school</td>
+<td align="left">banks</td>
+<td align="left">lawmakers</td>
+<td align="left">talk</td>
 <td align="left">diplomat</td>
 <td align="left">systems</td>
 </tr>
 <tr class="odd">
-<td align="left">companies</td>
-<td align="left">talk</td>
-<td align="left">soviet</td>
+<td align="left">stream</td>
+<td align="left">voters</td>
+<td align="left">sean</td>
 <td align="left">chinese</td>
-<td align="left">shelling</td>
+<td align="left">missile</td>
 </tr>
 <tr class="even">
-<td align="left">indian</td>
-<td align="left">politicians</td>
-<td align="left">refugees</td>
-<td align="left">negotiations</td>
-<td align="left">missile</td>
+<td align="left">nord</td>
+<td align="left">democrats</td>
+<td align="left">history</td>
+<td align="left">turkey</td>
+<td align="left">shelling</td>
 </tr>
 </tbody>
 </table>
@@ -257,31 +258,30 @@ algorithm <code>batch_size = 0.01</code> and convergence detection
 <code>residula = 2</code>, two unseeded topics are added to the model.
 You can change the name of these topics through
 <code>options(seededlda_residual_name)</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lda_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/textmodel_seededlda.html">textmodel_seededlda</a></span><span class="op">(</span><span class="va">dfmt</span>, <span class="va">dict</span>, residual <span class="op">=</span> <span class="fl">2</span>, batch_size <span class="op">=</span> <span class="fl">0.01</span>, auto_iter <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                                verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt; No features removed.</span></span></code></pre>
 <pre><code><span><span class="co">#&gt; Fitting LDA with 7 topics</span></span>
 <span><span class="co">#&gt;  ...initializing</span></span>
 <span><span class="co">#&gt;  ...using up to 16 threads for distributed computing</span></span>
 <span><span class="co">#&gt;  ......allocating 81 documents to each thread</span></span>
 <span><span class="co">#&gt;  ...Gibbs sampling in up to 2000 iterations</span></span>
-<span><span class="co">#&gt;  ......iteration 100 elapsed time: 8.48 seconds (delta: 0.24%)</span></span>
-<span><span class="co">#&gt;  ......iteration 200 elapsed time: 16.18 seconds (delta: 0.15%)</span></span>
-<span><span class="co">#&gt;  ......iteration 300 elapsed time: 23.49 seconds (delta: -0.01%)</span></span>
+<span><span class="co">#&gt;  ......iteration 100 elapsed time: 8.51 seconds (delta: 0.25%)</span></span>
+<span><span class="co">#&gt;  ......iteration 200 elapsed time: 16.37 seconds (delta: 0.05%)</span></span>
+<span><span class="co">#&gt;  ......iteration 300 elapsed time: 24.27 seconds (delta: -0.04%)</span></span>
 <span><span class="co">#&gt;  ...computing theta and phi</span></span>
 <span><span class="co">#&gt;  ...complete</span></span></code></pre>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../../reference/terms.html">terms</a></span><span class="op">(</span><span class="va">lda_res</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
-<col width="11%">
-<col width="15%">
-<col width="12%">
+<col width="13%">
+<col width="16%">
+<col width="13%">
+<col width="16%">
+<col width="13%">
 <col width="14%">
 <col width="12%">
-<col width="16%">
-<col width="15%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">economy</th>
@@ -295,93 +295,93 @@ You can change the name of these topics through
 <tbody>
 <tr class="odd">
 <td align="left">bank</td>
-<td align="left">joins</td>
+<td align="left">congress</td>
 <td align="left">police</td>
 <td align="left">diplomatic</td>
 <td align="left">army</td>
-<td align="left">hunter</td>
-<td align="left">india</td>
+<td align="left">joins</td>
+<td align="left">soviet</td>
 </tr>
 <tr class="even">
 <td align="left">company</td>
-<td align="left">congress</td>
-<td align="left">photo</td>
+<td align="left">politicians</td>
+<td align="left">azov</td>
 <td align="left">ambassador</td>
 <td align="left">soldiers</td>
-<td align="left">biological</td>
-<td align="left">grain</td>
+<td align="left">joined</td>
+<td align="left">know</td>
 </tr>
 <tr class="odd">
 <td align="left">money</td>
-<td align="left">joined</td>
-<td align="left">twitter</td>
+<td align="left">trump</td>
+<td align="left">mediabank</td>
 <td align="left">taiwan</td>
-<td align="left">dpr</td>
-<td align="left">research</td>
-<td align="left">indian</td>
+<td align="left">terrorist</td>
+<td align="left">journalist</td>
+<td align="left">say</td>
 </tr>
 <tr class="even">
 <td align="left">industry</td>
-<td align="left">journalist</td>
-<td align="left">azov</td>
-<td align="left">alliance</td>
-<td align="left">terrorist</td>
-<td align="left">intelligence</td>
-<td align="left">johnson</td>
+<td align="left">parliament</td>
+<td align="left">civilians</td>
+<td align="left">cooperation</td>
+<td align="left">air</td>
+<td align="left">hour</td>
+<td align="left">british</td>
 </tr>
 <tr class="odd">
 <td align="left">markets</td>
-<td align="left">trump</td>
-<td align="left">mediabank</td>
-<td align="left">embassy</td>
-<td align="left">air</td>
-<td align="left">activities</td>
-<td align="left">africa</td>
+<td align="left">lawmakers</td>
+<td align="left">mariupol</td>
+<td align="left">alliance</td>
+<td align="left">systems</td>
+<td align="left">johnson</td>
+<td align="left">photo</td>
 </tr>
 <tr class="even">
 <td align="left">per</td>
-<td align="left">hour</td>
-<td align="left">human</td>
-<td align="left">diplomat</td>
-<td align="left">systems</td>
-<td align="left">refugees</td>
-<td align="left">cooperation</td>
+<td align="left">voters</td>
+<td align="left">photo</td>
+<td align="left">embassy</td>
+<td align="left">dpr</td>
+<td align="left">talk</td>
+<td align="left">it’s</td>
 </tr>
 <tr class="odd">
-<td align="left">banks</td>
-<td align="left">analyst</td>
+<td align="left">companies</td>
+<td align="left">hunter</td>
 <td align="left">killed</td>
-<td align="left">lavrov</td>
+<td align="left">diplomat</td>
 <td align="left">lpr</td>
-<td align="left">agency</td>
-<td align="left">turkey</td>
+<td align="left">author</td>
+<td align="left">israel</td>
 </tr>
 <tr class="even">
-<td align="left">fuel</td>
-<td align="left">talk</td>
+<td align="left">banks</td>
+<td align="left">biological</td>
 <td align="left">crimes</td>
-<td align="left">zelensky</td>
+<td align="left">lavrov</td>
 <td align="left">missile</td>
-<td align="left">space</td>
-<td align="left">trade</td>
+<td align="left">analyst</td>
+<td align="left">good</td>
 </tr>
 <tr class="odd">
-<td align="left">nord</td>
-<td align="left">politicians</td>
-<td align="left">school</td>
-<td align="left">chinese</td>
+<td align="left">fuel</td>
+<td align="left">republicans</td>
+<td align="left">human</td>
+<td align="left">india</td>
 <td align="left">missiles</td>
-<td align="left">israel</td>
-<td align="left">south</td>
+<td align="left">professor</td>
+<td align="left">zelensky</td>
 </tr>
 <tr class="even">
 <td align="left">stream</td>
-<td align="left">author</td>
+<td align="left">republican</td>
 <td align="left">battalion</td>
-<td align="left">treaty</td>
-<td align="left">sweden</td>
-<td align="left">business</td>
-<td align="left">iran</td>
+<td align="left">chinese</td>
+<td align="left">grain</td>
+<td align="left">spoke</td>
+<td align="left">great</td>
 </tr>
 </tbody>
 </table>

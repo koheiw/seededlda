@@ -32,7 +32,7 @@
     
     <a class="navbar-brand me-2" href="../../index.html">seededlda</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,10 +91,11 @@ parallel computing</h3>
 
     
     
-<p>Distributed LDA can dramatically speeds up your analysis by using
-multiple processors on your computer. The number of topic is small in
-this example, but the distributed algorithm is highly effective in
-identifying many topics (<code>k &gt; 100</code>) in a large corpus.</p>
+<p>Distributed LDA (Latent Dirichlet Allocation) can dramatically speeds
+up your analysis by using multiple processors on your computer. The
+number of topic is small in this example, but the distributed algorithm
+is highly effective in identifying many topics (<code>k &gt; 100</code>)
+in a large corpus.</p>
 <div class="section level3">
 <h3 id="preperation">Preperation<a class="anchor" aria-label="anchor" href="#preperation"></a>
 </h3>
@@ -144,26 +145,26 @@ all the processors by default, but you can limit the number through
 <span><span class="co">#&gt;  ...using up to 16 threads for distributed computing</span></span>
 <span><span class="co">#&gt;  ......allocating 81 documents to each thread</span></span>
 <span><span class="co">#&gt;  ...Gibbs sampling in 2000 iterations</span></span>
-<span><span class="co">#&gt;  ......iteration 100 elapsed time: 10.41 seconds (delta: 0.44%)</span></span>
-<span><span class="co">#&gt;  ......iteration 200 elapsed time: 18.69 seconds (delta: 0.12%)</span></span>
-<span><span class="co">#&gt;  ......iteration 300 elapsed time: 26.50 seconds (delta: 0.01%)</span></span>
-<span><span class="co">#&gt;  ......iteration 400 elapsed time: 34.16 seconds (delta: 0.01%)</span></span>
-<span><span class="co">#&gt;  ......iteration 500 elapsed time: 41.79 seconds (delta: -0.01%)</span></span>
-<span><span class="co">#&gt;  ......iteration 600 elapsed time: 49.81 seconds (delta: -0.00%)</span></span>
-<span><span class="co">#&gt;  ......iteration 700 elapsed time: 57.38 seconds (delta: 0.04%)</span></span>
-<span><span class="co">#&gt;  ......iteration 800 elapsed time: 64.92 seconds (delta: 0.04%)</span></span>
-<span><span class="co">#&gt;  ......iteration 900 elapsed time: 72.42 seconds (delta: -0.01%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1000 elapsed time: 80.09 seconds (delta: -0.03%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1100 elapsed time: 87.81 seconds (delta: 0.03%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1200 elapsed time: 95.49 seconds (delta: 0.05%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1300 elapsed time: 103.13 seconds (delta: 0.02%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1400 elapsed time: 110.56 seconds (delta: 0.02%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1500 elapsed time: 118.18 seconds (delta: -0.09%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1600 elapsed time: 125.84 seconds (delta: 0.02%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1700 elapsed time: 133.47 seconds (delta: 0.00%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1800 elapsed time: 140.89 seconds (delta: 0.00%)</span></span>
-<span><span class="co">#&gt;  ......iteration 1900 elapsed time: 148.49 seconds (delta: -0.05%)</span></span>
-<span><span class="co">#&gt;  ......iteration 2000 elapsed time: 156.05 seconds (delta: 0.00%)</span></span>
+<span><span class="co">#&gt;  ......iteration 100 elapsed time: 7.59 seconds (delta: 0.48%)</span></span>
+<span><span class="co">#&gt;  ......iteration 200 elapsed time: 14.32 seconds (delta: 0.02%)</span></span>
+<span><span class="co">#&gt;  ......iteration 300 elapsed time: 20.94 seconds (delta: -0.00%)</span></span>
+<span><span class="co">#&gt;  ......iteration 400 elapsed time: 27.55 seconds (delta: -0.00%)</span></span>
+<span><span class="co">#&gt;  ......iteration 500 elapsed time: 34.13 seconds (delta: -0.01%)</span></span>
+<span><span class="co">#&gt;  ......iteration 600 elapsed time: 40.78 seconds (delta: 0.03%)</span></span>
+<span><span class="co">#&gt;  ......iteration 700 elapsed time: 47.46 seconds (delta: 0.08%)</span></span>
+<span><span class="co">#&gt;  ......iteration 800 elapsed time: 54.06 seconds (delta: -0.10%)</span></span>
+<span><span class="co">#&gt;  ......iteration 900 elapsed time: 61.19 seconds (delta: -0.05%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1000 elapsed time: 69.33 seconds (delta: -0.01%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1100 elapsed time: 77.42 seconds (delta: -0.02%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1200 elapsed time: 85.56 seconds (delta: -0.03%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1300 elapsed time: 93.65 seconds (delta: 0.02%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1400 elapsed time: 101.82 seconds (delta: 0.00%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1500 elapsed time: 110.06 seconds (delta: -0.07%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1600 elapsed time: 118.29 seconds (delta: 0.05%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1700 elapsed time: 126.52 seconds (delta: -0.05%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1800 elapsed time: 134.76 seconds (delta: -0.02%)</span></span>
+<span><span class="co">#&gt;  ......iteration 1900 elapsed time: 143.01 seconds (delta: 0.05%)</span></span>
+<span><span class="co">#&gt;  ......iteration 2000 elapsed time: 151.16 seconds (delta: -0.03%)</span></span>
 <span><span class="co">#&gt;  ...computing theta and phi</span></span>
 <span><span class="co">#&gt;  ...complete</span></span></code></pre></div>
 <p>Despite the much shorter execution time, it identifies topic terms
@@ -171,17 +172,17 @@ very similar to <a href="basic.html#topic-terms">the standard
 LDA</a>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../../reference/terms.html">terms</a></span><span class="op">(</span><span class="va">lda_dist</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
-<col width="11%">
 <col width="9%">
 <col width="10%">
 <col width="9%">
-<col width="10%">
-<col width="10%">
+<col width="9%">
 <col width="11%">
+<col width="10%">
 <col width="8%">
 <col width="9%">
+<col width="8%">
 <col width="11%">
 </colgroup>
 <thead><tr class="header">
@@ -198,124 +199,124 @@ LDA</a>.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">trump</td>
+<td align="left">hour</td>
+<td align="left">india</td>
+<td align="left">per</td>
+<td align="left">dpr</td>
+<td align="left">german</td>
+<td align="left">taiwan</td>
 <td align="left">photo</td>
 <td align="left">joins</td>
-<td align="left">taiwan</td>
-<td align="left">dpr</td>
-<td align="left">british</td>
-<td align="left">india</td>
-<td align="left">grain</td>
-<td align="left">per</td>
+<td align="left">systems</td>
 <td align="left">lavrov</td>
 </tr>
 <tr class="even">
-<td align="left">hunter</td>
-<td align="left">azov</td>
-<td align="left">joined</td>
-<td align="left">chinese</td>
+<td align="left">spoke</td>
+<td align="left">grain</td>
+<td align="left">fuel</td>
 <td align="left">lpr</td>
+<td align="left">stream</td>
+<td align="left">trump</td>
+<td align="left">azov</td>
 <td align="left">johnson</td>
-<td align="left">indian</td>
-<td align="left">finland</td>
-<td align="left">nord</td>
+<td align="left">air</td>
 <td align="left">alliance</td>
 </tr>
 <tr class="odd">
-<td align="left">congress</td>
+<td align="left">biological</td>
+<td align="left">indian</td>
+<td align="left">crude</td>
+<td align="left">civilians</td>
+<td align="left">nord</td>
+<td align="left">twitter</td>
 <td align="left">mediabank</td>
 <td align="left">journalist</td>
-<td align="left">beijing</td>
-<td align="left">civilians</td>
-<td align="left">french</td>
-<td align="left">cooperation</td>
-<td align="left">air</td>
-<td align="left">companies</td>
-<td align="left">negotiations</td>
+<td align="left">finland</td>
+<td align="left">interests</td>
 </tr>
 <tr class="even">
-<td align="left">democrats</td>
-<td align="left">killed</td>
-<td align="left">hour</td>
-<td align="left">say</td>
+<td align="left">discussed</td>
+<td align="left">cooperation</td>
+<td align="left">imports</td>
 <td align="left">shelling</td>
-<td align="left">truss</td>
-<td align="left">africa</td>
-<td align="left">systems</td>
-<td align="left">stream</td>
+<td align="left">french</td>
+<td align="left">congress</td>
+<td align="left">killed</td>
+<td align="left">author</td>
+<td align="left">missiles</td>
 <td align="left">zelensky</td>
 </tr>
 <tr class="odd">
-<td align="left">twitter</td>
-<td align="left">battalion</td>
-<td align="left">talk</td>
-<td align="left">interests</td>
-<td align="left">plant</td>
-<td align="left">german</td>
-<td align="left">iran</td>
-<td align="left">sea</td>
-<td align="left">fuel</td>
-<td align="left">proposals</td>
+<td align="left">lines</td>
+<td align="left">trade</td>
+<td align="left">cap</td>
+<td align="left">civilian</td>
+<td align="left">pipeline</td>
+<td align="left">hunter</td>
+<td align="left">human</td>
+<td align="left">joined</td>
+<td align="left">sweden</td>
+<td align="left">say</td>
 </tr>
 <tr class="even">
+<td align="left">lee</td>
+<td align="left">africa</td>
+<td align="left">production</td>
+<td align="left">plant</td>
+<td align="left">macron</td>
 <td align="left">republicans</td>
 <td align="left">police</td>
-<td align="left">author</td>
-<td align="left">soviet</td>
-<td align="left">zaporozhye</td>
-<td align="left">macron</td>
-<td align="left">african</td>
-<td align="left">missiles</td>
-<td align="left">pipeline</td>
-<td align="left">peskov</td>
+<td align="left">professor</td>
+<td align="left">missile</td>
+<td align="left">proposals</td>
 </tr>
 <tr class="odd">
-<td align="left">republican</td>
-<td align="left">video</td>
-<td align="left">analyst</td>
-<td align="left">know</td>
-<td align="left">biological</td>
-<td align="left">boris</td>
-<td align="left">south</td>
-<td align="left">sweden</td>
-<td align="left">crude</td>
-<td align="left">agreements</td>
-</tr>
-<tr class="even">
-<td align="left">bill</td>
+<td align="left">mark</td>
+<td align="left">iran</td>
+<td align="left">cost</td>
+<td align="left">zaporozhye</td>
+<td align="left">commission</td>
+<td align="left">democrats</td>
 <td align="left">refugees</td>
-<td align="left">spoke</td>
-<td align="left">believe</td>
-<td align="left">civilian</td>
-<td align="left">chancellor</td>
-<td align="left">trade</td>
-<td align="left">turkey</td>
-<td align="left">imports</td>
+<td align="left">sean</td>
+<td align="left">training</td>
 <td align="left">diplomatic</td>
 </tr>
-<tr class="odd">
-<td align="left">senate</td>
-<td align="left">children</td>
-<td align="left">mark</td>
-<td align="left">never</td>
+<tr class="even">
+<td align="left">fault</td>
+<td align="left">turkey</td>
+<td align="left">companies</td>
 <td align="left">kherson</td>
 <td align="left">france</td>
-<td align="left">summit</td>
-<td align="left">missile</td>
+<td align="left">republican</td>
+<td align="left">battalion</td>
+<td align="left">jacquie</td>
+<td align="left">equipment</td>
+<td align="left">negotiations</td>
+</tr>
+<tr class="odd">
+<td align="left">research</td>
+<td align="left">african</td>
 <td align="left">natural</td>
-<td align="left">ambassador</td>
+<td align="left">regions</td>
+<td align="left">restrictions</td>
+<td align="left">election</td>
+<td align="left">children</td>
+<td align="left">truss</td>
+<td align="left">aircraft</td>
+<td align="left">course</td>
 </tr>
 <tr class="even">
-<td align="left">biden’s</td>
-<td align="left">human</td>
-<td align="left">sean</td>
-<td align="left">strategic</td>
+<td align="left">joined</td>
+<td align="left">south</td>
+<td align="left">costs</td>
 <td align="left">strikes</td>
-<td align="left">scholz</td>
-<td align="left">saudi</td>
-<td align="left">black</td>
-<td align="left">cap</td>
-<td align="left">spokesman</td>
+<td align="left">company</td>
+<td align="left">bill</td>
+<td align="left">nazi</td>
+<td align="left">university</td>
+<td align="left">army</td>
+<td align="left">clear</td>
 </tr>
 </tbody>
 </table>
@@ -336,30 +337,26 @@ convergence (<code>delta &lt; 0</code>) and return the result.</p>
 <span><span class="co">#&gt;  ...using up to 16 threads for distributed computing</span></span>
 <span><span class="co">#&gt;  ......allocating 81 documents to each thread</span></span>
 <span><span class="co">#&gt;  ...Gibbs sampling in up to 2000 iterations</span></span>
-<span><span class="co">#&gt;  ......iteration 100 elapsed time: 10.33 seconds (delta: 0.52%)</span></span>
-<span><span class="co">#&gt;  ......iteration 200 elapsed time: 19.41 seconds (delta: 0.09%)</span></span>
-<span><span class="co">#&gt;  ......iteration 300 elapsed time: 28.51 seconds (delta: 0.03%)</span></span>
-<span><span class="co">#&gt;  ......iteration 400 elapsed time: 37.79 seconds (delta: 0.06%)</span></span>
-<span><span class="co">#&gt;  ......iteration 500 elapsed time: 46.95 seconds (delta: 0.02%)</span></span>
-<span><span class="co">#&gt;  ......iteration 600 elapsed time: 56.22 seconds (delta: 0.01%)</span></span>
-<span><span class="co">#&gt;  ......iteration 700 elapsed time: 65.49 seconds (delta: 0.03%)</span></span>
-<span><span class="co">#&gt;  ......iteration 800 elapsed time: 74.65 seconds (delta: -0.08%)</span></span>
+<span><span class="co">#&gt;  ......iteration 100 elapsed time: 9.00 seconds (delta: 0.38%)</span></span>
+<span><span class="co">#&gt;  ......iteration 200 elapsed time: 16.98 seconds (delta: 0.09%)</span></span>
+<span><span class="co">#&gt;  ......iteration 300 elapsed time: 25.14 seconds (delta: 0.02%)</span></span>
+<span><span class="co">#&gt;  ......iteration 400 elapsed time: 33.20 seconds (delta: -0.06%)</span></span>
 <span><span class="co">#&gt;  ...computing theta and phi</span></span>
 <span><span class="co">#&gt;  ...complete</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../../reference/terms.html">terms</a></span><span class="op">(</span><span class="va">lda_auto</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="9%">
-<col width="9%">
-<col width="9%">
-<col width="10%">
 <col width="8%">
-<col width="11%">
-<col width="9%">
-<col width="9%">
-<col width="11%">
 <col width="10%">
+<col width="9%">
+<col width="9%">
+<col width="10%">
+<col width="9%">
+<col width="9%">
+<col width="11%">
+<col width="12%">
+<col width="7%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">topic1</th>
@@ -376,123 +373,123 @@ convergence (<code>delta &lt; 0</code>) and return the result.</p>
 <tbody>
 <tr class="odd">
 <td align="left">per</td>
-<td align="left">dpr</td>
-<td align="left">british</td>
-<td align="left">trump</td>
-<td align="left">systems</td>
-<td align="left">taiwan</td>
-<td align="left">joins</td>
-<td align="left">photo</td>
-<td align="left">alliance</td>
 <td align="left">india</td>
+<td align="left">dpr</td>
+<td align="left">joins</td>
+<td align="left">trump</td>
+<td align="left">azov</td>
+<td align="left">bank</td>
+<td align="left">lavrov</td>
+<td align="left">twitter</td>
+<td align="left">british</td>
 </tr>
 <tr class="even">
-<td align="left">companies</td>
-<td align="left">civilians</td>
-<td align="left">german</td>
-<td align="left">hunter</td>
+<td align="left">fuel</td>
+<td align="left">taiwan</td>
 <td align="left">air</td>
-<td align="left">biological</td>
 <td align="left">joined</td>
-<td align="left">soviet</td>
+<td align="left">americans</td>
+<td align="left">mediabank</td>
+<td align="left">biological</td>
 <td align="left">grain</td>
-<td align="left">indian</td>
+<td align="left">hunter</td>
+<td align="left">johnson</td>
 </tr>
 <tr class="odd">
-<td align="left">fuel</td>
-<td align="left">lpr</td>
 <td align="left">stream</td>
-<td align="left">congress</td>
-<td align="left">missile</td>
-<td align="left">intelligence</td>
+<td align="left">indian</td>
+<td align="left">systems</td>
 <td align="left">journalist</td>
-<td align="left">know</td>
-<td align="left">lavrov</td>
-<td align="left">cooperation</td>
+<td align="left">say</td>
+<td align="left">photo</td>
+<td align="left">assets</td>
+<td align="left">negotiations</td>
+<td align="left">photo</td>
+<td align="left">truss</td>
 </tr>
 <tr class="even">
-<td align="left">crude</td>
-<td align="left">shelling</td>
-<td align="left">johnson</td>
-<td align="left">democrats</td>
-<td align="left">missiles</td>
-<td align="left">research</td>
+<td align="left">nord</td>
+<td align="left">cooperation</td>
+<td align="left">missile</td>
 <td align="left">hour</td>
-<td align="left">russians</td>
-<td align="left">turkey</td>
-<td align="left">africa</td>
+<td align="left">congress</td>
+<td align="left">human</td>
+<td align="left">research</td>
+<td align="left">alliance</td>
+<td align="left">post</td>
+<td align="left">boris</td>
+</tr>
+<tr class="odd">
+<td align="left">crude</td>
+<td align="left">chinese</td>
+<td align="left">lpr</td>
+<td align="left">talk</td>
+<td align="left">democrats</td>
+<td align="left">killed</td>
+<td align="left">central</td>
+<td align="left">agreement</td>
+<td align="left">intelligence</td>
+<td align="left">london</td>
+</tr>
+<tr class="even">
+<td align="left">pipeline</td>
+<td align="left">finland</td>
+<td align="left">missiles</td>
+<td align="left">author</td>
+<td align="left">it’s</td>
+<td align="left">battalion</td>
+<td align="left">banks</td>
+<td align="left">agreements</td>
+<td align="left">video</td>
+<td align="left">sunak</td>
 </tr>
 <tr class="odd">
 <td align="left">imports</td>
-<td align="left">plant</td>
-<td align="left">nord</td>
-<td align="left">republicans</td>
-<td align="left">equipment</td>
-<td align="left">chinese</td>
-<td align="left">talk</td>
-<td align="left">refugees</td>
-<td align="left">finland</td>
-<td align="left">trade</td>
-</tr>
-<tr class="even">
-<td align="left">production</td>
-<td align="left">zaporozhye</td>
-<td align="left">truss</td>
-<td align="left">election</td>
-<td align="left">training</td>
-<td align="left">activities</td>
-<td align="left">author</td>
-<td align="left">ukrainians</td>
 <td align="left">sweden</td>
-<td align="left">iran</td>
-</tr>
-<tr class="odd">
-<td align="left">cap</td>
-<td align="left">mediabank</td>
-<td align="left">pipeline</td>
-<td align="left">republican</td>
-<td align="left">aircraft</td>
-<td align="left">agency</td>
+<td align="left">artillery</td>
 <td align="left">analyst</td>
-<td align="left">say</td>
-<td align="left">negotiations</td>
-<td align="left">african</td>
+<td align="left">democratic</td>
+<td align="left">children</td>
+<td align="left">federal</td>
+<td align="left">peskov</td>
+<td align="left">investigation</td>
+<td align="left">liz</td>
 </tr>
 <tr class="even">
 <td align="left">natural</td>
-<td align="left">azov</td>
-<td align="left">boris</td>
-<td align="left">biden’s</td>
-<td align="left">army</td>
-<td align="left">space</td>
-<td align="left">spoke</td>
-<td align="left">never</td>
-<td align="left">agreement</td>
-<td align="left">south</td>
+<td align="left">beijing</td>
+<td align="left">shelling</td>
+<td align="left">mark</td>
+<td align="left">republicans</td>
+<td align="left">civilians</td>
+<td align="left">interest</td>
+<td align="left">diplomatic</td>
+<td align="left">screenshot</td>
+<td align="left">tax</td>
 </tr>
 <tr class="odd">
-<td align="left">bank</td>
-<td align="left">civilian</td>
-<td align="left">chancellor</td>
-<td align="left">bill</td>
-<td align="left">pentagon</td>
-<td align="left">evidence</td>
-<td align="left">professor</td>
-<td align="left">history</td>
-<td align="left">agreements</td>
+<td align="left">cap</td>
 <td align="left">summit</td>
+<td align="left">plant</td>
+<td align="left">spoke</td>
+<td align="left">know</td>
+<td align="left">crimes</td>
+<td align="left">companies</td>
+<td align="left">proposals</td>
+<td align="left">rt</td>
+<td align="left">britain</td>
 </tr>
 <tr class="even">
 <td align="left">exports</td>
-<td align="left">video</td>
-<td align="left">berlin</td>
-<td align="left">senate</td>
-<td align="left">vehicles</td>
-<td align="left">service</td>
-<td align="left">mark</td>
-<td align="left">nazi</td>
-<td align="left">peskov</td>
-<td align="left">chinese</td>
+<td align="left">south</td>
+<td align="left">zaporozhye</td>
+<td align="left">sean</td>
+<td align="left">change</td>
+<td align="left">soviet</td>
+<td align="left">rate</td>
+<td align="left">zelensky</td>
+<td align="left">alleged</td>
+<td align="left">pm</td>
 </tr>
 </tbody>
 </table>

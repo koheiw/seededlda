@@ -16,7 +16,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">seededlda</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,8 +60,14 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.0.1" id="changes-in-v101">Changes in v1.0.1<a class="anchor" aria-label="anchor" href="#changes-in-v101"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.1.0" id="changes-in-v110">Changes in v1.1.0<a class="anchor" aria-label="anchor" href="#changes-in-v110"></a></h2>
+<ul><li>Remove <code>uniform</code> to simplify the computation of seed word weights.</li>
+<li>Add <code>levels</code> argument to better handle hierarchical dictionaries.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.1" id="changes-in-v101">Changes in v1.0.1<a class="anchor" aria-label="anchor" href="#changes-in-v101"></a></h2><p class="text-muted">CRAN release: 2023-06-12</p>
 <ul><li>Fix the error when <code><a href="../reference/textmodel_seqlda.html">textmodel_seqlda()</a></code> is called.</li>
+<li>Save values in the Array object in double to avoid rounding error (<a href="https://github.com/koheiw/seededlda/issues/60" class="external-link">#60</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.0" id="changes-in-v100">Changes in v1.0.0<a class="anchor" aria-label="anchor" href="#changes-in-v100"></a></h2><p class="text-muted">CRAN release: 2023-05-31</p>
