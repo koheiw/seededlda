@@ -10,7 +10,13 @@
     <loc>/articles/pkgdown/basic.html</loc>
   </url>
   <url>
+    <loc>/articles/pkgdown/benchmark.html</loc>
+  </url>
+  <url>
     <loc>/articles/pkgdown/distributed.html</loc>
+  </url>
+  <url>
+    <loc>/articles/pkgdown/performance.html</loc>
   </url>
   <url>
     <loc>/articles/pkgdown/seeded.html</loc>

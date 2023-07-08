@@ -4,7 +4,8 @@ pkgdown_sha: ~
 articles:
   basic: pkgdown/basic.html
   distributed: pkgdown/distributed.html
+  performance: pkgdown/performance.html
   seeded: pkgdown/seeded.html
   sequential: pkgdown/sequential.html
-last_built: 2023-06-30T23:56Z
+last_built: 2023-07-08T22:54Z
 
