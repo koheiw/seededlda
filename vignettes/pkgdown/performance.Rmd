@@ -39,7 +39,7 @@ dfmt <- dfm(toks) |>
 tmmt <- convert(dfmt, to = "tm")
 ```
 
-### Resutls {.tabset}
+### Results {.tabset}
 
 "seededlda auto" is the fastest because the parallel computing (`batch_size = 0.01`) and the convergence (`auto_iter = TRUE`) are enabled; "seededlda seri" is the slowest because both are disabled; "topicmodels" is serial processing but faster thanks to its simpler estimator. The difference between them become greater when the number of topics is large (`k = 50`).
 
