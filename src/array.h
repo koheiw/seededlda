@@ -25,7 +25,7 @@ class Array {
     double & at(int i, int j) {
         // if (i < 0 || row <= i)
         //     throw std::range_error("Invalid row index");
-        // if (j < 0 || row <= j)
+        // if (j < 0 || col <= j)
         //     throw std::range_error("Invalid column index");
         return data[i][j];
     }
