@@ -66,21 +66,26 @@ textmodel_seededlda.dfm <- function(
     x, dictionary, levels = 1,
     valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
     residual = 0, weight = 0.01, max_iter = 2000, auto_iter = FALSE,
-    alpha = 0.5, beta = 0.1, gamma = 0, batch_size = 1.0,
+    alpha = 0.5, beta = 0.1, gamma = 0, batch_size = 1.0, old = TRUE,
     ..., verbose = quanteda_options("verbose")
 ) {
 
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
     weight <- check_double(weight, min_len = 0, max_len = Inf, min = 0, max = 1)
     levels <- check_integer(levels, min_len = 1, max_len = 100, min = 1)
-    seeds <- tfm(x, dictionary, levels = levels, weight = weight, residual = residual,
+    mat <- tfm(x, dictionary, levels = levels, weight = weight, residual = residual,
                  ..., verbose = verbose)
-    if (!identical(colnames(x), colnames(seeds)))
+    if (!identical(colnames(x), colnames(mat)))
         stop("seeds must have the same features")
-    k <- nrow(seeds)
-    label <- rownames(seeds)
-
-    result <- lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, t(seeds), NULL, batch_size, verbose)
+    k <- nrow(mat)
+    label <- rownames(mat)
+	if (!old) {
+		mat <- dfm_lookup(dfm_weight(x, "boolean"), dictionary, levels = levels)
+		seeds <- 2 ^ as(mat, "CsparseMatrix")
+	} else {
+		seeds <- t(mat)
+	}
+    result <- lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, seeds, NULL, batch_size, verbose, old)
     result$dictionary <- dictionary
     result$valuetype <- valuetype
     result$case_insensitive <- case_insensitive
@@ -224,6 +229,6 @@ tfm <- function(x, dictionary, levels = 1,
         result <- rbind(result, Matrix(0, nrow = residual, ncol = length(feat), sparse = TRUE))
     }
     dimnames(result) <- list(key, feat)
-    result <- as(result, "dgCMatrix")
+    result <- as(result, "CsparseMatrix")
     return(result)
 }

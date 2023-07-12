@@ -112,7 +112,7 @@ is.textmodel_lda <- function(x) {
 #' @import quanteda
 #' @useDynLib seededlda, .registration = TRUE
 lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
-                seeds, words, batch_size, verbose) {
+                seeds, words, batch_size, verbose, old) {
 
     k <- check_integer(k, min = 1, max = 1000)
     max_iter <- check_integer(max_iter, min = 100)
@@ -144,7 +144,7 @@ lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
 
     result <- cpp_lda(x, k, max_iter, min_delta, alpha, beta, gamma,
                       as(seeds, "dgCMatrix"), as(words, "dgCMatrix"),
-                      first, random, batch, verbose, thread)
+                      first, random, batch, verbose, thread, old)
 
     dimnames(result$words) <- list(colnames(x), label)
     dimnames(result$phi) <- list(label, colnames(x))

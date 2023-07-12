@@ -12,22 +12,30 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double min_delta,
              double alpha, double beta, double gamma,
              arma::sp_mat &seeds, arma::sp_mat &words,
              std::vector<bool> &first,
-             int random, int batch, bool verbose= false, int threads = -1) {
+             int random, int batch, bool verbose = false,
+             int threads = -1, bool old = true) {
 
-    LDA lda(k, alpha, beta, gamma, max_iter, min_delta, random, batch, verbose, threads);
+    LDA lda(k, alpha, beta, gamma, max_iter, min_delta, random, batch, verbose, threads, old);
     lda.set_data(mt, first);
     lda.set_fitted(words);
 
     if (lda.initialize() == 0) {
         bool seeded = arma::accu(seeds) > 0;
         if (seeded) {
-            if (seeds.n_cols != lda.nw.col ||  seeds.n_rows != lda.nw.row)
-                throw std::invalid_argument("Invalid seed matrix");
-            Array nw_ss(seeds);
-            Array nwsum_ss(arma::sum(seeds, 0));
-            lda.nw += nw_ss; // set pseudo count
-            lda.estimate();
-            lda.nwsum += nwsum_ss;
+        	if (old) {
+	            if (seeds.n_cols != lda.nw.col ||  seeds.n_rows != lda.nw.row)
+	                throw std::invalid_argument("Invalid seed matrix");
+	            Array nw_ss(seeds);
+	            Array nwsum_ss(arma::sum(seeds, 0));
+	            lda.nw += nw_ss; // set pseudo count
+	            lda.estimate();
+	            lda.nwsum += nwsum_ss;
+        	} else {
+        		Array pd_ss(seeds);
+        		lda.pd = pd_ss;
+        		pd_ss.print();
+        		lda.estimate();
+        	}
         } else {
             lda.estimate();
         }

@@ -61,6 +61,8 @@ class LDA {
     int batch; // size of subsets to distribute
     bool verbose; // print progress messages
     int thread; // numebr of thread in parallel processing
+    bool old;
+    Array pd;
 
     // topic transition
     double gamma; // parameter for topic transition
@@ -91,7 +93,7 @@ class LDA {
 
     // constructor
     LDA(int K, double alpha, double beta, double gamma, int max_iter, double min_delta,
-        int random, int batch, bool verbose, int thread);
+        int random, int batch, bool verbose, int thread, bool old);
 
     // set default values for variables
     void set_default_values();
@@ -110,7 +112,7 @@ class LDA {
 };
 
 LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter, double min_delta,
-         int random, int batch, bool verbose, int thread) {
+         int random, int batch, bool verbose, int thread, bool old) {
 
     if (verbose)
         Rprintf("Fitting LDA with %d topics\n", K);
@@ -131,6 +133,7 @@ LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter, double mi
     this->random = random;
     this->batch = batch;
     this->verbose = verbose;
+    this->old = old;
 
 }
 
@@ -346,6 +349,12 @@ int LDA::sample(int m, int n, int w,
         p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta) /
                 (nwsum.at(k) + nwsum_tp.at(k) + nwsum_ft.at(k) + Vbeta)) *
                 ((nd.at(m, k) + alpha) / (ndsum.at(m) + Kalpha)) * prob[k];
+    }
+
+    if (!old) {
+    	for (int k = 0; k < pd.col; k++) {
+    		p[k] = p[k] * pd.at(m, k);
+    	}
     }
     // cumulate multinomial parameters
     for (int k = 1; k < K; k++) {
