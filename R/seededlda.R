@@ -73,17 +73,20 @@ textmodel_seededlda.dfm <- function(
     residual <- check_integer(residual, min_len = 1, max_len = 1, min = 0)
     weight <- check_double(weight, min_len = 0, max_len = Inf, min = 0, max = 1)
     levels <- check_integer(levels, min_len = 1, max_len = 100, min = 1)
-    mat <- tfm(x, dictionary, levels = levels, weight = weight, residual = residual,
-                 ..., verbose = verbose)
-    if (!identical(colnames(x), colnames(mat)))
-        stop("seeds must have the same features")
-    k <- nrow(mat)
-    label <- rownames(mat)
-	if (!old) {
-		mat <- dfm_lookup(dfm_weight(x, "boolean"), dictionary, levels = levels)
-		seeds <- 2 ^ as(mat, "CsparseMatrix")
-	} else {
+
+	if (old) {
+		mat <- tfm(x, dictionary, levels = levels, weight = weight, residual = residual,
+				   ..., verbose = verbose)
+		if (!identical(colnames(x), colnames(mat)))
+			stop("seeds must have the same features")
+		k <- nrow(mat)
+		label <- rownames(mat)
 		seeds <- t(mat)
+	} else {
+		mat <- dfm_lookup(dfm_weight(x, "boolean"), dictionary, levels = levels)
+		mat <- as(mat, "CsparseMatrix")
+		#mat <- cbind(mat, Matrix(1, nrow = ndoc(x), ncol = residual, sparse = TRUE))
+		seeds <- (1 + (weight * 100)) ^ mat
 	}
     result <- lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, seeds, NULL, batch_size, verbose, old)
     result$dictionary <- dictionary
@@ -209,7 +212,7 @@ tfm <- function(x, dictionary, levels = 1,
     for (i in seq_along(dict)) {
         temp <- dfm_select(x, pattern = dict[i], verbose = FALSE)
         temp <- dfm_match(temp, features = feat)
-        y <- rbind(y, as(temp, "dgCMatrix"))
+        y <- rbind(y, as(temp, "CsparseMatrix"))
     }
     rownames(y) <- key
 

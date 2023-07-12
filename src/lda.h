@@ -352,8 +352,9 @@ int LDA::sample(int m, int n, int w,
     }
 
     if (!old) {
-    	for (int k = 0; k < pd.col; k++) {
-    		p[k] = p[k] * pd.at(m, k);
+    	std::vector<double> q = pd[m];
+    	for (int k = 0; k < q.size(); k++) {
+    		p[k] = p[k] * q[k];
     	}
     }
     // cumulate multinomial parameters
