@@ -53,7 +53,8 @@ class LDA {
     int V; // vocabulary size
     int K; // number of topics
     int N; // total number of words
-    double alpha, beta, Vbeta, Kalpha; // parameters for smoothing
+    std::vector<double> alpha, beta; // parameters for smoothing, size K
+    double Vbeta, Kalpha; // parameters for smoothing
     int max_iter; // number of Gibbs sampling iterations
     int iter; // the iteration at which the model was saved
     double min_delta; // criteria for convergence
@@ -90,7 +91,7 @@ class LDA {
     // --------------------------------------
 
     // constructor
-    LDA(int K, double alpha, double beta, double gamma, int max_iter, double min_delta,
+    LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamma, int max_iter, double min_delta,
         int random, int batch, bool verbose, int thread);
 
     // set default values for variables
@@ -109,7 +110,7 @@ class LDA {
 
 };
 
-LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter, double min_delta,
+LDA::LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamma, int max_iter, double min_delta,
          int random, int batch, bool verbose, int thread) {
 
     if (verbose)
@@ -117,9 +118,9 @@ LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter, double mi
 
     set_default_values();
     this->K = K;
-    if (0 < alpha)
+    if (K == (int)alpha.size())
         this->alpha = alpha;
-    if (0 < beta)
+    if (K == (int)beta.size())
         this->beta = beta;
     if (0 < gamma)
         this->gamma = gamma;
@@ -140,8 +141,8 @@ void LDA::set_default_values() {
     V = 0;
     K = 100;
     N = 0;
-    alpha = 0.5;
-    beta = 0.1;
+    alpha = std::vector<double>(K, 0.5);
+    beta = std::vector<double>(K, 0.1);
     max_iter = 2000;
     iter = 0;
     verbose = false;
@@ -194,8 +195,8 @@ int LDA::initialize() {
     nwsum = Array(K);
     ndsum = Array(arma::sum(data, 0));
 
-    Vbeta = V * beta;
-    Kalpha = K * alpha;
+    Vbeta = std::accumulate(beta.begin(), beta.end(), 0) / K * V;
+    Kalpha = std::accumulate(alpha.begin(), alpha.end(), 0);
 
     // initialize z and texts
     z = Texts(M);
@@ -286,7 +287,8 @@ void LDA::estimate() {
                             if (gamma == 0 || first[m] || m == 0) {
                                 prob[k] = 1.0 / K;
                             } else {
-                                prob[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum.at(m - 1) + K * alpha), gamma);
+                                prob[k] = pow((nd.at(m - 1, k) + alpha[k]) /
+                                	         (ndsum.at(m - 1) + K * alpha[k]), gamma);
                             }
                         }
                         if (texts[m].size() == 0) continue;
@@ -343,9 +345,9 @@ int LDA::sample(int m, int n, int w,
 
     // do multinomial sampling via cumulative method
     for (int k = 0; k < K; k++) {
-        p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta) /
+        p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta[k]) /
                 (nwsum.at(k) + nwsum_tp.at(k) + nwsum_ft.at(k) + Vbeta)) *
-                ((nd.at(m, k) + alpha) / (ndsum.at(m) + Kalpha)) * prob[k];
+                ((nd.at(m, k) + alpha[k]) / (ndsum.at(m) + Kalpha)) * prob[k];
     }
     // cumulate multinomial parameters
     for (int k = 1; k < K; k++) {
@@ -373,7 +375,7 @@ int LDA::sample(int m, int n, int w,
 void LDA::compute_theta() {
     for (int m = 0; m < M; m++) {
         for (int k = 0; k < K; k++) {
-            theta.at(m, k) = (nd.at(m, k) + alpha) / (ndsum.at(m) + K * alpha);
+            theta.at(m, k) = (nd.at(m, k) + alpha[k]) / (ndsum.at(m) + Kalpha);
         }
     }
 }
@@ -381,7 +383,7 @@ void LDA::compute_theta() {
 void LDA::compute_phi() {
     for (int k = 0; k < K; k++) {
         for (int w = 0; w < V; w++) {
-            phi.at(k, w) = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum.at(k) + nwsum_ft.at(k) + V * beta);
+            phi.at(k, w) = (nw.at(w, k) + nw_ft.at(w, k) + beta[k]) / (nwsum.at(k) + nwsum_ft.at(k) + Vbeta);
         }
     }
 }

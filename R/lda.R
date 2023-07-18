@@ -100,6 +100,10 @@ textmodel_lda.dfm <- function(
         label <- paste0("topic", seq_len(k))
         words <- NULL
     }
+	if (length(alpha) == 1)
+		alpha <- rep(alpha, K)
+	if (length(beta) == 1)
+		beta <- rep(beta, K)
     lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, NULL, words, batch_size, verbose)
 }
 
