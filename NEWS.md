@@ -1,3 +1,7 @@
+## Changes in v1.1.1
+
+* Allow `alpha` and `beta` to be a vector for asymmetric Dirichlet priors.
+
 ## Changes in v1.1.0
 
 * Remove `uniform` to simplify the computation of seed word weights.

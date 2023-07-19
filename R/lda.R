@@ -13,8 +13,8 @@
 #'   all the documents `batch_size = 1.0`. See details.
 #' @param verbose logical; if `TRUE` print diagnostic information during
 #'   fitting.
-#' @param alpha the value to smooth topic-document distribution.
-#' @param beta the value to smooth topic-word distribution.
+#' @param alpha the values to smooth topic-document distribution.
+#' @param beta the values to smooth topic-word distribution.
 #' @param gamma a parameter to determine change of topics between sentences or
 #'   paragraphs. When `gamma > 0`, Gibbs sampling of topics for the current
 #'   document is affected by the previous document's topics.

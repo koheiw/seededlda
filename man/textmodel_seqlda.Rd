@@ -26,9 +26,9 @@ textmodel_seqlda(
 \item{auto_iter}{if \code{TRUE}, stops Gibbs sampling on convergence before
 reaching \code{max_iter}. See details.}
 
-\item{alpha}{the value to smooth topic-document distribution.}
+\item{alpha}{the values to smooth topic-document distribution.}
 
-\item{beta}{the value to smooth topic-word distribution.}
+\item{beta}{the values to smooth topic-word distribution.}
 
 \item{batch_size}{split the corpus into the smaller batches (specified in
 proportion) for distributed computing; it is disabled when a batch include
