@@ -110,18 +110,27 @@ class LDA {
 
 };
 
-LDA::LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamma, int max_iter, double min_delta,
-         int random, int batch, bool verbose, int thread) {
+LDA::LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamma, int max_iter,
+         double min_delta, int random, int batch, bool verbose, int thread) {
 
     if (verbose)
         Rprintf("Fitting LDA with %d topics\n", K);
 
     set_default_values();
     this->K = K;
-    if (K == (int)alpha.size())
-        this->alpha = alpha;
-    if (K == (int)beta.size())
-        this->beta = beta;
+
+    if (K == (int)alpha.size()) {
+    	this->alpha = alpha;
+    } else {
+    	throw std::invalid_argument("Invalid alpha");
+    }
+
+    if (K == (int)beta.size()) {
+    	this->beta = beta;
+    } else {
+    	throw std::invalid_argument("Invalid beta");
+    }
+
     if (0 < gamma)
         this->gamma = gamma;
     if (0 < max_iter)
@@ -195,8 +204,12 @@ int LDA::initialize() {
     nwsum = Array(K);
     ndsum = Array(arma::sum(data, 0));
 
-    Vbeta = std::accumulate(beta.begin(), beta.end(), 0) / K * V;
-    Kalpha = std::accumulate(alpha.begin(), alpha.end(), 0);
+	Kalpha = 0;
+	for (auto& a : alpha)
+		Kalpha += a;
+	Vbeta = 0;
+	for (auto& b : beta)
+		Vbeta += V * b / K;
 
     // initialize z and texts
     z = Texts(M);
