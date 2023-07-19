@@ -100,10 +100,6 @@ textmodel_lda.dfm <- function(
         label <- paste0("topic", seq_len(k))
         words <- NULL
     }
-	if (length(alpha) == 1)
-		alpha <- rep(alpha, K)
-	if (length(beta) == 1)
-		beta <- rep(beta, K)
     lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, NULL, words, batch_size, verbose)
 }
 
@@ -121,8 +117,6 @@ lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
     k <- check_integer(k, min = 1, max = 1000)
     max_iter <- check_integer(max_iter, min = 100)
     auto_iter <- check_logical(auto_iter, strict = TRUE)
-    alpha <- check_double(alpha, min = 0)
-    beta <- check_double(beta, min = 0)
     gamma <- check_double(gamma, min = 0, max = 1)
     batch_size <- check_double(batch_size, min = 0, max = 1)
     verbose <- check_logical(verbose, strict = TRUE)
@@ -136,6 +130,14 @@ lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
     } else {
         min_delta <- -1.0
     }
+
+    if (length(alpha) == 1)
+    	alpha <- rep(alpha, k)
+    alpha <- check_double(alpha, min_len = k, max_len = k, min = 0)
+
+    if (length(beta) == 1)
+    	beta <- rep(beta, k)
+    beta <- check_double(beta, min_len = k, max_len = k, min = 0)
 
     first <- !duplicated(docid(x))
     if (all(first) && gamma)
