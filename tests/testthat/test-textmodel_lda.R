@@ -84,12 +84,12 @@ test_that("LDA is working", {
 test_that("alpha and beta work", {
 
     lda <- textmodel_lda(dfmt, max_iter = 200)
-    expect_equal(lda$alpha, 0.5)
-    expect_equal(lda$beta, 0.1)
+    expect_equal(lda$alpha, rep(0.5, 10))
+    expect_equal(lda$beta, rep(0.1, 10))
 
     lda2 <- textmodel_lda(dfmt, alpha = 0.7, beta = 0.2, max_iter = 200)
-    expect_equal(lda2$alpha, 0.7)
-    expect_equal(lda2$beta, 0.2)
+    expect_equal(lda2$alpha, rep(0.7, 10))
+    expect_equal(lda2$beta, rep(0.2, 10))
 
     expect_error(
         textmodel_lda(dfmt, alpha = -0.1),
@@ -97,8 +97,18 @@ test_that("alpha and beta work", {
     )
 
     expect_error(
+    	textmodel_lda(dfmt, alpha = rep(0.5, 5)),
+    	"The length of alpha must be 10"
+    )
+
+    expect_error(
         textmodel_lda(dfmt, beta = -0.1),
         "The value of beta must be between 0 and Inf"
+    )
+
+    expect_error(
+    	textmodel_lda(dfmt, beta = rep(0.1, 5)),
+    	"The length of beta must be 10"
     )
 
 })
