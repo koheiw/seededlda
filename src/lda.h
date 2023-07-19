@@ -76,6 +76,7 @@ class LDA {
     Array ndsum; // nasum[i]: total number of words in document i, size M
 
     // prediction with fitted model
+    bool fitted;
     Array nw_ft;
     Array nwsum_ft;
 
@@ -160,6 +161,7 @@ void LDA::set_default_values() {
     gamma = 0;
     first = std::vector<bool>(M);
     thread = tbb::this_task_arena::max_concurrency();
+    fitted = false;
 
 }
 
@@ -176,15 +178,16 @@ void LDA::set_data(arma::sp_mat mt, std::vector<bool> first) {
 
 void LDA::set_fitted(arma::sp_mat words) {
 
-    if ((int)words.n_rows != V || (int)words.n_cols != K)
+    if ((int)words.n_rows != V || (int)words.n_cols != K) {
         throw std::invalid_argument("Invalid word matrix");
-
-    if (verbose && arma::accu(words) > 0)
-        Rprintf(" ...loading fitted model\n");
-
-    nw_ft = Array(words);
-    nwsum_ft = Array(arma::sum(words, 0));
-
+    }
+	if (arma::accu(words) > 0) {
+	    if (verbose)
+	        Rprintf(" ...loading fitted model\n");
+	    nw_ft = Array(words);
+	    nwsum_ft = Array(arma::sum(words, 0));
+	    fitted = true;
+	}
 }
 
 int LDA::initialize() {
@@ -232,7 +235,7 @@ int LDA::initialize() {
     //dev::Timer timer;
     //dev::start_timer("Set z", timer);
     for (int m = 0; m < M; ++m) {
-        if (texts[m].size() == 0) continue;
+        if (texts[m].empty()) continue;
         for (std::size_t i = 0; i < texts[m].size(); i++) {
             int topic = random_topic(generator);
             int w = texts[m][i];
@@ -304,7 +307,7 @@ void LDA::estimate() {
                                 	         (ndsum.at(m - 1) + K * alpha[k]), gamma);
                             }
                         }
-                        if (texts[m].size() == 0) continue;
+                        if (texts[m].empty()) continue;
                         for (std::size_t n = 0; n < texts[m].size(); n++) {
                             int w = texts[m][n];
                             unsigned int topic = sample(m, n, w, prob, nw_tp, nwsum_tp);
@@ -358,9 +361,17 @@ int LDA::sample(int m, int n, int w,
 
     // do multinomial sampling via cumulative method
     for (int k = 0; k < K; k++) {
-        p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta[k]) /
-                (nwsum.at(k) + nwsum_tp.at(k) + nwsum_ft.at(k) + Vbeta)) *
-                ((nd.at(m, k) + alpha[k]) / (ndsum.at(m) + Kalpha)) * prob[k];
+    	if (fitted) {
+    		p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta[k]) /
+    			    (nwsum.at(k) + nwsum_tp.at(k) + nwsum_ft.at(k) + Vbeta)) *
+    			   ((nd.at(m, k) + alpha[k]) /
+    			    (ndsum.at(m) + Kalpha)) * prob[k];
+    	} else {
+    		p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + beta[k]) /
+    			    (nwsum.at(k) + nwsum_tp.at(k) + Vbeta)) *
+    			   ((nd.at(m, k) + alpha[k]) /
+    				(ndsum.at(m) + Kalpha)) * prob[k];
+    	}
     }
     // cumulate multinomial parameters
     for (int k = 1; k < K; k++) {
@@ -396,7 +407,11 @@ void LDA::compute_theta() {
 void LDA::compute_phi() {
     for (int k = 0; k < K; k++) {
         for (int w = 0; w < V; w++) {
-            phi.at(k, w) = (nw.at(w, k) + nw_ft.at(w, k) + beta[k]) / (nwsum.at(k) + nwsum_ft.at(k) + Vbeta);
+        	if (fitted) {
+            	phi.at(k, w) = (nw.at(w, k) + nw_ft.at(w, k) + beta[k]) / (nwsum.at(k) + nwsum_ft.at(k) + Vbeta);
+        	} else {
+        		phi.at(k, w) = (nw.at(w, k) + beta[k]) / (nwsum.at(k) + Vbeta);
+        	}
         }
     }
 }
