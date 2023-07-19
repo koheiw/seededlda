@@ -13,8 +13,8 @@
 #'   all the documents `batch_size = 1.0`. See details.
 #' @param verbose logical; if `TRUE` print diagnostic information during
 #'   fitting.
-#' @param alpha the value to smooth topic-document distribution.
-#' @param beta the value to smooth topic-word distribution.
+#' @param alpha the values to smooth topic-document distribution.
+#' @param beta the values to smooth topic-word distribution.
 #' @param gamma a parameter to determine change of topics between sentences or
 #'   paragraphs. When `gamma > 0`, Gibbs sampling of topics for the current
 #'   document is affected by the previous document's topics.
@@ -117,8 +117,6 @@ lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
     k <- check_integer(k, min = 1, max = 1000)
     max_iter <- check_integer(max_iter, min = 100)
     auto_iter <- check_logical(auto_iter, strict = TRUE)
-    alpha <- check_double(alpha, min = 0)
-    beta <- check_double(beta, min = 0)
     gamma <- check_double(gamma, min = 0, max = 1)
     batch_size <- check_double(batch_size, min = 0, max = 1)
     verbose <- check_logical(verbose, strict = TRUE)
@@ -132,6 +130,14 @@ lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
     } else {
         min_delta <- -1.0
     }
+
+    if (length(alpha) == 1)
+    	alpha <- rep(alpha, k)
+    alpha <- check_double(alpha, min_len = k, max_len = k, min = 0)
+
+    if (length(beta) == 1)
+    	beta <- rep(beta, k)
+    beta <- check_double(beta, min_len = k, max_len = k, min = 0)
 
     first <- !duplicated(docid(x))
     if (all(first) && gamma)

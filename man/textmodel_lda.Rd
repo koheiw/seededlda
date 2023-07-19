@@ -27,9 +27,9 @@ textmodel_lda(
 \item{auto_iter}{if \code{TRUE}, stops Gibbs sampling on convergence before
 reaching \code{max_iter}. See details.}
 
-\item{alpha}{the value to smooth topic-document distribution.}
+\item{alpha}{the values to smooth topic-document distribution.}
 
-\item{beta}{the value to smooth topic-word distribution.}
+\item{beta}{the values to smooth topic-word distribution.}
 
 \item{gamma}{a parameter to determine change of topics between sentences or
 paragraphs. When \code{gamma > 0}, Gibbs sampling of topics for the current
@@ -99,6 +99,6 @@ Algorithms for Topic Models. The Journal of Machine Learning Research, 10,
 1801–1828.
 }
 \seealso{
-\link[topicmodels:LDA]{LDA} \link[keyATM:weightedLDA]{weightedLDA}
+\link[topicmodels:lda]{LDA} \link[keyATM:weightedLDA]{weightedLDA}
 }
 \keyword{textmodel}

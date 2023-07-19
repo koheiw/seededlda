@@ -45,9 +45,9 @@ default, but it can be changed via \code{base::options(seededlda_residual_name)}
 \item{auto_iter}{if \code{TRUE}, stops Gibbs sampling on convergence before
 reaching \code{max_iter}. See details.}
 
-\item{alpha}{the value to smooth topic-document distribution.}
+\item{alpha}{the values to smooth topic-document distribution.}
 
-\item{beta}{the value to smooth topic-word distribution.}
+\item{beta}{the values to smooth topic-word distribution.}
 
 \item{gamma}{a parameter to determine change of topics between sentences or
 paragraphs. When \code{gamma > 0}, Gibbs sampling of topics for the current

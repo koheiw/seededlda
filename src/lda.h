@@ -53,7 +53,8 @@ class LDA {
     int V; // vocabulary size
     int K; // number of topics
     int N; // total number of words
-    double alpha, beta, Vbeta, Kalpha; // parameters for smoothing
+    std::vector<double> alpha, beta; // parameters for smoothing, size K
+    double Vbeta, Kalpha; // parameters for smoothing
     int max_iter; // number of Gibbs sampling iterations
     int iter; // the iteration at which the model was saved
     double min_delta; // criteria for convergence
@@ -75,6 +76,7 @@ class LDA {
     Array ndsum; // nasum[i]: total number of words in document i, size M
 
     // prediction with fitted model
+    bool fitted;
     Array nw_ft;
     Array nwsum_ft;
 
@@ -90,7 +92,7 @@ class LDA {
     // --------------------------------------
 
     // constructor
-    LDA(int K, double alpha, double beta, double gamma, int max_iter, double min_delta,
+    LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamma, int max_iter, double min_delta,
         int random, int batch, bool verbose, int thread);
 
     // set default values for variables
@@ -109,18 +111,27 @@ class LDA {
 
 };
 
-LDA::LDA(int K, double alpha, double beta, double gamma, int max_iter, double min_delta,
-         int random, int batch, bool verbose, int thread) {
+LDA::LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamma, int max_iter,
+         double min_delta, int random, int batch, bool verbose, int thread) {
 
     if (verbose)
         Rprintf("Fitting LDA with %d topics\n", K);
 
     set_default_values();
     this->K = K;
-    if (0 < alpha)
-        this->alpha = alpha;
-    if (0 < beta)
-        this->beta = beta;
+
+    if (K == (int)alpha.size()) {
+    	this->alpha = alpha;
+    } else {
+    	throw std::invalid_argument("Invalid alpha");
+    }
+
+    if (K == (int)beta.size()) {
+    	this->beta = beta;
+    } else {
+    	throw std::invalid_argument("Invalid beta");
+    }
+
     if (0 < gamma)
         this->gamma = gamma;
     if (0 < max_iter)
@@ -140,8 +151,8 @@ void LDA::set_default_values() {
     V = 0;
     K = 100;
     N = 0;
-    alpha = 0.5;
-    beta = 0.1;
+    alpha = std::vector<double>(K, 0.5);
+    beta = std::vector<double>(K, 0.1);
     max_iter = 2000;
     iter = 0;
     verbose = false;
@@ -150,6 +161,7 @@ void LDA::set_default_values() {
     gamma = 0;
     first = std::vector<bool>(M);
     thread = tbb::this_task_arena::max_concurrency();
+    fitted = false;
 
 }
 
@@ -166,15 +178,16 @@ void LDA::set_data(arma::sp_mat mt, std::vector<bool> first) {
 
 void LDA::set_fitted(arma::sp_mat words) {
 
-    if ((int)words.n_rows != V || (int)words.n_cols != K)
+    if ((int)words.n_rows != V || (int)words.n_cols != K) {
         throw std::invalid_argument("Invalid word matrix");
-
-    if (verbose && arma::accu(words) > 0)
-        Rprintf(" ...loading fitted model\n");
-
-    nw_ft = Array(words);
-    nwsum_ft = Array(arma::sum(words, 0));
-
+    }
+	if (arma::accu(words) > 0) {
+	    if (verbose)
+	        Rprintf(" ...loading fitted model\n");
+	    nw_ft = Array(words);
+	    nwsum_ft = Array(arma::sum(words, 0));
+	    fitted = true;
+	}
 }
 
 int LDA::initialize() {
@@ -194,8 +207,12 @@ int LDA::initialize() {
     nwsum = Array(K);
     ndsum = Array(arma::sum(data, 0));
 
-    Vbeta = V * beta;
-    Kalpha = K * alpha;
+	Kalpha = 0;
+	for (auto& a : alpha)
+		Kalpha += a;
+	Vbeta = 0;
+	for (auto& b : beta)
+		Vbeta += V * b / K;
 
     // initialize z and texts
     z = Texts(M);
@@ -218,7 +235,7 @@ int LDA::initialize() {
     //dev::Timer timer;
     //dev::start_timer("Set z", timer);
     for (int m = 0; m < M; ++m) {
-        if (texts[m].size() == 0) continue;
+        if (texts[m].empty()) continue;
         for (std::size_t i = 0; i < texts[m].size(); i++) {
             int topic = random_topic(generator);
             int w = texts[m][i];
@@ -271,9 +288,8 @@ void LDA::estimate() {
                     while (begin != 0 && !first[begin]) begin--;
                     while (end != M && !first[end]) end--;
                 }
-                // Rcout << "begin: " << begin - r.begin() << "\n";
-                // Rcout << "end: " << end - r.end() << "\n";
 
+				// local topic assignment
                 Array nw_tp(V, K);
                 Array nwsum_tp(K);
                 int change_tp = 0;
@@ -286,10 +302,11 @@ void LDA::estimate() {
                             if (gamma == 0 || first[m] || m == 0) {
                                 prob[k] = 1.0 / K;
                             } else {
-                                prob[k] = pow((nd.at(m - 1, k) + alpha) / (ndsum.at(m - 1) + K * alpha), gamma);
+                                prob[k] = pow((nd.at(m - 1, k) + alpha[k]) /
+                                	         (ndsum.at(m - 1) + K * alpha[k]), gamma);
                             }
                         }
-                        if (texts[m].size() == 0) continue;
+                        if (texts[m].empty()) continue;
                         for (std::size_t n = 0; n < texts[m].size(); n++) {
                             int w = texts[m][n];
                             unsigned int topic = sample(m, n, w, prob, nw_tp, nwsum_tp);
@@ -343,9 +360,17 @@ int LDA::sample(int m, int n, int w,
 
     // do multinomial sampling via cumulative method
     for (int k = 0; k < K; k++) {
-        p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta) /
-                (nwsum.at(k) + nwsum_tp.at(k) + nwsum_ft.at(k) + Vbeta)) *
-                ((nd.at(m, k) + alpha) / (ndsum.at(m) + Kalpha)) * prob[k];
+    	if (fitted) {
+    		p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta[k]) /
+    			    (nwsum.at(k) + nwsum_tp.at(k) + nwsum_ft.at(k) + Vbeta)) *
+    			   ((nd.at(m, k) + alpha[k]) /
+    			    (ndsum.at(m) + Kalpha)) * prob[k];
+    	} else {
+    		p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + beta[k]) /
+    			    (nwsum.at(k) + nwsum_tp.at(k) + Vbeta)) *
+    			   ((nd.at(m, k) + alpha[k]) /
+    				(ndsum.at(m) + Kalpha)) * prob[k];
+    	}
     }
     // cumulate multinomial parameters
     for (int k = 1; k < K; k++) {
@@ -373,7 +398,7 @@ int LDA::sample(int m, int n, int w,
 void LDA::compute_theta() {
     for (int m = 0; m < M; m++) {
         for (int k = 0; k < K; k++) {
-            theta.at(m, k) = (nd.at(m, k) + alpha) / (ndsum.at(m) + K * alpha);
+            theta.at(m, k) = (nd.at(m, k) + alpha[k]) / (ndsum.at(m) + Kalpha);
         }
     }
 }
@@ -381,7 +406,11 @@ void LDA::compute_theta() {
 void LDA::compute_phi() {
     for (int k = 0; k < K; k++) {
         for (int w = 0; w < V; w++) {
-            phi.at(k, w) = (nw.at(w, k) + nw_ft.at(w, k) + beta) / (nwsum.at(k) + nwsum_ft.at(k) + V * beta);
+        	if (fitted) {
+            	phi.at(k, w) = (nw.at(w, k) + nw_ft.at(w, k) + beta[k]) / (nwsum.at(k) + nwsum_ft.at(k) + Vbeta);
+        	} else {
+        		phi.at(k, w) = (nw.at(w, k) + beta[k]) / (nwsum.at(k) + Vbeta);
+        	}
         }
     }
 }

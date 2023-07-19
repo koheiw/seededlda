@@ -9,7 +9,7 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double min_delta,
-             double alpha, double beta, double gamma,
+             std::vector<double> alpha, std::vector<double> beta, double gamma,
              arma::sp_mat &seeds, arma::sp_mat &words,
              std::vector<bool> &first,
              int random, int batch, bool verbose= false, int threads = -1) {
