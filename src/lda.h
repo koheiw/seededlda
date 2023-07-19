@@ -288,9 +288,8 @@ void LDA::estimate() {
                     while (begin != 0 && !first[begin]) begin--;
                     while (end != M && !first[end]) end--;
                 }
-                // Rcout << "begin: " << begin - r.begin() << "\n";
-                // Rcout << "end: " << end - r.end() << "\n";
 
+				// local topic assignment
                 Array nw_tp(V, K);
                 Array nwsum_tp(K);
                 int change_tp = 0;
