@@ -1,3 +1,7 @@
+## Changes in v1.2.0
+
+* Remove RcppParallel from the dependency following changes in **quanteda** v4.0.
+
 ## Changes in v1.1.1
 
 * Allow `alpha` and `beta` to be a vector for asymmetric Dirichlet priors.
