@@ -1,6 +1,7 @@
 #include "lib.h"
 #include "dev.h"
 #include <chrono>
+#include <armadillo>
 
 using namespace std;
 
