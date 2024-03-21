@@ -19,7 +19,7 @@ Depends:
     proxyC (>= 0.3.1)
 Imports:
     Matrix
-LinkingTo: Rcpp, RcppParallel, RcppArmadillo (>= 0.7.600.1.0), quanteda, testthat
+LinkingTo: Rcpp, RcppArmadillo (>= 0.7.600.1.0), quanteda, testthat
 Suggests:
     testthat,
     topicmodels,
