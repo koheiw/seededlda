@@ -77,7 +77,7 @@ get_threads <- function() {
 	# respect other settings
 	default <- c("tbb" = as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS")),
 				 "omp" = as.integer(Sys.getenv("OMP_THREAD_LIMIT")),
-				 "max" = quanteda:::cpp_get_max_thread())
+				 "max" = cpp_get_max_thread())
 	default <- unname(min(default, na.rm = TRUE))
 
 	value <- as.integer(getOption("seededlda_threads", default))

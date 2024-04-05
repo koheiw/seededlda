@@ -35,11 +35,33 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cpp_get_max_thread
+int cpp_get_max_thread();
+RcppExport SEXP _seededlda_cpp_get_max_thread() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(cpp_get_max_thread());
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_tbb_enabled
+bool cpp_tbb_enabled();
+RcppExport SEXP _seededlda_cpp_tbb_enabled() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(cpp_tbb_enabled());
+    return rcpp_result_gen;
+END_RCPP
+}
 
 RcppExport SEXP run_testthat_tests(SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
     {"_seededlda_cpp_lda", (DL_FUNC) &_seededlda_cpp_lda, 14},
+    {"_seededlda_cpp_get_max_thread", (DL_FUNC) &_seededlda_cpp_get_max_thread, 0},
+    {"_seededlda_cpp_tbb_enabled", (DL_FUNC) &_seededlda_cpp_tbb_enabled, 0},
     {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 1},
     {NULL, NULL, 0}
 };
