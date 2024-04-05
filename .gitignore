@@ -3,5 +3,6 @@
 .RData
 .Ruserdata
 src/*.o
+src/*.so
 src/*.dll
 *_cache
