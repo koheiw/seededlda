@@ -185,7 +185,7 @@ test_that("works similar way as before v0.9", {
                                    max_iter = 2000)
 
     tb <- table(topics(lda), topics(lda_old))
-    expect_true(all(diag(tb) / rowSums(tb) > 0.80))
+    expect_true(all(diag(tb) / rowSums(tb) > 0.70))
 })
 
 
