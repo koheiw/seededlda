@@ -146,11 +146,10 @@ lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
         stop("batch_size musht be larger than 0", call. = FALSE)
     random <- sample.int(.Machine$integer.max, 1) # seed for random number generation
     batch <- ceiling(ndoc(x) * batch_size)
-    thread <- check_integer(getOption("seededlda_threads", -1))
 
     result <- cpp_lda(x, k, max_iter, min_delta, alpha, beta, gamma,
                       as(seeds, "dgCMatrix"), as(words, "dgCMatrix"),
-                      first, random, batch, verbose, thread)
+                      first, random, batch, verbose, get_threads())
 
     dimnames(result$words) <- list(colnames(x), label)
     dimnames(result$phi) <- list(label, colnames(x))
