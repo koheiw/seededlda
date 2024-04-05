@@ -99,7 +99,7 @@ test_that("seeded LDA is working", {
         paste0("\nCall:\n",
                "textmodel_seededlda(x = dfmt, dictionary = dict, residual = TRUE, \n" ,
                "    weight = 0.02, min_termfreq = 10)\n\n",
-               "3 topics; 500 documents; 22,605 features."),
+               "3 topics; 500 documents; 22,544 features."),
         fixed = TRUE
     )
     expect_equal(
