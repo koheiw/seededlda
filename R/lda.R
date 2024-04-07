@@ -33,6 +33,12 @@
 #'   changed the number of sub-processes used for the parallel computing via
 #'   `options(seededlda_threads)`.
 #'
+#'   `set.seed()` should be called immediately before `textmodel_lda()` or
+#'   `textmodel_seededlda()` to control random topic assignment. If the random
+#'   number seed is the same, the serial algorithm produces identical results;
+#'   the parallel algorithm produces non-identical results because it
+#'   classifies documents in different orders using multiple processors.
+#'
 #'   To predict topics of new documents (i.e. out-of-sample), first, create a
 #'   new LDA model from a existing LDA model passed to `model` in
 #'   `textmodel_lda()`; second, apply [topics()] to the new model. The `model`

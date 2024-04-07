@@ -71,6 +71,12 @@ Approximate Distributed LDA proposed by Newman et al. (2009). User can
 changed the number of sub-processes used for the parallel computing via
 \code{options(seededlda_threads)}.
 
+\code{set.seed()} should be called immediately before \code{textmodel_lda()} or
+\code{textmodel_seededlda()} to control random topic assignment. If the random
+number seed is the same, the serial algorithm produces identical results;
+the parallel algorithm produces non-identical results because it
+classifies documents in different orders using multiple processors.
+
 To predict topics of new documents (i.e. out-of-sample), first, create a
 new LDA model from a existing LDA model passed to \code{model} in
 \code{textmodel_lda()}; second, apply \code{\link[=topics]{topics()}} to the new model. The \code{model}
