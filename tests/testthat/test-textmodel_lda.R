@@ -67,7 +67,7 @@ test_that("LDA is working", {
         print(lda),
         paste0("\nCall:\n",
                "textmodel_lda(x = dfmt, k = 5, max_iter = 200)\n\n",
-               "5 topics; 500 documents; 22,605 features."),
+               "5 topics; 500 documents; 22,544 features."),
         fixed = TRUE
     )
     expect_equal(
@@ -299,7 +299,7 @@ test_that("distributed LDA works", {
     options(seededlda_threads = "a")
     expect_error(
         textmodel_lda(dfmt, k = 5, batch_size = 0.2, max_iter = 200, verbose = FALSE),
-        'getOption("seededlda_threads", -1) must be coercible to integer', fixed = TRUE
+        'seededlda_threads must be an integer', fixed = TRUE
     )
     options(seededlda_threads = -1) # use all threads
     expect_silent(
