@@ -241,8 +241,8 @@ test_that("select and min_prob are working", {
     )
 
     expect_equal(
-        topics(lda)[1:10],
-        topics(lda, select = paste0("topic", 1:5))[1:10]
+        topics(lda)[10:20],
+        topics(lda, select = paste0("topic", 1:5))[10:20]
     )
 
     expect_equal(
