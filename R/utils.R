@@ -79,8 +79,9 @@ get_threads <- function() {
 				 "omp" = as.integer(Sys.getenv("OMP_THREAD_LIMIT")),
 				 "max" = cpp_get_max_thread())
 	default <- unname(min(default, na.rm = TRUE))
-
-	value <- as.integer(getOption("seededlda_threads", default))
+	suppressWarnings({
+		value <- as.integer(getOption("seededlda_threads", default))
+	})
 	if (length(value) != 1 || is.na(value)) {
 		stop("seededlda_threads must be an integer")
 	}
