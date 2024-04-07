@@ -1,5 +1,4 @@
-#include "lda.h"
-#include "dev.h"
+#include "lib.h"
 
 // [[Rcpp::export]]
 int cpp_get_max_thread() {

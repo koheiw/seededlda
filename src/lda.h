@@ -328,8 +328,8 @@ void LDA::estimate() {
                 mutex_sync.unlock();
 #if QUANTEDA_USE_TBB
             }, tbb::static_partitioner());
-#endif
         });
+#endif
         if (iter > 0 && iter % 100 == 0) {
             double delta = (double)(change_pv - change) / (double)(iter_inc * N);
             if (verbose) {
