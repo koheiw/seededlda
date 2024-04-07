@@ -136,7 +136,7 @@ LDA::LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamm
         this->gamma = gamma;
     if (0 < max_iter)
         this->max_iter = max_iter;
-    if (0 < thread && thread <= tbb::this_task_arena::max_concurrency())
+    if (0 < thread)
         this->thread = thread;
     this->min_delta = min_delta;
     this->random = random;
@@ -160,7 +160,7 @@ void LDA::set_default_values() {
     random = 1234;
     gamma = 0;
     first = std::vector<bool>(M);
-    thread = tbb::this_task_arena::max_concurrency();
+    thread = -1;
     fitted = false;
 
 }
@@ -269,7 +269,7 @@ void LDA::estimate() {
     int change, change_pv = 0;
     auto start = std::chrono::high_resolution_clock::now();
     int iter_inc = 10;
-    tbb::mutex mutex_sync;
+    std::mutex mutex_sync;
     while (true) {
 
         checkUserInterrupt();
@@ -277,12 +277,16 @@ void LDA::estimate() {
             Rprintf(" ......iteration %d", iter);
 
         change = 0;
+#if QUANTEDA_USE_TBB
         tbb::task_arena arena(thread);
         arena.execute([&]{
             tbb::parallel_for(tbb::blocked_range<int>(0, M, batch), [&](tbb::blocked_range<int> r) {
-
                 int begin = r.begin();
                 int end = r.end();
+#else
+                int begin = 0;
+                int end = M;
+#endif
                 // partitions must match first documents when gamma > 0
                 if (gamma > 0) {
                     while (begin != 0 && !first[begin]) begin--;
@@ -322,8 +326,10 @@ void LDA::estimate() {
                 nw += nw_tp;
                 nwsum += nwsum_tp;
                 mutex_sync.unlock();
+#if QUANTEDA_USE_TBB
             }, tbb::static_partitioner());
         });
+#endif
         if (iter > 0 && iter % 100 == 0) {
             double delta = (double)(change_pv - change) / (double)(iter_inc * N);
             if (verbose) {

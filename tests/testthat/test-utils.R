@@ -93,3 +93,31 @@ test_that("sizes() is working", {
     expect_equal(names(size2), c("romance", "sifi", "other"))
     expect_equal(sum(size2), 1)
 })
+
+test_that("get_threads are working", {
+
+	options("seededlda_threads" = "abc")
+	expect_error(
+		suppressWarnings(seededlda:::get_threads()),
+		"seededlda_threads must be an integer"
+	)
+	options("seededlda_threads" = NA)
+	expect_error(
+		seededlda:::get_threads(),
+		"seededlda_threads must be an integer"
+	)
+
+	## respect other settings
+	options("seededlda_threads" = NULL)
+
+	Sys.setenv("OMP_THREAD_LIMIT" = 2)
+	expect_equal(seededlda:::get_threads(), 2)
+	Sys.unsetenv("OMP_THREAD_LIMIT")
+
+	Sys.setenv("RCPP_PARALLEL_NUM_THREADS" = 3)
+	expect_equal(seededlda:::get_threads(), 3)
+	Sys.unsetenv("RCPP_PARALLEL_NUM_THREADS")
+
+	options("seededlda_threads" = NULL)
+})
+

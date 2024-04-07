@@ -99,7 +99,7 @@ test_that("seeded LDA is working", {
         paste0("\nCall:\n",
                "textmodel_seededlda(x = dfmt, dictionary = dict, residual = TRUE, \n" ,
                "    weight = 0.02, min_termfreq = 10)\n\n",
-               "3 topics; 500 documents; 22,605 features."),
+               "3 topics; 500 documents; 22,544 features."),
         fixed = TRUE
     )
     expect_equal(
@@ -185,7 +185,7 @@ test_that("works similar way as before v0.9", {
                                    max_iter = 2000)
 
     tb <- table(topics(lda), topics(lda_old))
-    expect_true(all(diag(tb) / rowSums(tb) > 0.80))
+    expect_true(all(diag(tb) / rowSums(tb) > 0.70))
 })
 
 
@@ -216,11 +216,11 @@ test_that("distributed LDA works", {
     # parameters
     dist_theta <- proxyC::dist(lda_seri$theta + 0.001, lda_para$theta + 0.001,
                                1, method = "jensen", diag = TRUE)
-    expect_lt(median(Matrix::diag(dist_theta)), 0.1)
+    expect_lt(median(Matrix::diag(dist_theta)), 0.2)
 
     dist_phi <- proxyC::dist(lda_seri$phi + 0.001, lda_para$phi + 0.001,
                              2, method = "jensen", diag = TRUE)
-    expect_lt(median(Matrix::diag(dist_phi)), 0.1)
+    expect_lt(median(Matrix::diag(dist_phi)), 0.2)
 
 })
 

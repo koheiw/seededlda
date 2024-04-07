@@ -1,3 +1,8 @@
+## Changes in v1.2.0
+
+- The RcppParallel package is no longer required as the TBB library in the operating system (Linux and MacOS) or Rtools (Windows) is used.
+- Linux and MacOS must have the TBB library to enable parallel computing before installing this package from the source.
+
 ## Changes in v1.1.1
 
 * Allow `alpha` and `beta` to be a vector for asymmetric Dirichlet priors.

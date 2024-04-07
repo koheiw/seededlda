@@ -5,3 +5,11 @@ cpp_lda <- function(mt, k, max_iter, min_delta, alpha, beta, gamma, seeds, words
     .Call(`_seededlda_cpp_lda`, mt, k, max_iter, min_delta, alpha, beta, gamma, seeds, words, first, random, batch, verbose, threads)
 }
 
+cpp_get_max_thread <- function() {
+    .Call(`_seededlda_cpp_get_max_thread`)
+}
+
+cpp_tbb_enabled <- function() {
+    .Call(`_seededlda_cpp_tbb_enabled`)
+}
+
