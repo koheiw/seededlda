@@ -1,3 +1,7 @@
+## Changes in v1.2.1
+
+- Fix tests on systems when the TBB library is unavailable.
+
 ## Changes in v1.2.0
 
 - The RcppParallel package is no longer required as the TBB library in the operating system (Linux and MacOS) or Rtools (Windows) is used.
