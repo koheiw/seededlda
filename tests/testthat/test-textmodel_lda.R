@@ -144,10 +144,10 @@ test_that("verbose works", {
         lda3 <- textmodel_lda(dfmt, k = 5, verbose = TRUE, max_iter = 100, batch_size = 0.5),
         paste("Fitting LDA with 5 topics\n",
             " [.]{3}initializing\n",
-            " [.]{3}using up to .* threads for distributed computing\n",
-            " [.]{6}allocating .* documents to each thread\n",
+            "( [.]{3}using up to .* threads for distributed computing\n){0,1}",
+            "( [.]{6}allocating .* documents to each thread\n){0,1}",
             " [.]{3}Gibbs sampling in 100 iterations\n",
-            " [.]{6}iteration 100 elapsed time: .*\n",
+            "( [.]{6}iteration 100 elapsed time: .*\n){0,1}",
             " [.]{3}computing theta and phi\n",
             " [.]{3}complete", sep = "")
     )
@@ -157,8 +157,8 @@ test_that("verbose works", {
                               auto_iter = TRUE, batch_size = 0.5),
         paste("Fitting LDA with 5 topics\n",
               " [.]{3}initializing\n",
-              " [.]{3}using up to .* threads for distributed computing\n",
-              " [.]{6}allocating .* documents to each thread\n",
+              "( [.]{3}using up to .* threads for distributed computing\n){0,1}",
+              "( [.]{6}allocating .* documents to each thread\n){0,1}",
               " [.]{3}Gibbs sampling in up to 200 iterations\n",
                sep = "")
     )

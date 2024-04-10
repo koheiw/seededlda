@@ -111,11 +111,17 @@ test_that("get_threads are working", {
 	options("seededlda_threads" = NULL)
 
 	Sys.setenv("OMP_THREAD_LIMIT" = 2)
-	expect_equal(seededlda:::get_threads(), 2)
+	expect_equal(
+		seededlda:::get_threads(),
+		ifelse(quanteda::info_tbb()$enabled, 2, 1)
+	)
 	Sys.unsetenv("OMP_THREAD_LIMIT")
 
 	Sys.setenv("RCPP_PARALLEL_NUM_THREADS" = 3)
-	expect_equal(seededlda:::get_threads(), 3)
+	expect_equal(
+		seededlda:::get_threads(),
+		ifelse(quanteda::info_tbb()$enabled, 3, 1)
+	)
 	Sys.unsetenv("RCPP_PARALLEL_NUM_THREADS")
 
 	options("seededlda_threads" = NULL)
