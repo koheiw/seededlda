@@ -367,10 +367,12 @@ int LDA::sample(int m, int n, int w,
     // do multinomial sampling via cumulative method
     for (int k = 0; k < K; k++) {
     	if (fitted) {
-    		p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta[k]) /
-    			    (nwsum.at(k) + nwsum_tp.at(k) + nwsum_ft.at(k) + Vbeta)) *
-    			   ((nd.at(m, k) + alpha[k]) /
-    			    (ndsum.at(m) + Kalpha)) * prob[k];
+    		// p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta[k]) /
+    		// 	    (nwsum.at(k) + nwsum_tp.at(k) + nwsum_ft.at(k) + Vbeta)) *
+    		// 	   ((nd.at(m, k) + alpha[k]) /
+    		// 	    (ndsum.at(m) + Kalpha)) * prob[k];
+    		p[k] = ((nw_ft.at(w, k) + beta[k]) / (nwsum_ft.at(k) + Vbeta)) *
+    			   ((nd.at(m, k) + alpha[k]) / (ndsum.at(m) + Kalpha)) * prob[k];
     	} else {
     		p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + beta[k]) /
     			    (nwsum.at(k) + nwsum_tp.at(k) + Vbeta)) *
