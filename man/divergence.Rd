@@ -17,7 +17,7 @@ Ignored when \code{regularize = FALSE}.}
 \item{regularize}{if \code{TRUE}, returns the regularized divergence.}
 }
 \description{
-\code{divergence()} computes the regularized topic divergence to find the optimal
+\code{divergence()} computes the regularized topic divergence scores to find the optimal
 number of topics for LDA.
 }
 \details{
