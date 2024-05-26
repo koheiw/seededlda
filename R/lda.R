@@ -101,7 +101,7 @@ textmodel_lda.dfm <- function(
             gamma <- 0
         }
         words <- model$words
-        warning("k, alpha, beta and gamma values are overwriten by the fitted model", call. = FALSE)
+        warning("k, alpha, beta and gamma values are overwritten by the fitted model", call. = FALSE)
     } else {
         label <- paste0("topic", seq_len(k))
         words <- NULL
