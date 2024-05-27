@@ -20,6 +20,53 @@ slda <- textmodel_seededlda(dfmt, dict, residual = TRUE, weight = 0.02,
 
 test_that("divergence() is working", {
 
+	# in-sample
+	div1 <- divergence(lda)
+	expect_equal(div1, 0.33, tolerance = 0.01)
+
+	toks_val <- tokens(data_corpus_moviereviews[501:600],
+					   remove_punct = TRUE,
+					   remove_symbols = TRUE,
+					   remove_number = TRUE)
+	dfmt_val <- dfm(toks_val) %>%
+		dfm_remove(stopwords(), min_nchar = 2) %>%
+		dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
+
+	# out-sample
+	set.seed(1234)
+	expect_output(
+		div2 <- divergence(lda, newdata = dfmt_val, max_iter = 100, verbose = TRUE),
+		"Fitting LDA with 5 topics.*"
+	)
+	expect_equal(div2, 0.34, tolerance = 0.01)
+})
+
+test_that("perplexity() is working", {
+
+	# in-sample
+	ppl1 <- perplexity(lda)
+	expect_equal(ppl1, 7742, tolerance = 1)
+
+	toks_val <- tokens(data_corpus_moviereviews[501:600],
+					   remove_punct = TRUE,
+					   remove_symbols = TRUE,
+					   remove_number = TRUE)
+	dfmt_val <- dfm(toks_val) %>%
+		dfm_remove(stopwords(), min_nchar = 2) %>%
+		dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
+
+	# out-sample
+	set.seed(1234)
+	expect_output(
+		ppl2 <- perplexity(lda, newdata = dfmt_val, max_iter = 100, verbose = TRUE),
+		"Fitting LDA with 5 topics.*"
+	)
+	expect_equal(ppl2, 7534, tolerance = 1)
+})
+
+
+test_that("regularize is working", {
+
     # LDA
     expect_equal(divergence(lda),
                  0.34, tolerance = 0.01)

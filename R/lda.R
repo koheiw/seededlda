@@ -101,7 +101,7 @@ textmodel_lda.dfm <- function(
             gamma <- 0
         }
         words <- model$words
-        warning("k, alpha and beta values are overwriten by the fitted model", call. = FALSE)
+        warning("k, alpha, beta and gamma values are overwritten by the fitted model", call. = FALSE)
     } else {
         label <- paste0("topic", seq_len(k))
         words <- NULL
@@ -162,7 +162,7 @@ lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
     dimnames(result$theta) <- list(rownames(x), label)
     result$data <- x
     result$batch_size <- batch_size
-    result$call <- match.call(sys.function(-2), call = sys.call(-2))
+    result$call <- try(match.call(sys.function(-2), call = sys.call(-2)), silent = TRUE)
     result$version <- utils::packageVersion("seededlda")
     class(result) <- c("textmodel_lda", "textmodel", "list")
     return(result)

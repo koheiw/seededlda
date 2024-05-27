@@ -105,6 +105,6 @@ Algorithms for Topic Models. The Journal of Machine Learning Research, 10,
 1801–1828.
 }
 \seealso{
-\link[topicmodels:lda]{LDA} \link[keyATM:weightedLDA]{weightedLDA}
+\link[topicmodels:LDA]{LDA} \link[keyATM:weightedLDA]{weightedLDA}
 }
 \keyword{textmodel}
