@@ -2,10 +2,10 @@
 #'
 #' `divergence()` computes the regularized topic divergence scores to find the optimal
 #' number of topics for LDA.
+#' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()].
 #' @param min_size the minimum size of topics for regularized topic divergence.
 #'   Ignored when `regularize = FALSE`.
 #' @param select names of topics for which the divergence is computed.
-#' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()].
 #' @param regularize if `TRUE`, returns the regularized divergence.
 #' @details `divergence()` computes the average Jensen-Shannon divergence
 #'   between all the pairs of topic vectors in `x$phi`. The divergence score
@@ -60,15 +60,16 @@ divergence.textmodel_lda <- function(x, min_size = 0.01, select = NULL,
 #'
 #' `perplexity()` computes the perplexity score of a fitted LDA model to
 #' optimize hyper-parameters.
+#' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()].
 #' @param newdata the dfm for which the perplexity score will be computed. If
 #'   `NULL`, `x$data` will be used.
 #' @inheritParams textmodel_seededlda
 #' @param ... additional arguments passed to [textmodel_lda].
 #' @details Users can optimize hyper-parameters of LDA models such as `k`,
 #'   `alpha` and `gamma` by minimizing the perplexity score. `perplexity()`
-#'   estimates `theta` and `phi` for `newdata` through fresh Gibbs sampling and
+#'   computes `theta` and `phi` for `newdata` through fresh Gibbs sampling and
 #'   assesses the disparity between predicted and observed distribution of words
-#'   in the data.
+#'   in the dfm.
 #' @export
 perplexity <- function(x, newdata = NULL, max_iter = 100, ...) {
 	UseMethod("perplexity")
