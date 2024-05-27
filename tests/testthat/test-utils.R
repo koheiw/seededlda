@@ -81,6 +81,30 @@ test_that("divergence() is working", {
     )
 })
 
+test_that("perplexity() is working", {
+
+	# in-sample
+	set.seed(1234)
+	ppl0 <- perplexity(lda)
+	set.seed(1234)
+	ppl1 <- perplexity(lda, lda$data)
+	expect_equal(ppl0, ppl1)
+
+	toks_val <- tokens(data_corpus_moviereviews[501:600],
+				   remove_punct = TRUE,
+				   remove_symbols = TRUE,
+				   remove_number = TRUE)
+	dfmt_val <- dfm(toks_val) %>%
+		dfm_remove(stopwords(), min_nchar = 2) %>%
+		dfm_trim(max_docfreq = 0.1, docfreq_type = "prop")
+
+	# out-sample
+	set.seed(1234)
+	ppl2 <- perplexity(lda, dfmt_val)
+	expect_gt(ppl2, ppl1)
+
+})
+
 test_that("sizes() is working", {
 
     size1 <- sizes(lda)
