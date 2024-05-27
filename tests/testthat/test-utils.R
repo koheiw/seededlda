@@ -103,6 +103,10 @@ test_that("perplexity() is working", {
 	ppl2 <- perplexity(lda, dfmt_val)
 	expect_gt(ppl2, ppl1)
 
+	expect_output(
+		perplexity(lda, verbose = TRUE),
+		"Fitting LDA with 5 topics.*"
+	)
 })
 
 test_that("sizes() is working", {
