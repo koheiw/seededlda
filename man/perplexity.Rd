@@ -4,15 +4,26 @@
 \alias{perplexity}
 \title{Optimize the hyper-parameters}
 \usage{
-perplexity(x, newdata = NULL, max_iter = 100)
+perplexity(x, newdata = NULL, max_iter = 100, ...)
 }
 \arguments{
 \item{x}{the dfm on which the model will be fit.}
 
-\item{newdata}{the dfm for which the perplexity score will be computed. If \code{NULL}, \code{x$data} will be used.}
+\item{newdata}{the dfm for which the perplexity score will be computed. If
+\code{NULL}, \code{x$data} will be used.}
 
 \item{max_iter}{the maximum number of iteration in Gibbs sampling.}
+
+\item{...}{additional arguments passed to \link{textmodel_lda}.}
 }
 \description{
-\code{perplexity()} computes the perplexity score of a fitted LDA model to optimize hyper-parameters.
+\code{perplexity()} computes the perplexity score of a fitted LDA model to
+optimize hyper-parameters.
+}
+\details{
+Users can optimize hyper-parameters of LDA models such as \code{k},
+\code{alpha} and \code{gamma} by minimizing the perplexity score. \code{perplexity()}
+estimates \code{theta} and \code{phi} for \code{newdata} through fresh Gibbs sampling and
+assesses the disparity between predicted and observed distribution of words
+in the data.
 }

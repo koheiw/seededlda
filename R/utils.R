@@ -58,25 +58,33 @@ divergence.textmodel_lda <- function(x, min_size = 0.01, select = NULL,
 
 #' Optimize the hyper-parameters
 #'
-#' `perplexity()` computes the perplexity score of a fitted LDA model to optimize hyper-parameters.
-#' @param newdata the dfm for which the perplexity score will be computed. If `NULL`, `x$data` will be used.
+#' `perplexity()` computes the perplexity score of a fitted LDA model to
+#' optimize hyper-parameters.
+#' @param newdata the dfm for which the perplexity score will be computed. If
+#'   `NULL`, `x$data` will be used.
 #' @inheritParams textmodel_seededlda
+#' @param ... additional arguments passed to [textmodel_lda].
+#' @details Users can optimize hyper-parameters of LDA models such as `k`,
+#'   `alpha` and `gamma` by minimizing the perplexity score. `perplexity()`
+#'   estimates `theta` and `phi` for `newdata` through fresh Gibbs sampling and
+#'   assesses the disparity between predicted and observed distribution of words
+#'   in the data.
 #' @export
-perplexity <- function(x, newdata = NULL, max_iter = 100) {
+perplexity <- function(x, newdata = NULL, max_iter = 100, ...) {
 	UseMethod("perplexity")
 }
 
 #' @export
-perplexity.textmodel_lda <- function(x, newdata = NULL, max_iter = 100) {
+perplexity.textmodel_lda <- function(x, newdata = NULL, max_iter = 100, ...) {
 	if (is.null(newdata))
 		newdata <- x$data
 	suppressWarnings({
 		lda <- textmodel_lda(newdata, max_iter = max_iter, gamma = x$gamma,
-							 model = x, verbose = FALSE)
+							 model = x, ...)
 	})
 	#exp(-sum(log(lda$theta %*% lda$phi[,featnames(lda$data)]) * lda$data) / sum(lda$data))
-	data <- as(lda$data, "TsparseMatrix")
-	exp(-sum(log(colSums(lda$phi[,data@j + 1] * t(lda$theta)[,data@i + 1])) * data@x) / sum(data@x))
+	mat <- as(lda$data, "TsparseMatrix")
+	exp(-sum(log(colSums(lda$phi[,mat@j + 1] * t(lda$theta)[,mat@i + 1])) * mat@x) / sum(mat@x))
 }
 
 
