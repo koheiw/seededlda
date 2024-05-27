@@ -1,40 +1,49 @@
-#' Optimize the number of topics
+#' Optimize the number of topics for LDA
 #'
-#' `divergence()` computes the regularized topic divergence scores to find the optimal
-#' number of topics for LDA.
+#' `divergence()` computes the regularized topic divergence scores to help users
+#' to find the optimal number of topics for LDA.
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()].
 #' @param min_size the minimum size of topics for regularized topic divergence.
 #'   Ignored when `regularize = FALSE`.
 #' @param select names of topics for which the divergence is computed.
 #' @param regularize if `TRUE`, returns the regularized divergence.
+#' @param newdata if provided, `theta` and `phi` are estimated through fresh
+#'   Gibbs sampling.
+#' @param ... additional arguments passed to [textmodel_lda].
 #' @details `divergence()` computes the average Jensen-Shannon divergence
 #'   between all the pairs of topic vectors in `x$phi`. The divergence score
 #'   maximizes when the chosen number of topic `k` is optimal (Deveaud et al.,
 #'   2014). The regularized divergence penalizes topics smaller than `min_size`
 #'   to avoid fragmentation (Watanabe & Baturo, forthcoming).
-#' @seealso [sizes]
+#' @seealso [perplexity]
 #' @references Deveaud, Romain et al. (2014). "Accurate and Effective Latent
 #'   Concept Modeling for Ad Hoc Information Retrieval".
 #'   doi:10.3166/DN.17.1.61-84. *Document Numérique*.
 #'
-#'   Watanabe, Kohei & Baturo, Alexander. (2023). "Seeded Sequential LDA:
-#'   A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+#'   Watanabe, Kohei & Baturo, Alexander. (2023). "Seeded Sequential LDA: A
+#'   Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
 #'   doi:10.1177/08944393231178605. *Social Science Computer Review*.
 #' @export
 divergence <- function(x, min_size = 0.01, select = NULL,
-                       regularize = TRUE) {
+                       regularize = TRUE, newdata = NULL, ...) {
     UseMethod("divergence")
 }
 
 #' @importFrom proxyC dist
 #' @export
 divergence.textmodel_lda <- function(x, min_size = 0.01, select = NULL,
-                                     regularize = TRUE) {
+                                     regularize = TRUE, newdata = NULL, ...) {
 
     min_size <- check_double(min_size, min = 0, max = 1)
     select <- check_character(select, min_len = 2, max_len = nrow(x$phi),
                               strict = TRUE, allow_null = TRUE)
     regularize <- check_logical(regularize, strict = TRUE)
+
+    if (!is.null(newdata)) {
+    	suppressWarnings({
+    		x <- textmodel_lda(newdata, model = x, ...)
+    	})
+    }
 
     if (is.null(select)) {
         l <- rep(TRUE, nrow(x$phi))
@@ -56,36 +65,35 @@ divergence.textmodel_lda <- function(x, min_size = 0.01, select = NULL,
     sum(as.matrix(div[l, l]) * w, na.rm = TRUE) + (min_size ^ 2)
 }
 
-#' Optimize the hyper-parameters
+#' Optimize the hyper-parameters for LDA
 #'
-#' `perplexity()` computes the perplexity score of a fitted LDA model to
-#' optimize hyper-parameters.
+#' `perplexity()` computes the perplexity score to help users to chose the
+#' optimal values of hyper-parameters for LDA.
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()].
-#' @param newdata the dfm for which the perplexity score will be computed. If
-#'   `NULL`, `x$data` will be used.
-#' @inheritParams textmodel_seededlda
+#' @param newdata if provided, `theta` and `phi` are estimated through fresh
+#'   Gibbs sampling.
 #' @param ... additional arguments passed to [textmodel_lda].
-#' @details Users can optimize hyper-parameters of LDA models such as `k`,
-#'   `alpha` and `gamma` by minimizing the perplexity score. `perplexity()`
-#'   computes `theta` and `phi` for `newdata` through fresh Gibbs sampling and
-#'   assesses the disparity between predicted and observed distribution of words
-#'   in the dfm.
+#' @details `perplexity()` predicts the distribution of words in the dfm based
+#'   on `x$alpha` and `x$gamma` to compute the sum of disparity between their
+#'   predicted and observed frequencies. The perplexity score minimizes when the
+#'   chosen values of hyper-parameters such as `k`, `alpha` and `gamma` are
+#'   optimal.
+#' @seealso [divergence]
 #' @export
 perplexity <- function(x, newdata = NULL, max_iter = 100, ...) {
 	UseMethod("perplexity")
 }
 
 #' @export
-perplexity.textmodel_lda <- function(x, newdata = NULL, max_iter = 100, ...) {
-	if (is.null(newdata))
-		newdata <- x$data
-	suppressWarnings({
-		lda <- textmodel_lda(newdata, max_iter = max_iter, gamma = x$gamma,
-							 model = x, ...)
-	})
-	#exp(-sum(log(lda$theta %*% lda$phi[,featnames(lda$data)]) * lda$data) / sum(lda$data))
-	mat <- as(lda$data, "TsparseMatrix")
-	exp(-sum(log(colSums(lda$phi[,mat@j + 1] * t(lda$theta)[,mat@i + 1])) * mat@x) / sum(mat@x))
+perplexity.textmodel_lda <- function(x, newdata = NULL, ...) {
+	if (!is.null(newdata)) {
+		suppressWarnings({
+			x <- textmodel_lda(newdata, model = x, ...)
+		})
+	}
+	#exp(-sum(log(x$theta %*% x$phi[,featnames(x$data)]) * x$data) / sum(x$data))
+	mat <- as(x$data, "TsparseMatrix")
+	exp(-sum(log(colSums(x$phi[,mat@j + 1] * t(x$theta)[,mat@i + 1])) * mat@x) / sum(mat@x))
 }
 
 
