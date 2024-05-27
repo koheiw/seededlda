@@ -74,13 +74,13 @@ divergence.textmodel_lda <- function(x, min_size = 0.01, select = NULL,
 #'   Gibbs sampling.
 #' @param ... additional arguments passed to [textmodel_lda].
 #' @details `perplexity()` predicts the distribution of words in the dfm based
-#'   on `x$alpha` and `x$gamma` to compute the sum of disparity between their
+#'   on `x$alpha` and `x$gamma` and then compute the sum of disparity between their
 #'   predicted and observed frequencies. The perplexity score minimizes when the
 #'   chosen values of hyper-parameters such as `k`, `alpha` and `gamma` are
 #'   optimal.
 #' @seealso [divergence]
 #' @export
-perplexity <- function(x, newdata = NULL, max_iter = 100, ...) {
+perplexity <- function(x, newdata = NULL, ...) {
 	UseMethod("perplexity")
 }
 

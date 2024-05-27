@@ -4,7 +4,7 @@
 \alias{perplexity}
 \title{Optimize the hyper-parameters for LDA}
 \usage{
-perplexity(x, newdata = NULL, max_iter = 100, ...)
+perplexity(x, newdata = NULL, ...)
 }
 \arguments{
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}.}
@@ -20,7 +20,7 @@ optimal values of hyper-parameters for LDA.
 }
 \details{
 \code{perplexity()} predicts the distribution of words in the dfm based
-on \code{x$alpha} and \code{x$gamma} to compute the sum of disparity between their
+on \code{x$alpha} and \code{x$gamma} and then compute the sum of disparity between their
 predicted and observed frequencies. The perplexity score minimizes when the
 chosen values of hyper-parameters such as \code{k}, \code{alpha} and \code{gamma} are
 optimal.
