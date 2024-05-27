@@ -2,28 +2,29 @@
 % Please edit documentation in R/utils.R
 \name{perplexity}
 \alias{perplexity}
-\title{Optimize the hyper-parameters}
+\title{Optimize the hyper-parameters for LDA}
 \usage{
 perplexity(x, newdata = NULL, max_iter = 100, ...)
 }
 \arguments{
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}.}
 
-\item{newdata}{the dfm for which the perplexity score will be computed. If
-\code{NULL}, \code{x$data} will be used.}
-
-\item{max_iter}{the maximum number of iteration in Gibbs sampling.}
+\item{newdata}{if provided, \code{theta} and \code{phi} are estimated through fresh
+Gibbs sampling.}
 
 \item{...}{additional arguments passed to \link{textmodel_lda}.}
 }
 \description{
-\code{perplexity()} computes the perplexity score of a fitted LDA model to
-optimize hyper-parameters.
+\code{perplexity()} computes the perplexity score to help users to chose the
+optimal values of hyper-parameters for LDA.
 }
 \details{
-Users can optimize hyper-parameters of LDA models such as \code{k},
-\code{alpha} and \code{gamma} by minimizing the perplexity score. \code{perplexity()}
-computes \code{theta} and \code{phi} for \code{newdata} through fresh Gibbs sampling and
-assesses the disparity between predicted and observed distribution of words
-in the dfm.
+\code{perplexity()} predicts the distribution of words in the dfm based
+on \code{x$alpha} and \code{x$gamma} to compute the sum of disparity between their
+predicted and observed frequencies. The perplexity score minimizes when the
+chosen values of hyper-parameters such as \code{k}, \code{alpha} and \code{gamma} are
+optimal.
+}
+\seealso{
+\link{divergence}
 }

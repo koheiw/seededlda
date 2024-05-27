@@ -2,9 +2,16 @@
 % Please edit documentation in R/utils.R
 \name{divergence}
 \alias{divergence}
-\title{Optimize the number of topics}
+\title{Optimize the number of topics for LDA}
 \usage{
-divergence(x, min_size = 0.01, select = NULL, regularize = TRUE)
+divergence(
+  x,
+  min_size = 0.01,
+  select = NULL,
+  regularize = TRUE,
+  newdata = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}.}
@@ -15,10 +22,15 @@ Ignored when \code{regularize = FALSE}.}
 \item{select}{names of topics for which the divergence is computed.}
 
 \item{regularize}{if \code{TRUE}, returns the regularized divergence.}
+
+\item{newdata}{if provided, \code{theta} and \code{phi} are estimated through fresh
+Gibbs sampling.}
+
+\item{...}{additional arguments passed to \link{textmodel_lda}.}
 }
 \description{
-\code{divergence()} computes the regularized topic divergence scores to find the optimal
-number of topics for LDA.
+\code{divergence()} computes the regularized topic divergence scores to help users
+to find the optimal number of topics for LDA.
 }
 \details{
 \code{divergence()} computes the average Jensen-Shannon divergence
@@ -32,10 +44,10 @@ Deveaud, Romain et al. (2014). "Accurate and Effective Latent
 Concept Modeling for Ad Hoc Information Retrieval".
 doi:10.3166/DN.17.1.61-84. \emph{Document Numérique}.
 
-Watanabe, Kohei & Baturo, Alexander. (2023). "Seeded Sequential LDA:
-A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
+Watanabe, Kohei & Baturo, Alexander. (2023). "Seeded Sequential LDA: A
+Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
 doi:10.1177/08944393231178605. \emph{Social Science Computer Review}.
 }
 \seealso{
-\link{sizes}
+\link{perplexity}
 }
