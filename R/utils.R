@@ -15,6 +15,7 @@
 #'   maximizes when the chosen number of topic `k` is optimal (Deveaud et al.,
 #'   2014). The regularized divergence penalizes topics smaller than `min_size`
 #'   to avoid fragmentation (Watanabe & Baturo, forthcoming).
+#' @returns Returns a singple numeric value.
 #' @seealso [perplexity]
 #' @references Deveaud, Romain et al. (2014). "Accurate and Effective Latent
 #'   Concept Modeling for Ad Hoc Information Retrieval".
@@ -73,6 +74,7 @@ divergence.textmodel_lda <- function(x, min_size = 0.01, select = NULL,
 #' @param newdata if provided, `theta` and `phi` are estimated through fresh
 #'   Gibbs sampling.
 #' @param ... additional arguments passed to [textmodel_lda].
+#' @returns Returns a singple numeric value.
 #' @details `perplexity()` predicts the distribution of words in the dfm based
 #'   on `x$alpha` and `x$gamma` and then compute the sum of disparity between their
 #'   predicted and observed frequencies. The perplexity score minimizes when the
@@ -101,6 +103,7 @@ perplexity.textmodel_lda <- function(x, newdata = NULL, ...) {
 #'
 #' Compute the sizes of topics as the proportions of topic words in the corpus.
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
+#' @returns a numeric vector in the same lenghts as `k`.
 #' @export
 sizes <- function(x) {
     UseMethod("sizes")

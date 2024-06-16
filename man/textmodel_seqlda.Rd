@@ -40,6 +40,9 @@ parameters from an existing model. See details.}
 \item{verbose}{logical; if \code{TRUE} print diagnostic information during
 fitting.}
 }
+\value{
+The same as \code{\link[=textmodel_lda]{textmodel_lda()}}
+}
 \description{
 Implements Sequential Latent Dirichlet allocation (Sequential LDA).
 \code{textmodel_seqlda()} allows the users to classify sentences of texts. It

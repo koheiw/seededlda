@@ -9,6 +9,9 @@ sizes(x)
 \arguments{
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}}
 }
+\value{
+a numeric vector in the same lenghts as \code{k}.
+}
 \description{
 Compute the sizes of topics as the proportions of topic words in the corpus.
 }

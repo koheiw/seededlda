@@ -45,12 +45,15 @@
 #'   argument takes objects created either by `textmodel_lda()` or
 #'   `textmodel_seededlda()`.
 #'
-#' @return `textmodel_seededlda()` and `textmodel_lda()` returns a list of model
-#'   parameters. `theta` is the distribution of topics over documents; `phi` is
-#'   the distribution of words over topics. `alpha` and `beta` are the small
-#'   constant added to the frequency of words to estimate `theta` and `phi`,
-#'   respectively, in Gibbs sampling. Other elements in the list subject to
-#'   change.
+#' @returns Returns a list of model parameters:
+#'   \item{k}{the number of topics.}
+#'   \item{last_iter}{the number of iterations in Gibbs sampling}
+#'   \item{phi}{the distribution of words over topics.}
+#'   \item{theta}{the distribution of topics over documents.}
+#'   \item{words}{the raw frquency count of words assigned to topics.}
+#'   \item{data}{the original input of `x`.}
+#'   \item{call}{the command used to execute the function.}
+#'   \item{version}{the version of the seededlda package.}
 #' @references
 #'
 #' Newman, D., Asuncion, A., Smyth, P., & Welling, M. (2009). Distributed

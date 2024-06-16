@@ -11,6 +11,9 @@ terms(x, n = 10)
 
 \item{n}{number of terms to be extracted}
 }
+\value{
+a \eq{n*k} character matrix with the most frquent words in  each topic.
+}
 \description{
 \code{terms()} returns the most likely terms, or words, for topics based on the
 \code{phi} parameter.

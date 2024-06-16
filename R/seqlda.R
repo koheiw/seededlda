@@ -7,9 +7,9 @@
 #' `textmodel_lda(gamma = 0.5)`. Seeded Sequential LDA is
 #' `textmodel_seededlda(gamma = 0.5)`.
 #' @inheritParams textmodel_lda
+#' @returns The same as [textmodel_lda()]
 #' @export
 #' @references
-#'
 #'   Du, Lan et al. (2012). "Sequential Latent Dirichlet Allocation".
 #'   doi.org/10.1007/s10115-011-0425-1. *Knowledge and Information Systems*.
 #'

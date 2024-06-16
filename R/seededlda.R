@@ -17,17 +17,19 @@
 #' @param ... passed to [quanteda::dfm_trim] to restrict seed words based on
 #'   their term or document frequency. This is useful when glob patterns in the
 #'   dictionary match too many words.
-#' @references Lu, Bin et al. (2011). "Multi-aspect Sentiment Analysis with
+#' @references
+#'   Lu, Bin et al. (2011). "Multi-aspect Sentiment Analysis with
 #'   Topic Models". doi:10.5555/2117693.2119585. *Proceedings of the 2011 IEEE
 #'   11th International Conference on Data Mining Workshops*.
 #'
-#'   Watanabe, Kohei & Zhou, Yuan (2020). "Theory-Driven Analysis of Large
+#'   Watanabe, Kohei & Zhou, Yuan. (2020). "Theory-Driven Analysis of Large
 #'   Corpora: Semisupervised Topic Classification of the UN Speeches".
 #'   doi:10.1177/0894439320907027. *Social Science Computer Review*.
 #'
 #'   Watanabe, Kohei & Baturo, Alexander. (2023). "Seeded Sequential LDA:
 #'   A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
 #'   doi:10.1177/08944393231178605. *Social Science Computer Review*.
+#' @returns The same as [textmodel_lda()] with extra elements for `dictionary`.
 #' @seealso [keyATM][keyATM::keyATM]
 #' @examples
 #' \donttest{
@@ -112,6 +114,7 @@ print.textmodel_lda <- function(x, ...) {
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
 #' @param n number of terms to be extracted
 #' @details Users can access the original matrix `x$phi` for likelihood scores.
+#' @returns a \eq{n*k} character matrix with the most frquent words in  each topic.
 #' @export
 terms <- function(x, n = 10) {
     UseMethod("terms")
@@ -137,6 +140,7 @@ terms.textmodel_lda <- function(x, n = 10) {
 #' @param min_prob ignores topics if their probability is lower than this value.
 #' @details Users can access the original matrix `x$theta` for likelihood
 #'   scores; run `max.col(x$theta)` to obtain the same result as `topics(x)`.
+#' @returns Returns predicted topics as a vector.
 topics <- function(x, min_prob = 0, select = NULL) {
     UseMethod("topics")
 }

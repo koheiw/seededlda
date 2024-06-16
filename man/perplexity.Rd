@@ -14,6 +14,9 @@ Gibbs sampling.}
 
 \item{...}{additional arguments passed to \link{textmodel_lda}.}
 }
+\value{
+Returns a singple numeric value.
+}
 \description{
 \code{perplexity()} computes the perplexity score to help users to chose the
 optimal values of hyper-parameters for LDA.

@@ -64,6 +64,9 @@ dictionary match too many words.}
 \item{verbose}{logical; if \code{TRUE} print diagnostic information during
 fitting.}
 }
+\value{
+The same as \code{\link[=textmodel_lda]{textmodel_lda()}} with extra elements for \code{dictionary}.
+}
 \description{
 Implements semisupervised Latent Dirichlet allocation
 (Seeded LDA). \code{textmodel_seededlda()} allows users to specify
@@ -97,7 +100,7 @@ Lu, Bin et al. (2011). "Multi-aspect Sentiment Analysis with
 Topic Models". doi:10.5555/2117693.2119585. \emph{Proceedings of the 2011 IEEE
 11th International Conference on Data Mining Workshops}.
 
-Watanabe, Kohei & Zhou, Yuan (2020). "Theory-Driven Analysis of Large
+Watanabe, Kohei & Zhou, Yuan. (2020). "Theory-Driven Analysis of Large
 Corpora: Semisupervised Topic Classification of the UN Speeches".
 doi:10.1177/0894439320907027. \emph{Social Science Computer Review}.
 

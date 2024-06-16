@@ -14,6 +14,9 @@ topics(x, min_prob = 0, select = NULL)
 \item{select}{returns the selected topic with the
 highest probability; specify by the names of columns in \code{x$theta}.}
 }
+\value{
+Returns predicted topics as a vector.
+}
 \description{
 \code{topics()} returns the most likely topics for documents based on the \code{theta}
 parameter.

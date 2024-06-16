@@ -28,6 +28,9 @@ Gibbs sampling.}
 
 \item{...}{additional arguments passed to \link{textmodel_lda}.}
 }
+\value{
+Returns a singple numeric value.
+}
 \description{
 \code{divergence()} computes the regularized topic divergence scores to help users
 to find the optimal number of topics for LDA.
