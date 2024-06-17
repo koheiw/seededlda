@@ -7,12 +7,12 @@
 terms(x, n = 10)
 }
 \arguments{
-\item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}}
+\item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}.}
 
-\item{n}{number of terms to be extracted}
+\item{n}{number of terms to be extracted.}
 }
 \value{
-a \eqn{n*k} character matrix with the most frquent words in  each topic.
+a character matrix with the most frequent words in each topic.
 }
 \description{
 \code{terms()} returns the most likely terms, or words, for topics based on the
