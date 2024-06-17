@@ -111,10 +111,10 @@ print.textmodel_lda <- function(x, ...) {
 #'
 #' `terms()` returns the most likely terms, or words, for topics based on the
 #' `phi` parameter.
-#' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
-#' @param n number of terms to be extracted
+#' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()].
+#' @param n number of terms to be extracted.
 #' @details Users can access the original matrix `x$phi` for likelihood scores.
-#' @returns a \eq{n*k} character matrix with the most frquent words in  each topic.
+#' @returns a character matrix with the most frequent words in each topic.
 #' @export
 terms <- function(x, n = 10) {
     UseMethod("terms")

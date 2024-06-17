@@ -50,7 +50,7 @@
 #'   \item{last_iter}{the number of iterations in Gibbs sampling}
 #'   \item{phi}{the distribution of words over topics.}
 #'   \item{theta}{the distribution of topics over documents.}
-#'   \item{words}{the raw frquency count of words assigned to topics.}
+#'   \item{words}{the raw frequency count of words assigned to topics.}
 #'   \item{data}{the original input of `x`.}
 #'   \item{call}{the command used to execute the function.}
 #'   \item{version}{the version of the seededlda package.}

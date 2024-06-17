@@ -103,7 +103,7 @@ perplexity.textmodel_lda <- function(x, newdata = NULL, ...) {
 #'
 #' Compute the sizes of topics as the proportions of topic words in the corpus.
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()]
-#' @returns a numeric vector in the same lenghts as `k`.
+#' @returns a numeric vector in the same lengths as `k`.
 #' @export
 sizes <- function(x) {
     UseMethod("sizes")
