@@ -1,8 +1,8 @@
 bibentry(
   bibtype  = "Article",
   title    = "Seeded Sequential LDA: A Semi-Supervised Algorithm for Topic-Specific Analysis of Sentences",
-  author = c(person(c("Kohei", "Watanabe"),
-             person(c("Baturo", "Alexander")))),
+  author = c(person("Kohei", "Watanabe"),
+             person("Baturo", "Alexander")),
   journal  = "Social Science Computer Review",
   year     = "2023",
   volume   = "42",
