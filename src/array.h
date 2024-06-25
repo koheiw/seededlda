@@ -63,7 +63,7 @@ class Array {
         for (std::size_t i = 0;  i < data.size(); i++) {
             temp.insert(temp.end(), data[i].begin(), data[i].end());
         }
-        arma::vec mt = arma::conv_to<arma::vec>::from(temp);
+        arma::mat mt = arma::conv_to<arma::mat>::from(temp);
         mt.reshape(col, row);
         mt = mt.t();
         return mt;
