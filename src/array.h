@@ -58,14 +58,12 @@ class Array {
 
     //convert to arma::mat
     arma::mat to_mat() {
-        std::vector<double> temp;
-        temp.reserve(row * col);
-        for (std::size_t i = 0;  i < data.size(); i++) {
-            temp.insert(temp.end(), data[i].begin(), data[i].end());
+    	arma::mat mt(row, col);
+        for (std::size_t r = 0;  r < row; r++) {
+        	for (std::size_t c = 0; c < col; c++) {
+        		mt(r, c) = data[r][c];
+        	}
         }
-        arma::mat mt = arma::conv_to<arma::mat>::from(temp);
-        mt.reshape(col, row);
-        mt = mt.t();
         return mt;
     }
 
