@@ -1,3 +1,7 @@
+## Changes in v1.3.2
+
+- Improve the way to convert std::vector to arma::mat.
+
 ## Changes in v1.3.1
 
 - Fix C++ code for Armadillo v14.
