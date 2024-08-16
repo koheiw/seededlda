@@ -20,6 +20,7 @@
 #'   document is affected by the previous document's topics.
 #' @param model a fitted LDA model; if provided, `textmodel_lda()` inherits
 #'   parameters from an existing model. See details.
+#' @param add_terms if `TRUE`, add new terms from `x` even when `model` is provided.
 #' @details If `auto_iter = TRUE`, the iteration stops even before `max_iter`
 #'   when `delta <= 0`. `delta` is computed to measure the changes in the number
 #'   of words whose topics are updated by the Gibbs sampler in every 100
@@ -79,7 +80,8 @@
 #' }
 textmodel_lda <- function(
     x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, gamma = 0,
-    model = NULL, batch_size = 1.0, verbose = quanteda_options("verbose")
+    model = NULL, add_terms = FALSE,
+    batch_size = 1.0, verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_lda")
 }
@@ -87,13 +89,21 @@ textmodel_lda <- function(
 #' @export
 textmodel_lda.dfm <- function(
     x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, gamma = 0,
-    model = NULL, batch_size = 1.0, verbose = quanteda_options("verbose")
+    model = NULL, batch_size = 1.0, add_terms = FALSE,
+    verbose = quanteda_options("verbose")
 ) {
 
     if (!is.null(model)) {
         if (!is.textmodel_lda(model))
             stop("model must be a fitted textmodel_lda")
-        x <- dfm_match(x, colnames(model$phi))
+
+    	words <- model$words
+    	if (add_terms) {
+    		words <- t(dfm_match(as.dfm(t(words)), featnames(x)))
+    	} else {
+    		x <- dfm_match(x, rownames(words))
+    	}
+
         k <- model$k
         label <- rownames(model$phi)
         alpha <- model$alpha
@@ -103,7 +113,7 @@ textmodel_lda.dfm <- function(
         } else {
             gamma <- 0
         }
-        words <- model$words
+
         warning("k, alpha, beta and gamma values are overwritten by the fitted model", call. = FALSE)
     } else {
         label <- paste0("topic", seq_len(k))

@@ -13,6 +13,7 @@ textmodel_lda(
   beta = 0.1,
   gamma = 0,
   model = NULL,
+  add_terms = FALSE,
   batch_size = 1,
   verbose = quanteda_options("verbose")
 )
