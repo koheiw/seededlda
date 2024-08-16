@@ -80,8 +80,8 @@
 #' }
 textmodel_lda <- function(
     x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, gamma = 0,
-    model = NULL, add_terms = FALSE,
-    batch_size = 1.0, verbose = quanteda_options("verbose")
+    model = NULL, add_terms = FALSE, batch_size = 1.0,
+	verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_lda")
 }
@@ -89,7 +89,7 @@ textmodel_lda <- function(
 #' @export
 textmodel_lda.dfm <- function(
     x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, gamma = 0,
-    model = NULL, batch_size = 1.0, add_terms = FALSE,
+    model = NULL, add_terms = FALSE, batch_size = 1.0,
     verbose = quanteda_options("verbose")
 ) {
 
