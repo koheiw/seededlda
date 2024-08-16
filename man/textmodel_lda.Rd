@@ -39,6 +39,8 @@ document is affected by the previous document's topics.}
 \item{model}{a fitted LDA model; if provided, \code{textmodel_lda()} inherits
 parameters from an existing model. See details.}
 
+\item{add_terms}{if \code{TRUE}, add new terms from \code{x} even when \code{model} is provided.}
+
 \item{batch_size}{split the corpus into the smaller batches (specified in
 proportion) for distributed computing; it is disabled when a batch include
 all the documents \code{batch_size = 1.0}. See details.}
