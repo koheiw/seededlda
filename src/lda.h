@@ -54,7 +54,8 @@ class LDA {
     int K; // number of topics
     int N; // total number of words
     std::vector<double> alpha, beta; // parameters for smoothing, size K
-    std::vector<double> ipsilon;
+    std::vector<double> epsilon;
+    bool adjust; // adjust alpha by nwsum
     double Vbeta, Kalpha; // parameters for smoothing
     int max_iter; // number of Gibbs sampling iterations
     int iter; // the iteration at which the model was saved
@@ -94,7 +95,7 @@ class LDA {
 
     // constructor
     LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamma,
-        int max_iter, double min_delta, //bool adjust,
+        int max_iter, double min_delta, bool adjust,
         int random, int batch, bool verbose, int thread);
 
     // set default values for variables
@@ -103,7 +104,7 @@ class LDA {
     void set_fitted(arma::sp_mat mt);
 
     // init for estimation
-    int initialize(bool adjust);
+    int initialize();
 
     // estimate LDA model using Gibbs sampling
     void estimate();
@@ -114,7 +115,7 @@ class LDA {
 };
 
 LDA::LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamma, int max_iter,
-         double min_delta, int random, int batch, bool verbose, int thread) {
+         double min_delta, bool adjust, int random, int batch, bool verbose, int thread) {
 
     if (verbose)
         Rprintf("Fitting LDA with %d topics\n", K);
@@ -127,6 +128,7 @@ LDA::LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamm
     } else {
     	throw std::invalid_argument("Invalid alpha");
     }
+    this->adjust = adjust;
 
     if (K == (int)beta.size()) {
     	this->beta = beta;
@@ -154,8 +156,9 @@ void LDA::set_default_values() {
     K = 100;
     N = 0;
     alpha = std::vector<double>(K, 0.5);
+    epsilon = std::vector<double>(K, 0);
+    adjust = false;
     beta = std::vector<double>(K, 0.1);
-    ipsilon = std::vector<double>(K, 0);
     max_iter = 2000;
     iter = 0;
     verbose = false;
@@ -193,7 +196,7 @@ void LDA::set_fitted(arma::sp_mat words) {
 	}
 }
 
-int LDA::initialize(bool adjust) {
+int LDA::initialize() {
 
     if (verbose)
         Rprintf(" ...initializing\n");
@@ -253,10 +256,10 @@ int LDA::initialize(bool adjust) {
     }
     //dev::stop_timer("Set z", timer);
 
-	// adjust alpha by ipsilon
+    // compute epsilon by the size of topics
 	if (adjust) {
 	    for (int k = 0; k < K; k++) {
-	    	ipsilon[k] = alpha[k] / nwsum.at(k);
+	    	epsilon[k] = alpha[k] / nwsum.at(k);
 	    }
 	}
     return 0;
@@ -335,6 +338,12 @@ void LDA::estimate() {
                 change += change_tp;
                 nw += nw_tp;
                 nwsum += nwsum_tp;
+                if (adjust) {
+                	// adjust alpha by epsilon
+	                for (int k = 0; k < K; k++) {
+	                	alpha[k] += epsilon[k] * nwsum_tp.at(k);
+                	}
+                }
                 mutex_sync.unlock();
 #if QUANTEDA_USE_TBB
             }, tbb::static_partitioner());
@@ -372,7 +381,6 @@ int LDA::sample(int m, int n, int w,
     nw_tp.at(w, topic) -= 1;
     nwsum_tp.at(topic) -= 1;
     nd.at(m, topic) -= 1;
-    alpha[topic] -= ipsilon[topic];
     std::vector<double> p(K, 0);
 
     // do multinomial sampling via cumulative method
@@ -408,7 +416,6 @@ int LDA::sample(int m, int n, int w,
     nw_tp.at(w, topic) += 1;
     nwsum_tp.at(topic) += 1;
     nd.at(m, topic) += 1;
-    alpha[topic] += ipsilon[topic];
     return topic;
 }
 
