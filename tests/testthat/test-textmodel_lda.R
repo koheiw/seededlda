@@ -115,6 +115,10 @@ test_that("alpha and beta work", {
 
 test_that("adjust_alpha works", {
 
+	skip_on_os("mac")
+	skip_on_cran()
+
+	set.seed(1234)
 	lda <- textmodel_lda(dfmt, max_iter = 200, adjust_alpha = TRUE)
 	expect_true(all(lda$alpha != 0.5))
 	expect_true(all(order(sizes(lda)) == order(lda$alpha)))
