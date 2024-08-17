@@ -1,3 +1,7 @@
+## Changes in v1.3.3
+
+- Add `update_model` to update terms of existing models to classify documents with unseen words more accurately.
+
 ## Changes in v1.3.2
 
 - Improve the way to convert std::vector to arma::mat.
