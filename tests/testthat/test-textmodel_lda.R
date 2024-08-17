@@ -113,6 +113,14 @@ test_that("alpha and beta work", {
 
 })
 
+test_that("adjust_alpha works", {
+
+	lda <- textmodel_lda(dfmt, max_iter = 200, adjust_alpha = TRUE)
+	expect_true(all(lda$alpha != 0.5))
+	expect_true(all(order(sizes(lda)) == order(lda$alpha)))
+
+})
+
 test_that("verbose works", {
 
     expect_output(
