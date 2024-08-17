@@ -181,8 +181,8 @@ test_that("LDA works with empty documents", {
 test_that("model argument works with LDA", {
     skip_on_cran()
 
-    dfmt_train <- head(dfmt, 450)
-    dfmt_test <- tail(dfmt, 50)
+    dfmt_train <- dfm_trim(head(dfmt, 450))
+    dfmt_test <- dfm_trim(tail(dfmt, 50))
 
     # fit new model
     lda <- textmodel_lda(dfmt_train, k = 5)
@@ -203,11 +203,20 @@ test_that("model argument works with LDA", {
     expect_warning({
         lda2 <- textmodel_lda(dfmt_test, model = lda)
     }, "k, alpha, beta and gamma values are overwritten by the fitted model")
-    expect_false(all(lda$phi == lda2$phi))
     expect_identical(dimnames(lda$phi), dimnames(lda2$phi))
     expect_equal(
         levels(topics(lda2)),
         c("topic1", "topic2", "topic3", "topic4", "topic5")
+    )
+
+    # out-of-sample with new words
+    expect_warning({
+    	lda3 <- textmodel_lda(dfmt_test, model = lda, update_model = TRUE)
+    }, "k, alpha, beta and gamma values are overwritten by the fitted model")
+    expect_false(identical(dimnames(lda$phi), dimnames(lda3$phi)))
+    expect_equal(
+    	levels(topics(lda3)),
+    	c("topic1", "topic2", "topic3", "topic4", "topic5")
     )
 })
 

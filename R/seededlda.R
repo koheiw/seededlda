@@ -30,7 +30,6 @@
 #'   A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
 #'   doi:10.1177/08944393231178605. *Social Science Computer Review*.
 #' @returns The same as [textmodel_lda()] with extra elements for `dictionary`.
-#' @seealso [keyATM][keyATM::keyATM]
 #' @examples
 #' \donttest{
 #' require(seededlda)

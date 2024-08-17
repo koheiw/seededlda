@@ -23,8 +23,7 @@ LinkingTo: Rcpp, RcppArmadillo (>= 0.7.600.1.0), quanteda, testthat
 Suggests:
     spelling,
     testthat,
-    topicmodels,
-    keyATM
+    topicmodels
 RoxygenNote: 7.3.1
 Roxygen: list(markdown = TRUE)
 Language: en-US
