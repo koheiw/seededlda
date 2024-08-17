@@ -80,7 +80,7 @@
 #' }
 textmodel_lda <- function(
     x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, gamma = 0,
-    model = NULL, add_terms = FALSE, batch_size = 1.0,
+    auto_alpha = FALSE, model = NULL, add_terms = FALSE, batch_size = 1.0,
 	verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_lda")
@@ -89,7 +89,7 @@ textmodel_lda <- function(
 #' @export
 textmodel_lda.dfm <- function(
     x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, gamma = 0,
-    model = NULL, add_terms = FALSE, batch_size = 1.0,
+    auto_alpha = FALSE, model = NULL, add_terms = FALSE, batch_size = 1.0,
     verbose = quanteda_options("verbose")
 ) {
 
@@ -119,7 +119,8 @@ textmodel_lda.dfm <- function(
         label <- paste0("topic", seq_len(k))
         words <- NULL
     }
-    lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, NULL, words, batch_size, verbose)
+    lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, auto_alpha,
+    	NULL, words, batch_size, verbose)
 }
 
 is.textmodel_lda <- function(x) {
@@ -130,13 +131,14 @@ is.textmodel_lda <- function(x) {
 #' @importFrom methods as
 #' @import quanteda
 #' @useDynLib seededlda, .registration = TRUE
-lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
+lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma, auto_alpha,
                 seeds, words, batch_size, verbose) {
 
     k <- check_integer(k, min = 1, max = 1000)
     max_iter <- check_integer(max_iter, min = 100)
     auto_iter <- check_logical(auto_iter, strict = TRUE)
     gamma <- check_double(gamma, min = 0, max = 1)
+    auto_alpha <- check_logical(auto_alpha, strict = TRUE)
     batch_size <- check_double(batch_size, min = 0, max = 1)
     verbose <- check_logical(verbose, strict = TRUE)
 
@@ -168,7 +170,7 @@ lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
 
     result <- cpp_lda(x, k, max_iter, min_delta, alpha, beta, gamma,
                       as(seeds, "dgCMatrix"), as(words, "dgCMatrix"),
-                      first, random, batch, verbose, get_threads())
+                      first, auto_alpha, random, batch, verbose, get_threads())
 
     dimnames(result$words) <- list(colnames(x), label)
     dimnames(result$phi) <- list(label, colnames(x))
