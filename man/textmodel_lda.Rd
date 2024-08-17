@@ -12,6 +12,7 @@ textmodel_lda(
   alpha = 0.5,
   beta = 0.1,
   gamma = 0,
+  adjust_alpha = FALSE,
   model = NULL,
   add_terms = FALSE,
   batch_size = 1,
@@ -35,6 +36,8 @@ reaching \code{max_iter}. See details.}
 \item{gamma}{a parameter to determine change of topics between sentences or
 paragraphs. When \code{gamma > 0}, Gibbs sampling of topics for the current
 document is affected by the previous document's topics.}
+
+\item{adjust_alpha}{if \code{TRUE}, automatically adjust \code{alpha} by the size of the topic.}
 
 \item{model}{a fitted LDA model; if provided, \code{textmodel_lda()} inherits
 parameters from an existing model. See details.}

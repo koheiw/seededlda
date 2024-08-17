@@ -17,6 +17,7 @@ textmodel_seededlda(
   alpha = 0.5,
   beta = 0.1,
   gamma = 0,
+  adjust_alpha = FALSE,
   batch_size = 1,
   ...,
   verbose = quanteda_options("verbose")
@@ -52,6 +53,8 @@ reaching \code{max_iter}. See details.}
 \item{gamma}{a parameter to determine change of topics between sentences or
 paragraphs. When \code{gamma > 0}, Gibbs sampling of topics for the current
 document is affected by the previous document's topics.}
+
+\item{adjust_alpha}{if \code{TRUE}, automatically adjust \code{alpha} by the size of the topic.}
 
 \item{batch_size}{split the corpus into the smaller batches (specified in
 proportion) for distributed computing; it is disabled when a batch include

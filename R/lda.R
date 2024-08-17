@@ -18,6 +18,7 @@
 #' @param gamma a parameter to determine change of topics between sentences or
 #'   paragraphs. When `gamma > 0`, Gibbs sampling of topics for the current
 #'   document is affected by the previous document's topics.
+#' @param adjust_alpha if `TRUE`, automatically adjust `alpha` by the size of the topic.
 #' @param model a fitted LDA model; if provided, `textmodel_lda()` inherits
 #'   parameters from an existing model. See details.
 #' @param add_terms if `TRUE`, add new terms from `x` even when `model` is provided.
@@ -80,7 +81,7 @@
 #' }
 textmodel_lda <- function(
     x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, gamma = 0,
-    auto_alpha = FALSE, model = NULL, add_terms = FALSE, batch_size = 1.0,
+    adjust_alpha = FALSE, model = NULL, add_terms = FALSE, batch_size = 1.0,
 	verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_lda")
@@ -89,7 +90,7 @@ textmodel_lda <- function(
 #' @export
 textmodel_lda.dfm <- function(
     x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, gamma = 0,
-    auto_alpha = FALSE, model = NULL, add_terms = FALSE, batch_size = 1.0,
+    adjust_alpha = FALSE, model = NULL, add_terms = FALSE, batch_size = 1.0,
     verbose = quanteda_options("verbose")
 ) {
 
@@ -119,7 +120,7 @@ textmodel_lda.dfm <- function(
         label <- paste0("topic", seq_len(k))
         words <- NULL
     }
-    lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, auto_alpha,
+    lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, adjust_alpha,
     	NULL, words, batch_size, verbose)
 }
 
@@ -131,14 +132,14 @@ is.textmodel_lda <- function(x) {
 #' @importFrom methods as
 #' @import quanteda
 #' @useDynLib seededlda, .registration = TRUE
-lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma, auto_alpha,
+lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma, adjust_alpha,
                 seeds, words, batch_size, verbose) {
 
     k <- check_integer(k, min = 1, max = 1000)
     max_iter <- check_integer(max_iter, min = 100)
     auto_iter <- check_logical(auto_iter, strict = TRUE)
     gamma <- check_double(gamma, min = 0, max = 1)
-    auto_alpha <- check_logical(auto_alpha, strict = TRUE)
+    adjust_alpha <- check_logical(adjust_alpha, strict = TRUE)
     batch_size <- check_double(batch_size, min = 0, max = 1)
     verbose <- check_logical(verbose, strict = TRUE)
 
@@ -170,7 +171,7 @@ lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma, auto_alpha
 
     result <- cpp_lda(x, k, max_iter, min_delta, alpha, beta, gamma,
                       as(seeds, "dgCMatrix"), as(words, "dgCMatrix"),
-                      first, auto_alpha, random, batch, verbose, get_threads())
+                      first, adjust_alpha, random, batch, verbose, get_threads())
 
     dimnames(result$words) <- list(colnames(x), label)
     dimnames(result$phi) <- list(label, colnames(x))
