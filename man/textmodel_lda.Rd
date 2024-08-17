@@ -14,7 +14,7 @@ textmodel_lda(
   gamma = 0,
   adjust_alpha = FALSE,
   model = NULL,
-  add_terms = FALSE,
+  update_model = FALSE,
   batch_size = 1,
   verbose = quanteda_options("verbose")
 )
@@ -43,7 +43,8 @@ by the size of the topics.}
 \item{model}{a fitted LDA model; if provided, \code{textmodel_lda()} inherits
 parameters from an existing model. See details.}
 
-\item{add_terms}{if \code{TRUE}, add new terms from \code{x} even when \code{model} is provided.}
+\item{update_model}{if \code{TRUE}, update the terms of \code{model} to recognize unseen
+words.}
 
 \item{batch_size}{split the corpus into the smaller batches (specified in
 proportion) for distributed computing; it is disabled when a batch include

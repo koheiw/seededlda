@@ -223,7 +223,7 @@ test_that("model argument works with LDA", {
 
     # out-of-sample with new words
     expect_warning({
-    	lda3 <- textmodel_lda(dfmt_test, model = lda, add_terms = TRUE)
+    	lda3 <- textmodel_lda(dfmt_test, model = lda, update_model = TRUE)
     }, "k, alpha, beta and gamma values are overwritten by the fitted model")
     expect_false(identical(dimnames(lda$phi), dimnames(lda3$phi)))
     expect_equal(

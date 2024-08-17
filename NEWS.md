@@ -1,6 +1,7 @@
 ## Changes in v1.3.3
 
 - Add `adjust_alpha` as an experimental argument to optimize `alpha` automatically.
+- Add `update_model` to update terms of existing models to classify documents with unseen words more accurately.
 
 ## Changes in v1.3.2
 
