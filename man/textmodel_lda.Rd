@@ -37,7 +37,8 @@ reaching \code{max_iter}. See details.}
 paragraphs. When \code{gamma > 0}, Gibbs sampling of topics for the current
 document is affected by the previous document's topics.}
 
-\item{adjust_alpha}{if \code{TRUE}, automatically adjust \code{alpha} by the size of the topic.}
+\item{adjust_alpha}{[experimental] if \code{TRUE}, automatically adjust \code{alpha}
+by the size of the topics.}
 
 \item{model}{a fitted LDA model; if provided, \code{textmodel_lda()} inherits
 parameters from an existing model. See details.}

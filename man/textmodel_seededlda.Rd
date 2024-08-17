@@ -54,7 +54,8 @@ reaching \code{max_iter}. See details.}
 paragraphs. When \code{gamma > 0}, Gibbs sampling of topics for the current
 document is affected by the previous document's topics.}
 
-\item{adjust_alpha}{if \code{TRUE}, automatically adjust \code{alpha} by the size of the topic.}
+\item{adjust_alpha}{[experimental] if \code{TRUE}, automatically adjust \code{alpha}
+by the size of the topics.}
 
 \item{batch_size}{split the corpus into the smaller batches (specified in
 proportion) for distributed computing; it is disabled when a batch include

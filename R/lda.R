@@ -18,7 +18,8 @@
 #' @param gamma a parameter to determine change of topics between sentences or
 #'   paragraphs. When `gamma > 0`, Gibbs sampling of topics for the current
 #'   document is affected by the previous document's topics.
-#' @param adjust_alpha if `TRUE`, automatically adjust `alpha` by the size of the topic.
+#' @param adjust_alpha \[experimental\] if `TRUE`, automatically adjust `alpha`
+#'   by the size of the topics.
 #' @param model a fitted LDA model; if provided, `textmodel_lda()` inherits
 #'   parameters from an existing model. See details.
 #' @param add_terms if `TRUE`, add new terms from `x` even when `model` is provided.
