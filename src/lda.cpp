@@ -10,7 +10,7 @@ using namespace Rcpp;
 List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double min_delta,
              std::vector<double> alpha, std::vector<double> beta, double gamma,
              arma::sp_mat &seeds, arma::sp_mat &words,
-             std::vector<bool> &first, bool adjust,
+             std::vector<bool> &first, double adjust,
              int random, int batch, bool verbose= false, int threads = -1) {
 
     LDA lda(k, alpha, beta, gamma, max_iter, min_delta, adjust, random, batch, verbose, threads);

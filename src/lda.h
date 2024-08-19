@@ -55,7 +55,7 @@ class LDA {
     int N; // total number of words
     std::vector<double> alpha, beta; // parameters for smoothing, size K
     std::vector<double> epsilon;
-    bool adjust; // adjust alpha by nwsum
+    double adjust; // adjust alpha by nwsum
     double Vbeta, Kalpha; // parameters for smoothing
     int max_iter; // number of Gibbs sampling iterations
     int iter; // the iteration at which the model was saved
@@ -95,7 +95,7 @@ class LDA {
 
     // constructor
     LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamma,
-        int max_iter, double min_delta, bool adjust,
+        int max_iter, double min_delta, double adjust,
         int random, int batch, bool verbose, int thread);
 
     // set default values for variables
@@ -115,7 +115,7 @@ class LDA {
 };
 
 LDA::LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamma, int max_iter,
-         double min_delta, bool adjust, int random, int batch, bool verbose, int thread) {
+         double min_delta, double adjust, int random, int batch, bool verbose, int thread) {
 
     if (verbose)
         Rprintf("Fitting LDA with %d topics\n", K);
@@ -157,7 +157,7 @@ void LDA::set_default_values() {
     N = 0;
     alpha = std::vector<double>(K, 0.5);
     epsilon = std::vector<double>(K, 0);
-    adjust = false;
+    adjust = 0;
     beta = std::vector<double>(K, 0.1);
     max_iter = 2000;
     iter = 0;
@@ -257,9 +257,9 @@ int LDA::initialize() {
     //dev::stop_timer("Set z", timer);
 
     // compute epsilon by the size of topics
-	if (adjust) {
+	if (adjust > 0) {
 	    for (int k = 0; k < K; k++) {
-	    	epsilon[k] = alpha[k] / nwsum.at(k);
+	    	epsilon[k] = (alpha[k] / nwsum.at(k)) * adjust;
 	    }
 	}
     return 0;
@@ -339,9 +339,9 @@ void LDA::estimate() {
                 nw += nw__;
                 nwsum += nwsum__;
                 // adjust alpha by the changes in sizes
-                if (adjust) {
+                if (adjust > 0) {
 	                for (int k = 0; k < K; k++) {
-	                	alpha[k] += epsilon[k] * nwsum__.at(k);
+	                	alpha[k] = std::max(0.0, alpha[k] + (epsilon[k] * nwsum__.at(k)));
                 	}
                 }
                 mutex_sync.unlock();
