@@ -17,7 +17,7 @@ textmodel_seededlda(
   alpha = 0.5,
   beta = 0.1,
   gamma = 0,
-  adjust_alpha = FALSE,
+  adjust_alpha = 0,
   batch_size = 1,
   ...,
   verbose = quanteda_options("verbose")
@@ -54,8 +54,9 @@ reaching \code{max_iter}. See details.}
 paragraphs. When \code{gamma > 0}, Gibbs sampling of topics for the current
 document is affected by the previous document's topics.}
 
-\item{adjust_alpha}{[experimental] if \code{TRUE}, automatically adjust \code{alpha}
-by the size of the topics.}
+\item{adjust_alpha}{[experimental] if \code{adjust_alpha > 0}, automatically adjust
+\code{alpha} by the size of the topics. The smallest value of adjusted \code{alpha}
+will be \code{alpha * (1 - adjust_alpha)}.}
 
 \item{batch_size}{split the corpus into the smaller batches (specified in
 proportion) for distributed computing; it is disabled when a batch include

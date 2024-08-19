@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // cpp_lda
-List cpp_lda(arma::sp_mat& mt, int k, int max_iter, double min_delta, std::vector<double> alpha, std::vector<double> beta, double gamma, arma::sp_mat& seeds, arma::sp_mat& words, std::vector<bool>& first, bool adjust, int random, int batch, bool verbose, int threads);
+List cpp_lda(arma::sp_mat& mt, int k, int max_iter, double min_delta, std::vector<double> alpha, std::vector<double> beta, double gamma, arma::sp_mat& seeds, arma::sp_mat& words, std::vector<bool>& first, double adjust, int random, int batch, bool verbose, int threads);
 RcppExport SEXP _seededlda_cpp_lda(SEXP mtSEXP, SEXP kSEXP, SEXP max_iterSEXP, SEXP min_deltaSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP seedsSEXP, SEXP wordsSEXP, SEXP firstSEXP, SEXP adjustSEXP, SEXP randomSEXP, SEXP batchSEXP, SEXP verboseSEXP, SEXP threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -27,7 +27,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::sp_mat& >::type seeds(seedsSEXP);
     Rcpp::traits::input_parameter< arma::sp_mat& >::type words(wordsSEXP);
     Rcpp::traits::input_parameter< std::vector<bool>& >::type first(firstSEXP);
-    Rcpp::traits::input_parameter< bool >::type adjust(adjustSEXP);
+    Rcpp::traits::input_parameter< double >::type adjust(adjustSEXP);
     Rcpp::traits::input_parameter< int >::type random(randomSEXP);
     Rcpp::traits::input_parameter< int >::type batch(batchSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
