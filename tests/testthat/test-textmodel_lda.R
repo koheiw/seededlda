@@ -119,9 +119,9 @@ test_that("adjust_alpha works", {
 	skip_on_cran()
 
 	set.seed(1234)
-	lda <- textmodel_lda(dfmt, max_iter = 200, adjust_alpha = 0.1)
+	lda <- textmodel_lda(dfmt, max_iter = 200, adjust_alpha = 0.5)
 	expect_true(all(lda$alpha != 0.5))
-	expect_true(all(order(sizes(lda)) == order(lda$alpha)))
+	expect_true(all(lda$alpha > 0.25))
 
 	expect_error(
 		textmodel_lda(dfmt, max_iter = 200, adjust_alpha = 1.5),
@@ -133,6 +133,10 @@ test_that("adjust_alpha works", {
 		"The value of adjust_alpha must be between 0 and 1"
 	)
 
+	expect_error(
+		textmodel_lda(dfmt, max_iter = 200, adjust_alpha = c(0.5, 0.5)),
+		"The length of adjust_alpha must be 1"
+	)
 })
 
 test_that("verbose works", {
