@@ -156,7 +156,7 @@ void LDA::set_default_values() {
     K = 100;
     N = 0;
     alpha = std::vector<double>(K, 0.5);
-    epsilon = std::vector<double>(K, 0);
+    epsilon = std::vector<double>(K, 0.0);
     adjust = 0;
     beta = std::vector<double>(K, 0.1);
     max_iter = 2000;
@@ -259,7 +259,9 @@ int LDA::initialize() {
     // compute epsilon by the size of topics
 	if (adjust > 0) {
 	    for (int k = 0; k < K; k++) {
-	    	epsilon[k] = (alpha[k] / nwsum.at(k)) * adjust;
+	    	//epsilon[k] = (alpha[k] / nwsum.at(k)) * adjust;
+	    	// scale by N to avoid underflow
+	    	epsilon[k] = ((alpha[k] * (double)N) / nwsum.at(k)) * adjust;
 	    }
 	}
     return 0;
@@ -341,7 +343,9 @@ void LDA::estimate() {
                 // adjust alpha by the changes in sizes
                 if (adjust > 0) {
 	                for (int k = 0; k < K; k++) {
-	                	alpha[k] = std::max(0.0, alpha[k] + (epsilon[k] * nwsum__.at(k)));
+	                	//alpha[k] = std::max(0.0, alpha[k] + (epsilon[k] * nwsum__.at(k)));
+	                	// rescale by 1 / N
+	                	alpha[k] = std::max(0.0, alpha[k] + (epsilon[k] * (nwsum__.at(k) / (double)N)));
                 	}
                 }
                 mutex_sync.unlock();
