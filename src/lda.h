@@ -279,7 +279,7 @@ void LDA::estimate() {
         }
     }
 
-    int change, change__ = 0; // current and previous topic change
+    int change, change_pv = 0; // current and previous topic change
     auto start = std::chrono::high_resolution_clock::now();
     int iter_inc = 10;
     std::mutex mutex_sync;
@@ -309,7 +309,7 @@ void LDA::estimate() {
 				// local topic assignment
                 Array nw__(V, K);
                 Array nwsum__(K);
-                int change__ = 0;
+                int change_pv = 0;
                 for (int i = 0; i < iter_inc; i++) {
                     //for (int m = r.begin(); m < r.end(); ++m) {
                     for (int m = begin; m < end; ++m) {
@@ -328,14 +328,14 @@ void LDA::estimate() {
                             int w = texts[m][n];
                             unsigned int topic = sample(m, n, w, prob, nw__, nwsum__);
                             if (z[m][n] != topic) {
-                                change__++;
+                                change_pv++;
                                 z[m][n] = topic;
                             }
                         }
                     }
                 }
                 mutex_sync.lock();
-                change += change__;
+                change += change_pv;
                 nw += nw__;
                 nwsum += nwsum__;
                 // adjust alpha by the changes in sizes
@@ -350,7 +350,7 @@ void LDA::estimate() {
         });
 #endif
         if (iter > 0 && iter % 100 == 0) {
-            double delta = (double)(change__ - change) / (double)(iter_inc * N);
+            double delta = (double)(change_pv - change) / (double)(iter_inc * N);
             if (verbose) {
                 auto end = std::chrono::high_resolution_clock::now();
                 auto diff = std::chrono::duration<double, std::milli>(end - start);
@@ -362,7 +362,7 @@ void LDA::estimate() {
         }
         if (iter >= max_iter)
             break;
-        change__ = change;
+        change_pv = change;
         iter += iter_inc;
     }
     if (verbose)
