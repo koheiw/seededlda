@@ -156,7 +156,7 @@ void LDA::set_default_values() {
     K = 100;
     N = 0;
     alpha = std::vector<double>(K, 0.5);
-    epsilon = std::vector<double>(K, 0);
+    epsilon = std::vector<double>(K, 0.0);
     adjust = 0;
     beta = std::vector<double>(K, 0.1);
     max_iter = 2000;
