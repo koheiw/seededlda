@@ -54,6 +54,8 @@ class LDA {
     int K; // number of topics
     int N; // total number of words
     std::vector<double> alpha, beta; // parameters for smoothing, size K
+    std::vector<double> epsilon;
+    double adjust; // adjust alpha by nwsum
     double Vbeta, Kalpha; // parameters for smoothing
     int max_iter; // number of Gibbs sampling iterations
     int iter; // the iteration at which the model was saved
@@ -92,7 +94,8 @@ class LDA {
     // --------------------------------------
 
     // constructor
-    LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamma, int max_iter, double min_delta,
+    LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamma,
+        int max_iter, double min_delta, double adjust,
         int random, int batch, bool verbose, int thread);
 
     // set default values for variables
@@ -105,14 +108,14 @@ class LDA {
 
     // estimate LDA model using Gibbs sampling
     void estimate();
-    int sample(int m, int n, int w, std::vector<double> &prob, Array &nw_tp, Array &nwsum_tp);
+    int sample(int m, int n, int w, std::vector<double> &prob, Array &nw__, Array &nwsum__);
     void compute_theta();
     void compute_phi();
 
 };
 
 LDA::LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamma, int max_iter,
-         double min_delta, int random, int batch, bool verbose, int thread) {
+         double min_delta, double adjust, int random, int batch, bool verbose, int thread) {
 
     if (verbose)
         Rprintf("Fitting LDA with %d topics\n", K);
@@ -125,6 +128,7 @@ LDA::LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamm
     } else {
     	throw std::invalid_argument("Invalid alpha");
     }
+    this->adjust = adjust;
 
     if (K == (int)beta.size()) {
     	this->beta = beta;
@@ -152,6 +156,8 @@ void LDA::set_default_values() {
     K = 100;
     N = 0;
     alpha = std::vector<double>(K, 0.5);
+    epsilon = std::vector<double>(K, 0);
+    adjust = 0;
     beta = std::vector<double>(K, 0.1);
     max_iter = 2000;
     iter = 0;
@@ -249,6 +255,13 @@ int LDA::initialize() {
         }
     }
     //dev::stop_timer("Set z", timer);
+
+    // compute epsilon by the size of topics
+	if (adjust > 0) {
+	    for (int k = 0; k < K; k++) {
+	    	epsilon[k] = (alpha[k] / nwsum.at(k)) * adjust;
+	    }
+	}
     return 0;
 }
 
@@ -294,9 +307,9 @@ void LDA::estimate() {
                 }
 
 				// local topic assignment
-                Array nw_tp(V, K);
-                Array nwsum_tp(K);
-                int change_tp = 0;
+                Array nw__(V, K);
+                Array nwsum__(K);
+                int change__ = 0;
                 for (int i = 0; i < iter_inc; i++) {
                     //for (int m = r.begin(); m < r.end(); ++m) {
                     for (int m = begin; m < end; ++m) {
@@ -313,18 +326,24 @@ void LDA::estimate() {
                         if (texts[m].empty()) continue;
                         for (std::size_t n = 0; n < texts[m].size(); n++) {
                             int w = texts[m][n];
-                            unsigned int topic = sample(m, n, w, prob, nw_tp, nwsum_tp);
+                            unsigned int topic = sample(m, n, w, prob, nw__, nwsum__);
                             if (z[m][n] != topic) {
-                                change_tp++;
+                                change__++;
                                 z[m][n] = topic;
                             }
                         }
                     }
                 }
                 mutex_sync.lock();
-                change += change_tp;
-                nw += nw_tp;
-                nwsum += nwsum_tp;
+                change += change__;
+                nw += nw__;
+                nwsum += nwsum__;
+                // adjust alpha by the changes in sizes
+                if (adjust > 0) {
+	                for (int k = 0; k < K; k++) {
+	                	alpha[k] = std::max(0.0, alpha[k] + (epsilon[k] * nwsum__.at(k)));
+                	}
+                }
                 mutex_sync.unlock();
 #if QUANTEDA_USE_TBB
             }, tbb::static_partitioner());
@@ -354,26 +373,26 @@ void LDA::estimate() {
 
 int LDA::sample(int m, int n, int w,
                 std::vector<double> &prob,
-                Array &nw_tp, Array &nwsum_tp) {
+                Array &nw__, Array &nwsum__) {
 
     // remove z_i from the count variables
     int topic = z[m][n];
     //Rcout << "topic:" << topic << "\n";
-    nw_tp.at(w, topic) -= 1;
-    nwsum_tp.at(topic) -= 1;
+    nw__.at(w, topic) -= 1;
+    nwsum__.at(topic) -= 1;
     nd.at(m, topic) -= 1;
     std::vector<double> p(K, 0);
 
     // do multinomial sampling via cumulative method
     for (int k = 0; k < K; k++) {
     	if (fitted) {
-    		p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + nw_ft.at(w, k) + beta[k]) /
-    			    (nwsum.at(k) + nwsum_tp.at(k) + nwsum_ft.at(k) + Vbeta)) *
+    		p[k] = ((nw.at(w, k) + nw__.at(w, k) + nw_ft.at(w, k) + beta[k]) /
+    			    (nwsum.at(k) + nwsum__.at(k) + nwsum_ft.at(k) + Vbeta)) *
     			   ((nd.at(m, k) + alpha[k]) /
     			    (ndsum.at(m) + Kalpha)) * prob[k];
     	} else {
-    		p[k] = ((nw.at(w, k) + nw_tp.at(w, k) + beta[k]) /
-    			    (nwsum.at(k) + nwsum_tp.at(k) + Vbeta)) *
+    		p[k] = ((nw.at(w, k) + nw__.at(w, k) + beta[k]) /
+    			    (nwsum.at(k) + nwsum__.at(k) + Vbeta)) *
     			   ((nd.at(m, k) + alpha[k]) /
     				(ndsum.at(m) + Kalpha)) * prob[k];
     	}
@@ -394,10 +413,9 @@ int LDA::sample(int m, int n, int w,
     }
 
     // add newly estimated z_i to count variables
-    nw_tp.at(w, topic) += 1;
-    nwsum_tp.at(topic) += 1;
+    nw__.at(w, topic) += 1;
+    nwsum__.at(topic) += 1;
     nd.at(m, topic) += 1;
-
     return topic;
 }
 
