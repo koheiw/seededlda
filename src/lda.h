@@ -279,7 +279,7 @@ void LDA::estimate() {
         }
     }
 
-    int change, change_pv = 0;
+    int change, change__ = 0; // current and previous topic change
     auto start = std::chrono::high_resolution_clock::now();
     int iter_inc = 10;
     std::mutex mutex_sync;
@@ -350,7 +350,7 @@ void LDA::estimate() {
         });
 #endif
         if (iter > 0 && iter % 100 == 0) {
-            double delta = (double)(change_pv - change) / (double)(iter_inc * N);
+            double delta = (double)(change__ - change) / (double)(iter_inc * N);
             if (verbose) {
                 auto end = std::chrono::high_resolution_clock::now();
                 auto diff = std::chrono::duration<double, std::milli>(end - start);
@@ -362,7 +362,7 @@ void LDA::estimate() {
         }
         if (iter >= max_iter)
             break;
-        change_pv = change;
+        change__ = change;
         iter += iter_inc;
     }
     if (verbose)
