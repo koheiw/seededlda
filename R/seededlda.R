@@ -189,6 +189,7 @@ tfm <- function(x, dictionary, levels = 1,
     if (!quanteda::is.dictionary(dictionary))
         stop("dictionary must be a dictionary object", call. = FALSE)
 
+    docvars(x) <- NULL # sanitize dfm
     dict <- flatten_dictionary(dictionary, levels)
     key <- names(dict)
     feat <- featnames(x)
