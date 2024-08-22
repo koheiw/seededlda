@@ -116,6 +116,24 @@ test_that("tfm works with ngrams", {
                  c("un" = 2, "icc" = 2, "other" = 0))
 })
 
+test_that("tfm works with dfm with x in docvars (#87)", {
+
+	dict <- dictionary(list("A" = "a", "B" = "b"))
+	dat <- data.frame(text = c("a b c", "A B C"),
+					  x = c(1, 2))
+	corp <- corpus(dat)
+	toks <- tokens(corp)
+	dfmt <- dfm(toks)
+
+	expect_equal(
+		as.matrix(seededlda:::tfm(dfmt, dict, residula = 1)),
+		matrix(c(2, 0, 0, 0, 2, 0, 0, 0 ,0), nrow = 3,
+			   dimnames = list(c("A", "B", "other"), c("a", "b", "c")))
+	)
+
+})
+
+
 test_that("levels is working", {
 
 	dict <- dictionary(list(A = list(
