@@ -57,7 +57,13 @@ fitting.}
 \value{
 Returns a list of model parameters:
 \item{k}{the number of topics.}
-\item{last_iter}{the number of iterations in Gibbs sampling}
+\item{last_iter}{the number of iterations in Gibbs sampling.}
+\item{max_iter}{the maximum number of iterations in Gibbs sampling.}
+\item{auto_iter}{\code{auto_iter} is used if \code{TRUE}.}
+\item{alpha}{the smoothing parameter for \code{theta}.}
+\item{beta}{the smoothing parameter for \code{phi}.}
+\item{epsilon}{the amount of adjustment for \code{adjust_alpha}.}
+\item{gamma}{the gamma parameter for Sequential LDA.}
 \item{phi}{the distribution of words over topics.}
 \item{theta}{the distribution of topics over documents.}
 \item{words}{the raw frequency count of words assigned to topics.}

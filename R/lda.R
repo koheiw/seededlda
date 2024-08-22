@@ -52,7 +52,13 @@
 #'
 #' @returns Returns a list of model parameters:
 #'   \item{k}{the number of topics.}
-#'   \item{last_iter}{the number of iterations in Gibbs sampling}
+#'   \item{last_iter}{the number of iterations in Gibbs sampling.}
+#'   \item{max_iter}{the maximum number of iterations in Gibbs sampling.}
+#'   \item{auto_iter}{`auto_iter` is used if `TRUE`.}
+#'   \item{alpha}{the smoothing parameter for `theta`.}
+#'   \item{beta}{the smoothing parameter for `phi`.}
+#'   \item{epsilon}{the amount of adjustment for `adjust_alpha`.}
+#'   \item{gamma}{the gamma parameter for Sequential LDA.}
 #'   \item{phi}{the distribution of words over topics.}
 #'   \item{theta}{the distribution of topics over documents.}
 #'   \item{words}{the raw frequency count of words assigned to topics.}
@@ -60,7 +66,6 @@
 #'   \item{call}{the command used to execute the function.}
 #'   \item{version}{the version of the seededlda package.}
 #' @references
-#'
 #' Newman, D., Asuncion, A., Smyth, P., & Welling, M. (2009). Distributed
 #' Algorithms for Topic Models. The Journal of Machine Learning Research, 10,
 #' 1801–1828.
