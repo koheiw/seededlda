@@ -254,20 +254,12 @@ int LDA::initialize() {
         }
     }
     //dev::stop_timer("Set z", timer);
-	Rcout << "Compute epsilon: " << epsilon.size() ,"\n";
 
     // compute epsilon by the size of topics
 	if (adjust > 0) {
-		//Rcout << "epsilon\n";
 	    for (int k = 0; k < K; k++) {
-	    	//epsilon[k] = (alpha[k] / nwsum.at(k)) * adjust;
-	    	// scale by 1000 to avoid underflow
-	    	epsilon[k] = (alpha[k] / (nwsum.at(k) / 10000.0)) * adjust;
-	    	// scale by N to avoid underflow
-	    	//epsilon[k] = (alpha[k] / (nwsum.at(k) / (double)N)) * adjust;
-	    	//Rcout << epsilon[k] << ", ";
+	    	epsilon[k] = (alpha[k] / nwsum.at(k)) * adjust;
 	    }
-	    //Rcout << "\n";
 	}
     return 0;
 }
@@ -348,18 +340,7 @@ void LDA::estimate() {
                 // adjust alpha by the changes in sizes
                 if (adjust > 0) {
 	                for (int k = 0; k < K; k++) {
-	                	//alpha[k] = std::max(0.0, alpha[k] + (epsilon[k] * nwsum__.at(k)));
-	                	// rescale by 1 / N
-	                	//double a = epsilon[k] * (nwsum__.at(k) / (double)N);
-	                	//double a = epsilon[k] * (nwsum__.at(k) / 10000.0);
-	                	//alpha[k] =  std::max(0.0, alpha[k] + a);
-	                	//alpha[k] = alpha[k] + a;
-	                	//alpha[k] = std::max(0.0, alpha[k] + (epsilon[k] * (nwsum__.at(k) / 10000.0)));
-	                	//double a = std::max(0.0, alpha[k] + (epsilon[k] * (nwsum__.at(k) / 10000.0)));
-	                	//Kalpha = Kalpha + a;
-
-	                	//alpha[k] = std::max(0.0, alpha[k] + (epsilon[k] * (nwsum__.at(k) / (double)N)));
-	                	//alpha[k] = std::max(0.0, alpha[k] + (epsilon[k] * (nwsum__.at(k) / N__)));
+	                	alpha[k] = std::max(0.0, alpha[k] + (epsilon[k] * nwsum__.at(k)));
                 	}
                 }
                 mutex_sync.unlock();
@@ -438,28 +419,13 @@ int LDA::sample(int m, int n, int w,
 }
 
 void LDA::compute_theta() {
-	Rcout << "compute_theta\n";
-	//Rcout << "alpha\n";
-	// update to eliminate floating point errors
-	Kalpha = 0;
-	for (auto& a : alpha) {
-		if (a <= 0 || isnan(a))
-			throw std::invalid_argument("Invalid adjusted alpha");
-		Kalpha += a;
+
+	if (adjust > 0) {
+		// update for floating point errors
+		Kalpha = 0;
+		for (auto& a : alpha)
+			Kalpha += a;
 	}
-	// Kalpha = 0.0;
-	// for (int k = 0; k < K; k++) {
-	// 	if (alpha[k] <= 0)
-	// 		throw std::invalid_argument("Invalid adjusted alpha");
-	// 	//Rcout << alpha[k] << ", ";
-	// 	Kalpha += alpha[k];
-	// };
-	//Rcout << "\n";
-	// if (s != Kalpha) {
-	// 	Rcout << s - Kalpha << "\n";
-	// 	throw std::invalid_argument("Invalid Kalpha");
-	// }
-	//Kalpha = s;
 
     for (int m = 0; m < M; m++) {
         for (int k = 0; k < K; k++) {
@@ -469,17 +435,10 @@ void LDA::compute_theta() {
 }
 
 void LDA::compute_phi() {
-	Rcout << "compute_phi\n";
-	double s = 0;
-	for (auto& b : beta) {
-		if (b <= 0 || isnan(b))
-			throw std::invalid_argument("Invalid beta");
-		s += V * b / K;
-	}
-	if (s != Vbeta) {
-		Rcout << s - Vbeta << "\n";
-		throw std::invalid_argument("Invalid Vbeta");
-	}
+
+	// Vbeta = 0;
+	// for (auto& b : beta)
+	//	Vbeta += V * b / K;
 
     for (int k = 0; k < K; k++) {
         for (int w = 0; w < V; w++) {
