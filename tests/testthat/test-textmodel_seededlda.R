@@ -104,8 +104,8 @@ test_that("seeded LDA is working", {
     )
     expect_equal(
         names(lda),
-        c("k", "max_iter", "last_iter", "auto_iter", "alpha", "beta", "gamma","phi", "theta",
-          "words", "data", "batch_size", "call", "version",
+        c("k", "max_iter", "last_iter", "auto_iter", "alpha", "beta", "epsilon", "gamma",
+          "phi", "theta", "words", "data", "batch_size", "call", "version",
           "dictionary", "valuetype", "case_insensitive", "seeds",
           "residual", "weight")
     )
