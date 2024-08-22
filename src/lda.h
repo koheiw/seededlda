@@ -94,12 +94,12 @@ class LDA {
     // --------------------------------------
 
     // constructor
-    LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamma,
+    LDA(int k, std::vector<double> alpha, std::vector<double> beta, double gamma,
         int max_iter, double min_delta, double adjust,
         int random, int batch, bool verbose, int thread);
 
     // set default values for variables
-    void set_default_values();
+    void set_default_values(int k);
     void set_data(arma::sp_mat mt, std::vector<bool> first);
     void set_fitted(arma::sp_mat mt);
 
@@ -114,14 +114,13 @@ class LDA {
 
 };
 
-LDA::LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamma, int max_iter,
+LDA::LDA(int k, std::vector<double> alpha, std::vector<double> beta, double gamma, int max_iter,
          double min_delta, double adjust, int random, int batch, bool verbose, int thread) {
+
+	set_default_values(k);
 
     if (verbose)
         Rprintf("Fitting LDA with %d topics\n", K);
-
-    set_default_values();
-    this->K = K;
 
     if (K == (int)alpha.size()) {
     	this->alpha = alpha;
@@ -149,16 +148,16 @@ LDA::LDA(int K, std::vector<double> alpha, std::vector<double> beta, double gamm
 
 }
 
-void LDA::set_default_values() {
+void LDA::set_default_values(int k) {
 
+	K = k;
     M = 0;
     V = 0;
-    K = 100;
     N = 0;
     alpha = std::vector<double>(K, 0.5);
-    epsilon = std::vector<double>(K, 0);
-    adjust = 0;
     beta = std::vector<double>(K, 0.1);
+    epsilon = std::vector<double>(K, 0.0);
+    adjust = 0;
     max_iter = 2000;
     iter = 0;
     verbose = false;
@@ -420,6 +419,14 @@ int LDA::sample(int m, int n, int w,
 }
 
 void LDA::compute_theta() {
+
+	if (adjust > 0) {
+		// update for floating point errors
+		Kalpha = 0;
+		for (auto& a : alpha)
+			Kalpha += a;
+	}
+
     for (int m = 0; m < M; m++) {
         for (int k = 0; k < K; k++) {
             theta.at(m, k) = (nd.at(m, k) + alpha[k]) / (ndsum.at(m) + Kalpha);
@@ -428,6 +435,11 @@ void LDA::compute_theta() {
 }
 
 void LDA::compute_phi() {
+
+	// Vbeta = 0;
+	// for (auto& b : beta)
+	//	Vbeta += V * b / K;
+
     for (int k = 0; k < K; k++) {
         for (int w = 0; w < V; w++) {
         	if (fitted) {

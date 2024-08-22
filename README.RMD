@@ -26,8 +26,6 @@ status](https://github.com/koheiw/seededlda/workflows/R-CMD-check/badge.svg)](ht
 
 **seededlda** is an R package that implements Seeded LDA (Latent Dirichlet Allocation) for semi-supervised topic modeling based on **quanteda**. Initially, the package was a simple wrapper around the **topicmodels** package, but it was fully rewritten in C++ using the [GibbsLDA++ library](http://gibbslda.sourceforge.net/) and submitted to CRAN as version 0.5 in 2020. The package was further developed to add the sequential classification (Sequential LDA) and parallel computing (Distributed LDA) capabilities and released as version 1.0 in 2023.
 
-[**keyATM**](https://github.com/keyATM/keyATM) is the latest addition to the semi-supervised topic models. The users of Seeded LDA are also encouraged to download that package.
-
 ## Installation
 
 From CRAN:
