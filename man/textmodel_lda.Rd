@@ -122,7 +122,4 @@ Newman, D., Asuncion, A., Smyth, P., & Welling, M. (2009). Distributed
 Algorithms for Topic Models. The Journal of Machine Learning Research, 10,
 1801–1828.
 }
-\seealso{
-\link[topicmodels:lda]{LDA} \link[keyATM:weightedLDA]{weightedLDA}
-}
 \keyword{textmodel}
