@@ -117,10 +117,10 @@ class LDA {
 LDA::LDA(int k, std::vector<double> alpha, std::vector<double> beta, double gamma, int max_iter,
          double min_delta, double adjust, int random, int batch, bool verbose, int thread) {
 
+	set_default_values(k);
+
     if (verbose)
         Rprintf("Fitting LDA with %d topics\n", K);
-
-    set_default_values(k);
 
     if (K == (int)alpha.size()) {
     	this->alpha = alpha;
