@@ -54,7 +54,8 @@
 #'   \item{k}{the number of topics.}
 #'   \item{last_iter}{the number of iterations in Gibbs sampling.}
 #'   \item{max_iter}{the maximum number of iterations in Gibbs sampling.}
-#'   \item{auto_iter}{`auto_iter` is used if `TRUE`.}
+#'   \item{auto_iter}{the use of `auto_iter`}
+#'   \item{adjust_alpha}{the value of `adjust_alpha`.}
 #'   \item{alpha}{the smoothing parameter for `theta`.}
 #'   \item{beta}{the smoothing parameter for `phi`.}
 #'   \item{epsilon}{the amount of adjustment for `adjust_alpha`.}

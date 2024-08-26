@@ -72,7 +72,8 @@ test_that("LDA is working", {
     )
     expect_equal(
         names(lda),
-        c("k", "max_iter", "last_iter", "auto_iter", "alpha", "beta", "epsilon", "gamma",
+        c("k", "max_iter", "last_iter", "auto_iter", "adjust_alpha",
+          "alpha", "beta", "epsilon", "gamma",
           "phi", "theta", "words", "data", "batch_size", "call", "version")
     )
     expect_equal(lda$last_iter, 200)
@@ -120,6 +121,7 @@ test_that("adjust_alpha works", {
 
 	set.seed(1234)
 	lda <- textmodel_lda(dfmt, max_iter = 200, adjust_alpha = 0.5)
+	expect_equal(lda$adjust_alpha, 0.5)
 	expect_true(all(lda$alpha != 0.5))
 	expect_true(all(lda$alpha > 0.25))
 	expect_true(all(lda$epsilon > 0))
