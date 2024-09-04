@@ -30,7 +30,6 @@
 #'   A Semi-supervised Algorithm for Topic-specific Analysis of Sentences".
 #'   doi:10.1177/08944393231178605. *Social Science Computer Review*.
 #' @returns The same as [textmodel_lda()] with extra elements for `dictionary`.
-#' @seealso [keyATM][keyATM::keyATM]
 #' @examples
 #' \donttest{
 #' require(seededlda)
@@ -57,7 +56,7 @@ textmodel_seededlda <- function(
     x, dictionary, levels = 1,
     valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
     residual = 0, weight = 0.01, max_iter = 2000, auto_iter = FALSE,
-    alpha = 0.5, beta = 0.1, gamma = 0, batch_size = 1.0,
+    alpha = 0.5, beta = 0.1, gamma = 0, adjust_alpha = 0.0, batch_size = 1.0,
     ..., verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_seededlda")
@@ -68,7 +67,7 @@ textmodel_seededlda.dfm <- function(
     x, dictionary, levels = 1,
     valuetype = c("glob", "regex", "fixed"), case_insensitive = TRUE,
     residual = 0, weight = 0.01, max_iter = 2000, auto_iter = FALSE,
-    alpha = 0.5, beta = 0.1, gamma = 0, batch_size = 1.0,
+    alpha = 0.5, beta = 0.1, gamma = 0, adjust_alpha = 0.0, batch_size = 1.0,
     ..., verbose = quanteda_options("verbose")
 ) {
 
@@ -82,7 +81,8 @@ textmodel_seededlda.dfm <- function(
     k <- nrow(seeds)
     label <- rownames(seeds)
 
-    result <- lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, t(seeds), NULL, batch_size, verbose)
+    result <- lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, adjust_alpha,
+    			  t(seeds), NULL, batch_size, verbose)
     result$dictionary <- dictionary
     result$valuetype <- valuetype
     result$case_insensitive <- case_insensitive
@@ -189,6 +189,7 @@ tfm <- function(x, dictionary, levels = 1,
     if (!quanteda::is.dictionary(dictionary))
         stop("dictionary must be a dictionary object", call. = FALSE)
 
+    docvars(x) <- NULL # sanitize dfm
     dict <- flatten_dictionary(dictionary, levels)
     key <- names(dict)
     feat <- featnames(x)

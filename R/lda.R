@@ -18,8 +18,13 @@
 #' @param gamma a parameter to determine change of topics between sentences or
 #'   paragraphs. When `gamma > 0`, Gibbs sampling of topics for the current
 #'   document is affected by the previous document's topics.
+#' @param adjust_alpha \[experimental\] if `adjust_alpha > 0`, automatically adjust
+#'  `alpha` by the size of the topics. The smallest value of adjusted `alpha`
+#'  will be `alpha * (1 - adjust_alpha)`.
 #' @param model a fitted LDA model; if provided, `textmodel_lda()` inherits
 #'   parameters from an existing model. See details.
+#' @param update_model if `TRUE`, update the terms of `model` to recognize unseen
+#'   words.
 #' @details If `auto_iter = TRUE`, the iteration stops even before `max_iter`
 #'   when `delta <= 0`. `delta` is computed to measure the changes in the number
 #'   of words whose topics are updated by the Gibbs sampler in every 100
@@ -47,7 +52,14 @@
 #'
 #' @returns Returns a list of model parameters:
 #'   \item{k}{the number of topics.}
-#'   \item{last_iter}{the number of iterations in Gibbs sampling}
+#'   \item{last_iter}{the number of iterations in Gibbs sampling.}
+#'   \item{max_iter}{the maximum number of iterations in Gibbs sampling.}
+#'   \item{auto_iter}{the use of `auto_iter`}
+#'   \item{adjust_alpha}{the value of `adjust_alpha`.}
+#'   \item{alpha}{the smoothing parameter for `theta`.}
+#'   \item{beta}{the smoothing parameter for `phi`.}
+#'   \item{epsilon}{the amount of adjustment for `adjust_alpha`.}
+#'   \item{gamma}{the gamma parameter for Sequential LDA.}
 #'   \item{phi}{the distribution of words over topics.}
 #'   \item{theta}{the distribution of topics over documents.}
 #'   \item{words}{the raw frequency count of words assigned to topics.}
@@ -55,12 +67,10 @@
 #'   \item{call}{the command used to execute the function.}
 #'   \item{version}{the version of the seededlda package.}
 #' @references
-#'
 #' Newman, D., Asuncion, A., Smyth, P., & Welling, M. (2009). Distributed
 #' Algorithms for Topic Models. The Journal of Machine Learning Research, 10,
 #' 1801–1828.
 #' @keywords textmodel
-#' @seealso [LDA][topicmodels::LDA] [weightedLDA][keyATM::weightedLDA]
 #' @export
 #' @examples
 #' \donttest{
@@ -79,7 +89,8 @@
 #' }
 textmodel_lda <- function(
     x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, gamma = 0,
-    model = NULL, batch_size = 1.0, verbose = quanteda_options("verbose")
+    adjust_alpha = 0.0, model = NULL, update_model = FALSE, batch_size = 1.0,
+	verbose = quanteda_options("verbose")
 ) {
     UseMethod("textmodel_lda")
 }
@@ -87,13 +98,21 @@ textmodel_lda <- function(
 #' @export
 textmodel_lda.dfm <- function(
     x, k = 10, max_iter = 2000, auto_iter = FALSE, alpha = 0.5, beta = 0.1, gamma = 0,
-    model = NULL, batch_size = 1.0, verbose = quanteda_options("verbose")
+    adjust_alpha = 0.0, model = NULL, update_model = FALSE, batch_size = 1.0,
+    verbose = quanteda_options("verbose")
 ) {
 
     if (!is.null(model)) {
         if (!is.textmodel_lda(model))
             stop("model must be a fitted textmodel_lda")
-        x <- dfm_match(x, colnames(model$phi))
+
+    	words <- model$words
+    	if (update_model) {
+    		words <- t(dfm_match(as.dfm(t(words)), featnames(x)))
+    	} else {
+    		x <- dfm_match(x, rownames(words))
+    	}
+
         k <- model$k
         label <- rownames(model$phi)
         alpha <- model$alpha
@@ -103,13 +122,14 @@ textmodel_lda.dfm <- function(
         } else {
             gamma <- 0
         }
-        words <- model$words
+
         warning("k, alpha, beta and gamma values are overwritten by the fitted model", call. = FALSE)
     } else {
         label <- paste0("topic", seq_len(k))
         words <- NULL
     }
-    lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, NULL, words, batch_size, verbose)
+    lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, adjust_alpha,
+    	NULL, words, batch_size, verbose)
 }
 
 is.textmodel_lda <- function(x) {
@@ -120,13 +140,14 @@ is.textmodel_lda <- function(x) {
 #' @importFrom methods as
 #' @import quanteda
 #' @useDynLib seededlda, .registration = TRUE
-lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
+lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma, adjust_alpha,
                 seeds, words, batch_size, verbose) {
 
     k <- check_integer(k, min = 1, max = 1000)
     max_iter <- check_integer(max_iter, min = 100)
     auto_iter <- check_logical(auto_iter, strict = TRUE)
     gamma <- check_double(gamma, min = 0, max = 1)
+    adjust_alpha <- check_double(adjust_alpha, min = 0, max = 1)
     batch_size <- check_double(batch_size, min = 0, max = 1)
     verbose <- check_logical(verbose, strict = TRUE)
 
@@ -158,7 +179,7 @@ lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma,
 
     result <- cpp_lda(x, k, max_iter, min_delta, alpha, beta, gamma,
                       as(seeds, "dgCMatrix"), as(words, "dgCMatrix"),
-                      first, random, batch, verbose, get_threads())
+                      first, adjust_alpha, random, batch, verbose, get_threads())
 
     dimnames(result$words) <- list(colnames(x), label)
     dimnames(result$phi) <- list(label, colnames(x))

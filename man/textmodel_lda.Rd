@@ -12,7 +12,9 @@ textmodel_lda(
   alpha = 0.5,
   beta = 0.1,
   gamma = 0,
+  adjust_alpha = 0,
   model = NULL,
+  update_model = FALSE,
   batch_size = 1,
   verbose = quanteda_options("verbose")
 )
@@ -35,8 +37,15 @@ reaching \code{max_iter}. See details.}
 paragraphs. When \code{gamma > 0}, Gibbs sampling of topics for the current
 document is affected by the previous document's topics.}
 
+\item{adjust_alpha}{[experimental] if \code{adjust_alpha > 0}, automatically adjust
+\code{alpha} by the size of the topics. The smallest value of adjusted \code{alpha}
+will be \code{alpha * (1 - adjust_alpha)}.}
+
 \item{model}{a fitted LDA model; if provided, \code{textmodel_lda()} inherits
 parameters from an existing model. See details.}
+
+\item{update_model}{if \code{TRUE}, update the terms of \code{model} to recognize unseen
+words.}
 
 \item{batch_size}{split the corpus into the smaller batches (specified in
 proportion) for distributed computing; it is disabled when a batch include
@@ -48,7 +57,14 @@ fitting.}
 \value{
 Returns a list of model parameters:
 \item{k}{the number of topics.}
-\item{last_iter}{the number of iterations in Gibbs sampling}
+\item{last_iter}{the number of iterations in Gibbs sampling.}
+\item{max_iter}{the maximum number of iterations in Gibbs sampling.}
+\item{auto_iter}{the use of \code{auto_iter}}
+\item{adjust_alpha}{the value of \code{adjust_alpha}.}
+\item{alpha}{the smoothing parameter for \code{theta}.}
+\item{beta}{the smoothing parameter for \code{phi}.}
+\item{epsilon}{the amount of adjustment for \code{adjust_alpha}.}
+\item{gamma}{the gamma parameter for Sequential LDA.}
 \item{phi}{the distribution of words over topics.}
 \item{theta}{the distribution of topics over documents.}
 \item{words}{the raw frequency count of words assigned to topics.}
@@ -106,8 +122,5 @@ topics(lda)
 Newman, D., Asuncion, A., Smyth, P., & Welling, M. (2009). Distributed
 Algorithms for Topic Models. The Journal of Machine Learning Research, 10,
 1801–1828.
-}
-\seealso{
-\link[topicmodels:lda]{LDA} \link[keyATM:weightedLDA]{weightedLDA}
 }
 \keyword{textmodel}

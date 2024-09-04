@@ -72,8 +72,9 @@ test_that("LDA is working", {
     )
     expect_equal(
         names(lda),
-        c("k", "max_iter", "last_iter", "auto_iter", "alpha", "beta", "gamma", "phi", "theta",
-          "words", "data", "batch_size", "call", "version")
+        c("k", "max_iter", "last_iter", "auto_iter", "adjust_alpha",
+          "alpha", "beta", "epsilon", "gamma",
+          "phi", "theta", "words", "data", "batch_size", "call", "version")
     )
     expect_equal(lda$last_iter, 200)
     expect_equivalent(class(lda$words), "dgCMatrix")
@@ -111,6 +112,34 @@ test_that("alpha and beta work", {
     	"The length of beta must be 10"
     )
 
+})
+
+test_that("adjust_alpha works", {
+
+	skip_on_os("mac")
+	skip_on_cran()
+
+	set.seed(1234)
+	lda <- textmodel_lda(dfmt, max_iter = 200, adjust_alpha = 0.5)
+	expect_equal(lda$adjust_alpha, 0.5)
+	expect_true(all(lda$alpha != 0.5))
+	expect_true(all(lda$alpha > 0.25))
+	expect_true(all(lda$epsilon > 0))
+
+	expect_error(
+		textmodel_lda(dfmt, max_iter = 200, adjust_alpha = 1.5),
+		"The value of adjust_alpha must be between 0 and 1"
+	)
+
+	expect_error(
+		textmodel_lda(dfmt, max_iter = 200, adjust_alpha = -0.5),
+		"The value of adjust_alpha must be between 0 and 1"
+	)
+
+	expect_error(
+		textmodel_lda(dfmt, max_iter = 200, adjust_alpha = c(0.5, 0.5)),
+		"The length of adjust_alpha must be 1"
+	)
 })
 
 test_that("verbose works", {
@@ -181,8 +210,8 @@ test_that("LDA works with empty documents", {
 test_that("model argument works with LDA", {
     skip_on_cran()
 
-    dfmt_train <- head(dfmt, 450)
-    dfmt_test <- tail(dfmt, 50)
+    dfmt_train <- dfm_trim(head(dfmt, 450))
+    dfmt_test <- dfm_trim(tail(dfmt, 50))
 
     # fit new model
     lda <- textmodel_lda(dfmt_train, k = 5)
@@ -203,11 +232,20 @@ test_that("model argument works with LDA", {
     expect_warning({
         lda2 <- textmodel_lda(dfmt_test, model = lda)
     }, "k, alpha, beta and gamma values are overwritten by the fitted model")
-    expect_false(all(lda$phi == lda2$phi))
     expect_identical(dimnames(lda$phi), dimnames(lda2$phi))
     expect_equal(
         levels(topics(lda2)),
         c("topic1", "topic2", "topic3", "topic4", "topic5")
+    )
+
+    # out-of-sample with new words
+    expect_warning({
+    	lda3 <- textmodel_lda(dfmt_test, model = lda, update_model = TRUE)
+    }, "k, alpha, beta and gamma values are overwritten by the fitted model")
+    expect_false(identical(dimnames(lda$phi), dimnames(lda3$phi)))
+    expect_equal(
+    	levels(topics(lda3)),
+    	c("topic1", "topic2", "topic3", "topic4", "topic5")
     )
 })
 
