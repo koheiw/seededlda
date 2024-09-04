@@ -2,7 +2,14 @@
 .Rhistory
 .RData
 .Ruserdata
+# C++
 src/*.o
 src/*.so
 src/*.dll
 *_cache
+# Configure
+src/Makevars
+autom4te.cache
+config.log
+config.status
+*~
