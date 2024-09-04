@@ -12,8 +12,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // cpp_lda
-List cpp_lda(arma::sp_mat& mt, int k, int max_iter, double min_delta, std::vector<double> alpha, std::vector<double> beta, double gamma, arma::sp_mat& seeds, arma::sp_mat& words, std::vector<bool>& first, int random, int batch, bool verbose, int threads);
-RcppExport SEXP _seededlda_cpp_lda(SEXP mtSEXP, SEXP kSEXP, SEXP max_iterSEXP, SEXP min_deltaSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP seedsSEXP, SEXP wordsSEXP, SEXP firstSEXP, SEXP randomSEXP, SEXP batchSEXP, SEXP verboseSEXP, SEXP threadsSEXP) {
+List cpp_lda(arma::sp_mat& mt, int k, int max_iter, double min_delta, std::vector<double> alpha, std::vector<double> beta, double gamma, arma::sp_mat& seeds, arma::sp_mat& words, std::vector<bool>& first, double adjust, int random, int batch, bool verbose, int threads);
+RcppExport SEXP _seededlda_cpp_lda(SEXP mtSEXP, SEXP kSEXP, SEXP max_iterSEXP, SEXP min_deltaSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP seedsSEXP, SEXP wordsSEXP, SEXP firstSEXP, SEXP adjustSEXP, SEXP randomSEXP, SEXP batchSEXP, SEXP verboseSEXP, SEXP threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -27,11 +27,12 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::sp_mat& >::type seeds(seedsSEXP);
     Rcpp::traits::input_parameter< arma::sp_mat& >::type words(wordsSEXP);
     Rcpp::traits::input_parameter< std::vector<bool>& >::type first(firstSEXP);
+    Rcpp::traits::input_parameter< double >::type adjust(adjustSEXP);
     Rcpp::traits::input_parameter< int >::type random(randomSEXP);
     Rcpp::traits::input_parameter< int >::type batch(batchSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_lda(mt, k, max_iter, min_delta, alpha, beta, gamma, seeds, words, first, random, batch, verbose, threads));
+    rcpp_result_gen = Rcpp::wrap(cpp_lda(mt, k, max_iter, min_delta, alpha, beta, gamma, seeds, words, first, adjust, random, batch, verbose, threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -59,7 +60,7 @@ END_RCPP
 RcppExport SEXP run_testthat_tests(SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_seededlda_cpp_lda", (DL_FUNC) &_seededlda_cpp_lda, 14},
+    {"_seededlda_cpp_lda", (DL_FUNC) &_seededlda_cpp_lda, 15},
     {"_seededlda_cpp_get_max_thread", (DL_FUNC) &_seededlda_cpp_get_max_thread, 0},
     {"_seededlda_cpp_tbb_enabled", (DL_FUNC) &_seededlda_cpp_tbb_enabled, 0},
     {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 1},

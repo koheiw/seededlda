@@ -1,3 +1,4 @@
+#include <RcppArmadillo.h>
 #include "lib.h"
 #include "dev.h"
 #include "lda.h"
@@ -10,10 +11,10 @@ using namespace Rcpp;
 List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double min_delta,
              std::vector<double> alpha, std::vector<double> beta, double gamma,
              arma::sp_mat &seeds, arma::sp_mat &words,
-             std::vector<bool> &first,
+             std::vector<bool> &first, double adjust,
              int random, int batch, bool verbose= false, int threads = -1) {
 
-    LDA lda(k, alpha, beta, gamma, max_iter, min_delta, random, batch, verbose, threads);
+    LDA lda(k, alpha, beta, gamma, max_iter, min_delta, adjust, random, batch, verbose, threads);
     lda.set_data(mt, first);
     lda.set_fitted(words);
 
@@ -38,8 +39,10 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double min_delta,
                         Rcpp::Named("max_iter") = lda.max_iter,
                         Rcpp::Named("last_iter") = lda.iter,
                         Rcpp::Named("auto_iter") = (lda.min_delta == 0),
-                        Rcpp::Named("alpha") = lda.alpha,
-                        Rcpp::Named("beta") = lda.beta,
+                        Rcpp::Named("adjust_alpha") = lda.adjust,
+                        Rcpp::Named("alpha") = as<NumericVector>(wrap(lda.alpha)),
+                        Rcpp::Named("beta") = as<NumericVector>(wrap(lda.beta)),
+                        Rcpp::Named("epsilon") = as<NumericVector>(wrap(lda.epsilon)),
                         Rcpp::Named("gamma") = lda.gamma,
                         Rcpp::Named("phi") = wrap(lda.phi),
                         Rcpp::Named("theta") = wrap(lda.theta),
