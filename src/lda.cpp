@@ -1,3 +1,4 @@
+#include <RcppArmadillo.h>
 #include "lib.h"
 #include "dev.h"
 #include "lda.h"
@@ -38,6 +39,7 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double min_delta,
                         Rcpp::Named("max_iter") = lda.max_iter,
                         Rcpp::Named("last_iter") = lda.iter,
                         Rcpp::Named("auto_iter") = (lda.min_delta == 0),
+                        Rcpp::Named("adjust_alpha") = lda.adjust,
                         Rcpp::Named("alpha") = as<NumericVector>(wrap(lda.alpha)),
                         Rcpp::Named("beta") = as<NumericVector>(wrap(lda.beta)),
                         Rcpp::Named("epsilon") = as<NumericVector>(wrap(lda.epsilon)),
