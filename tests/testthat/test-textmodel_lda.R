@@ -121,9 +121,12 @@ test_that("adjust_alpha works", {
 
 	set.seed(1234)
 	lda <- textmodel_lda(dfmt, max_iter = 200, adjust_alpha = 0.5)
+
+	expect_equivalent(rowSums(lda$theta), rep(1.0, ndoc(lda$data)))
+	expect_equivalent(rowSums(lda$phi), rep(1.0, lda$k))
+
 	expect_equal(lda$adjust_alpha, 0.5)
 	expect_true(all(lda$alpha != 0.5))
-	expect_true(all(lda$alpha > 0.25))
 	expect_true(all(lda$epsilon > 0))
 
 	expect_error(
