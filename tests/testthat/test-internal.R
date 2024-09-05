@@ -89,11 +89,11 @@ test_that("tfm is working without matches", {
 
     # no match
     tfm11 <- seededlda:::tfm(dfmt, dictionary(list(X = "x", Y = "y")),
-                             residual = 1, balance = TRUE)
+                             residual = 1)
     expect_equal(rowSums(tfm11), c("X" = 0, "Y" = 0, "other" = 0))
 
     tfm12 <- seededlda:::tfm(dfmt, dictionary(list(X = character(), Y = character())),
-                             residual = 1, balance = TRUE)
+                             residual = 1)
     expect_equal(rowSums(tfm12), c("X" = 0, "Y" = 0, "other" = 0))
 })
 
@@ -126,7 +126,7 @@ test_that("tfm works with dfm with x in docvars (#87)", {
 	dfmt <- dfm(toks)
 
 	expect_equal(
-		as.matrix(seededlda:::tfm(dfmt, dict, residula = 1)),
+		as.matrix(seededlda:::tfm(dfmt, dict, residual = 1)),
 		matrix(c(2, 0, 0, 0, 2, 0, 0, 0 ,0), nrow = 3,
 			   dimnames = list(c("A", "B", "other"), c("a", "b", "c")))
 	)
