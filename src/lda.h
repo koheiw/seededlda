@@ -34,9 +34,7 @@
  *   http://www.arbylon.net/publications/text-est.pdf
  */
 
-#include "lib.h"
 #include "array.h"
-#include "dev.h"
 #include <chrono>
 
 using namespace std;

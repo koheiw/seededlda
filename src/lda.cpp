@@ -1,6 +1,3 @@
-#include <RcppArmadillo.h>
-#include "lib.h"
-#include "dev.h"
 #include "lda.h"
 using namespace quanteda;
 using namespace arma;
