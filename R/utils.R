@@ -130,3 +130,11 @@ get_threads <- function() {
 	}
 	return(value)
 }
+
+#' Get information on TBB library
+#' @keywords internal
+#' @export
+info_tbb <- function() {
+	list("enabled" = cpp_tbb_enabled(),
+		 "max_threads" = cpp_get_max_thread())
+}
