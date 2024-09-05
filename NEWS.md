@@ -1,3 +1,7 @@
+## Changes in v1.4.1
+
+- Fix regression in 1.4.0 on Linux-like OS.
+
 ## Changes in v1.4.0
 
 - Use configure to link the TBB library on MacOS.
