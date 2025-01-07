@@ -110,6 +110,7 @@ test_that("tfm works with ngrams", {
     expect_equal(rowSums(seededlda:::tfm(dfmt1, dict)),
                  c("un" = 2, "icc" = 2, "other" = 0))
 
+    skip_if_not_installed("quanteda", "4.2.0")
     toks2 <- tokens_compound(toks, dict, concatenator = "+")
     dfmt2 <- dfm(toks2)
     expect_equal(rowSums(seededlda:::tfm(dfmt2, dict)),
