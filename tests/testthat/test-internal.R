@@ -102,18 +102,19 @@ test_that("tfm works with ngrams", {
 
     txt <- c("UN is the United Nations.",
              "ICC is the International Criminal Court.")
-    toks <- tokens(txt)
+    toks <- tokens(txt, concatenator = " ")
     dict <- dictionary(list("un" = c("united nations", "un"),
                             "icc" = c("international criminal court", "icc")))
-    toks1 <- tokens_compound(toks, dict, concatenator = " ")
+    toks1 <- tokens_compound(toks, dict)
     dfmt1 <- dfm(toks1)
     expect_equal(rowSums(seededlda:::tfm(dfmt1, dict)),
                  c("un" = 2, "icc" = 2, "other" = 0))
 
+    skip_if_not_installed("quanteda", "4.2.0")
     toks2 <- tokens_compound(toks, dict, concatenator = "+")
     dfmt2 <- dfm(toks2)
     expect_equal(rowSums(seededlda:::tfm(dfmt2, dict)),
-                 c("un" = 2, "icc" = 2, "other" = 0))
+                 c("un" = 1, "icc" = 1, "other" = 0))
 })
 
 test_that("tfm works with dfm with x in docvars (#87)", {
