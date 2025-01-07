@@ -1,6 +1,6 @@
 ## Changes in v1.4.2
 
-Fix tests for **quanteda** v4.2.0.
+- Fix tests for **quanteda** v4.2.0.
 
 ## Changes in v1.4.1
 
