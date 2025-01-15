@@ -208,7 +208,7 @@ tfm <- function(x, dictionary, levels = 1,
     y <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
     for (i in seq_along(dict)) {
         temp <- dfm_select(x, pattern = dict[i], verbose = FALSE)
-        temp <- dfm_match(temp, features = feat)
+        temp <- dfm_match(temp, features = feat, verbose = FALSE)
         y <- rbind(y, as(temp, "dgCMatrix"))
     }
     rownames(y) <- key
