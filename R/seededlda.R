@@ -208,7 +208,7 @@ tfm <- function(x, dictionary, levels = 1,
     y <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
     for (i in seq_along(dict)) {
         temp <- dfm_select(x, pattern = dict[i], padding = TRUE, verbose = FALSE)
-        if (packageVersion("quanteda") >= "4.2.0") {
+        if (utils::packageVersion("quanteda") >= "4.2.0") {
         	temp <- dfm_match(temp, features = feat, verbose = FALSE)
         } else {
         	temp <- dfm_match(temp, features = feat)
