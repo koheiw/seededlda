@@ -1,5 +1,6 @@
-## Changes in v1.5.0
+## Changes in v1.4.3
 
+- Suppress messages from internal functions.
 - Move quanteda from Depends to Imports.
 
 ## Changes in v1.4.2
