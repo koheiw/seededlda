@@ -207,8 +207,12 @@ tfm <- function(x, dictionary, levels = 1,
     x <- dfm_group(x, rep("text", ndoc(x)))
     y <- Matrix(nrow = 0, ncol = length(feat), sparse = TRUE)
     for (i in seq_along(dict)) {
-        temp <- dfm_select(x, pattern = dict[i], verbose = FALSE)
-        temp <- dfm_match(temp, features = feat)
+        temp <- dfm_select(x, pattern = dict[i], padding = TRUE, verbose = FALSE)
+        if (utils::packageVersion("quanteda") >= "4.2.0") {
+        	temp <- dfm_match(temp, features = feat, verbose = FALSE)
+        } else {
+        	temp <- dfm_match(temp, features = feat)
+        }
         y <- rbind(y, as(temp, "dgCMatrix"))
     }
     rownames(y) <- key
