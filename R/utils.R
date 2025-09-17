@@ -115,6 +115,29 @@ sizes.textmodel_lda <- function(x) {
     return(p)
 }
 
+#' Create a dictionary from topic terms
+#'
+#' `as.dictionary()` returns a [quanteda::dictionary] object
+#' from top topic terms.
+#' @param x a model fitted by [textmodel_lda()].
+#' @export
+#' @param separator the character in between multi-word dictionary values.
+#' @param ... passed to [terms.textmodel_lda]
+#' @return Returns a [quanteda::dictionary] object.
+#' @method as.dictionary textmodel_lda
+as.dictionary.textmodel_lda <- function(x, separator = NULL, ...) {
+	if (is.null(separator)) {
+		if (is.null(x$concatenator)) {
+			# for v1.4.2 or earlier
+			separator <- meta(x$data, field = "concatenator", type = "object")
+		} else {
+			separator <- x$concatenator
+		}
+	}
+	lis <- as.list(as.data.frame.matrix(terms(x, ...)))
+	dictionary(lis, separator = separator)
+}
+
 get_threads <- function() {
 
 	# respect other settings
