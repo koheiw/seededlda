@@ -186,6 +186,7 @@ lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma, adjust_alp
     dimnames(result$theta) <- list(rownames(x), label)
     result$data <- x
     result$batch_size <- batch_size
+    result$concatenator <- meta(x, field = "concatenator", type = "object")
     result$call <- try(match.call(sys.function(-2), call = sys.call(-2)), silent = TRUE)
     result$version <- utils::packageVersion("seededlda")
     class(result) <- c("textmodel_lda", "textmodel", "list")
