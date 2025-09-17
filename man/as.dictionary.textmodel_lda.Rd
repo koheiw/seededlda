@@ -4,14 +4,14 @@
 \alias{as.dictionary.textmodel_lda}
 \title{Create a dictionary from topic terms}
 \usage{
-\method{as.dictionary}{textmodel_lda}(x, separator = NULL, n = 10, ...)
+\method{as.dictionary}{textmodel_lda}(x, n = 10, separator = NULL, ...)
 }
 \arguments{
 \item{x}{a model fitted by \code{\link[=textmodel_lda]{textmodel_lda()}}.}
 
-\item{separator}{the character in between multi-word dictionary values.}
-
 \item{n}{the number of terms in the dictionary for each topic.}
+
+\item{separator}{the character in between multi-word dictionary values.}
 
 \item{...}{not used.}
 }
