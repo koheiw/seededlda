@@ -65,10 +65,11 @@ Returns a list of model parameters:
 \item{beta}{the smoothing parameter for \code{phi}.}
 \item{epsilon}{the amount of adjustment for \code{adjust_alpha}.}
 \item{gamma}{the gamma parameter for Sequential LDA.}
-\item{phi}{the distribution of words over topics.}
-\item{theta}{the distribution of topics over documents.}
+\item{phi}{the posterior distribution of words over topics.}
+\item{theta}{the posterior distribution of topics over documents.}
 \item{words}{the raw frequency count of words assigned to topics.}
 \item{data}{the original input of \code{x}.}
+\item{concatenator}{the concatenator in \code{x}.}
 \item{call}{the command used to execute the function.}
 \item{version}{the version of the seededlda package.}
 }

@@ -7,9 +7,9 @@
 \method{print}{textmodel_lda}(x, ...)
 }
 \arguments{
-\item{x}{for print method, the object to be printed}
+\item{x}{for print method, the object to be printed.}
 
-\item{...}{unused}
+\item{...}{unused.}
 }
 \description{
 Print method for a LDA model
