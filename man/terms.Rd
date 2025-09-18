@@ -9,15 +9,15 @@ terms(x, n = 10)
 \arguments{
 \item{x}{a LDA model fitted by \code{\link[=textmodel_seededlda]{textmodel_seededlda()}} or \code{\link[=textmodel_lda]{textmodel_lda()}}.}
 
-\item{n}{the number of terms to be extracted.}
+\item{n}{number of terms to be extracted.}
 }
 \value{
-Returns a character matrix with the most frequent words in each topic.
+a character matrix with the most frequent words in each topic.
 }
 \description{
-\code{terms()} returns the most likely terms for topics based on the \code{phi} parameter.
+\code{terms()} returns the most likely terms, or words, for topics based on the
+\code{phi} parameter.
 }
 \details{
-Topic terms are sorted in the descending order within topics based on
-the values in \code{x$phi}.
+Users can access the original matrix \code{x$phi} for likelihood scores.
 }

@@ -60,11 +60,10 @@
 #'   \item{beta}{the smoothing parameter for `phi`.}
 #'   \item{epsilon}{the amount of adjustment for `adjust_alpha`.}
 #'   \item{gamma}{the gamma parameter for Sequential LDA.}
-#'   \item{phi}{the posterior distribution of words over topics.}
-#'   \item{theta}{the posterior distribution of topics over documents.}
+#'   \item{phi}{the distribution of words over topics.}
+#'   \item{theta}{the distribution of topics over documents.}
 #'   \item{words}{the raw frequency count of words assigned to topics.}
 #'   \item{data}{the original input of `x`.}
-#'   \item{concatenator}{the concatenator in `x`.}
 #'   \item{call}{the command used to execute the function.}
 #'   \item{version}{the version of the seededlda package.}
 #' @references
@@ -187,7 +186,6 @@ lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma, adjust_alp
     dimnames(result$theta) <- list(rownames(x), label)
     result$data <- x
     result$batch_size <- batch_size
-    result$concatenator <- meta(x, field = "concatenator", type = "object")
     result$call <- try(match.call(sys.function(-2), call = sys.call(-2)), silent = TRUE)
     result$version <- utils::packageVersion("seededlda")
     class(result) <- c("textmodel_lda", "textmodel", "list")

@@ -25,6 +25,6 @@ Suggests:
     spelling,
     testthat,
     topicmodels
-RoxygenNote: 7.3.3
+RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Language: en-US

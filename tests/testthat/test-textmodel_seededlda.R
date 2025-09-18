@@ -106,7 +106,7 @@ test_that("seeded LDA is working", {
         names(lda),
         c("k", "max_iter", "last_iter", "auto_iter", "adjust_alpha",
           "alpha", "beta", "epsilon", "gamma", "phi", "theta",
-          "words", "data", "batch_size", "concatenator", "call", "version",
+          "words", "data", "batch_size", "call", "version",
           "dictionary", "valuetype", "case_insensitive", "seeds",
           "residual", "weight")
     )

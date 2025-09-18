@@ -2,12 +2,11 @@
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, v1.0]
   pull_request:
+    branches: [main, master, v1.0]
 
-name: R-CMD-check.yaml
-
-permissions: read-all
+name: R-CMD-check
 
 jobs:
   R-CMD-check:
@@ -39,7 +38,7 @@ jobs:
             brew update
             brew install tbb
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -57,4 +56,3 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'

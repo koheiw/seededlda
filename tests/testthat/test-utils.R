@@ -174,14 +174,3 @@ test_that("get_threads are working", {
 	options("seededlda_threads" = NULL)
 })
 
-test_that("as.dictionary is working", {
-
-	dict1 <- as.dictionary(lda)
-	expect_true(is.dictionary(dict1))
-	expect_true(all(lengths(dict1) == 10))
-
-	dict2 <- as.dictionary(slda, n = 20)
-	expect_true(is.dictionary(dict2))
-	expect_identical(names(dict2), c("romance", "sifi", "other" ))
-	expect_true(all(lengths(dict2) == 20))
-})

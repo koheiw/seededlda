@@ -93,8 +93,8 @@ textmodel_seededlda.dfm <- function(
 }
 
 #' Print method for a LDA model
-#' @param x for print method, the object to be printed.
-#' @param ... unused.
+#' @param x for print method, the object to be printed
+#' @param ... unused
 #' @method print textmodel_lda
 #' @keywords internal
 #' @export
@@ -109,12 +109,12 @@ print.textmodel_lda <- function(x, ...) {
 
 #' Extract most likely terms
 #'
-#' `terms()` returns the most likely terms for topics based on the `phi` parameter.
+#' `terms()` returns the most likely terms, or words, for topics based on the
+#' `phi` parameter.
 #' @param x a LDA model fitted by [textmodel_seededlda()] or [textmodel_lda()].
-#' @param n the number of terms to be extracted.
-#' @details Topic terms are sorted in the descending order within topics based on
-#'    the values in `x$phi`.
-#' @returns Returns a character matrix with the most frequent words in each topic.
+#' @param n number of terms to be extracted.
+#' @details Users can access the original matrix `x$phi` for likelihood scores.
+#' @returns a character matrix with the most frequent words in each topic.
 #' @export
 terms <- function(x, n = 10) {
     UseMethod("terms")
