@@ -74,7 +74,8 @@ test_that("LDA is working", {
         names(lda),
         c("k", "max_iter", "last_iter", "auto_iter", "adjust_alpha",
           "alpha", "beta", "epsilon", "gamma",
-          "phi", "theta", "words", "data", "batch_size", "call", "version")
+          "phi", "theta", "words", "data", "batch_size", "concatenator",
+          "call", "version")
     )
     expect_equal(lda$last_iter, 200)
     expect_equivalent(class(lda$words), "dgCMatrix")
