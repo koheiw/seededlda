@@ -1,6 +1,6 @@
-#' Semisupervised Latent Dirichlet allocation
+#' Semisupervised latent Dirichlet allocation
 #'
-#' Implements semisupervised Latent Dirichlet allocation
+#' Implements semisupervised latent Dirichlet allocation
 #' (Seeded LDA). `textmodel_seededlda()` allows users to specify
 #' topics using a seed word dictionary. Users can run Seeded Sequential LDA by
 #' setting `gamma > 0`.

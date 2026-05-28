@@ -2,7 +2,7 @@
 % Please edit documentation in R/seqlda.R
 \name{textmodel_seqlda}
 \alias{textmodel_seqlda}
-\title{Sequential Latent Dirichlet allocation}
+\title{Sequential latent Dirichlet allocation}
 \usage{
 textmodel_seqlda(
   x,
@@ -44,7 +44,7 @@ fitting.}
 The same as \code{\link[=textmodel_lda]{textmodel_lda()}}
 }
 \description{
-Implements Sequential Latent Dirichlet allocation (Sequential LDA).
+Implements sequential latent Dirichlet allocation (Sequential LDA).
 \code{textmodel_seqlda()} allows the users to classify sentences of texts. It
 considers the topics of previous document in inferring the topics of currency
 document. \code{textmodel_seqlda()} is a shortcut equivalent to

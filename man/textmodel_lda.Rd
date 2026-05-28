@@ -2,7 +2,7 @@
 % Please edit documentation in R/lda.R
 \name{textmodel_lda}
 \alias{textmodel_lda}
-\title{Unsupervised Latent Dirichlet allocation}
+\title{Unsupervised latent Dirichlet allocation}
 \usage{
 textmodel_lda(
   x,
@@ -74,7 +74,7 @@ Returns a list of model parameters:
 \item{version}{the version of the seededlda package.}
 }
 \description{
-Implements unsupervised Latent Dirichlet allocation (LDA). Users can run
+Implements unsupervised latent Dirichlet allocation (LDA). Users can run
 Seeded LDA by setting \code{gamma > 0}.
 }
 \details{

@@ -1,6 +1,6 @@
-#' Unsupervised Latent Dirichlet allocation
+#' Unsupervised latent Dirichlet allocation
 #'
-#' Implements unsupervised Latent Dirichlet allocation (LDA). Users can run
+#' Implements unsupervised latent Dirichlet allocation (LDA). Users can run
 #' Seeded LDA by setting `gamma > 0`.
 #'
 #' @param x the dfm on which the model will be fit.

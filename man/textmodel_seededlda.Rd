@@ -2,7 +2,7 @@
 % Please edit documentation in R/seededlda.R
 \name{textmodel_seededlda}
 \alias{textmodel_seededlda}
-\title{Semisupervised Latent Dirichlet allocation}
+\title{Semisupervised latent Dirichlet allocation}
 \usage{
 textmodel_seededlda(
   x,
@@ -73,7 +73,7 @@ fitting.}
 The same as \code{\link[=textmodel_lda]{textmodel_lda()}} with extra elements for \code{dictionary}.
 }
 \description{
-Implements semisupervised Latent Dirichlet allocation
+Implements semisupervised latent Dirichlet allocation
 (Seeded LDA). \code{textmodel_seededlda()} allows users to specify
 topics using a seed word dictionary. Users can run Seeded Sequential LDA by
 setting \code{gamma > 0}.

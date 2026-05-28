@@ -1,6 +1,6 @@
-#' Sequential Latent Dirichlet allocation
+#' Sequential latent Dirichlet allocation
 #'
-#' Implements Sequential Latent Dirichlet allocation (Sequential LDA).
+#' Implements sequential latent Dirichlet allocation (Sequential LDA).
 #' `textmodel_seqlda()` allows the users to classify sentences of texts. It
 #' considers the topics of previous document in inferring the topics of currency
 #' document. `textmodel_seqlda()` is a shortcut equivalent to
