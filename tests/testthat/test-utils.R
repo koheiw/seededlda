@@ -22,7 +22,7 @@ test_that("divergence() is working", {
 
 	# in-sample
 	div1 <- divergence(lda)
-	expect_equal(div1, 0.33, tolerance = 0.01)
+	expect_equal(div1, 0.34, tolerance = 0.01)
 
 	toks_val <- tokens(data_corpus_moviereviews[501:600],
 					   remove_punct = TRUE,

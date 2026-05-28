@@ -1,3 +1,7 @@
+## Changes in v1.4.4
+
+- Fix texts to pass checks on CRAN.
+
 ## Changes in v1.4.3
 
 - Add `as.dictionary` to create a dictionary object from topic terms.
