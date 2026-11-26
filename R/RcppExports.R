@@ -2,14 +2,14 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 cpp_lda <- function(mt, k, max_iter, min_delta, alpha, beta, gamma, seeds, words, first, adjust, random, batch, verbose = FALSE, threads = -1L) {
-    .Call(`_seededlda_cpp_lda`, mt, k, max_iter, min_delta, alpha, beta, gamma, seeds, words, first, adjust, random, batch, verbose, threads)
+    .Call(`_seededlda_old_cpp_lda`, mt, k, max_iter, min_delta, alpha, beta, gamma, seeds, words, first, adjust, random, batch, verbose, threads)
 }
 
 cpp_get_max_thread <- function() {
-    .Call(`_seededlda_cpp_get_max_thread`)
+    .Call(`_seededlda_old_cpp_get_max_thread`)
 }
 
 cpp_tbb_enabled <- function() {
-    .Call(`_seededlda_cpp_tbb_enabled`)
+    .Call(`_seededlda_old_cpp_tbb_enabled`)
 }
 

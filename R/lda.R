@@ -140,7 +140,7 @@ is.textmodel_lda <- function(x) {
 
 #' @importFrom methods as
 #' @import quanteda
-#' @useDynLib seededlda, .registration = TRUE
+#' @useDynLib seededlda.old, .registration = TRUE
 lda <- function(x, k, label, max_iter, auto_iter, alpha, beta, gamma, adjust_alpha,
                 seeds, words, batch_size, verbose) {
 

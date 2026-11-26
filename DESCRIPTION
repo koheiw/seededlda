@@ -1,4 +1,4 @@
-Package: seededlda
+Package: seededlda.old
 Type: Package
 Title: Seeded Sequential LDA for Topic Modeling
 Version: 1.4.4
@@ -25,6 +25,6 @@ Suggests:
     spelling,
     testthat,
     topicmodels
-RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 Language: en-US
+Config/roxygen2/version: 8.1.0
