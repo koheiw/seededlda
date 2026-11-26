@@ -5,8 +5,9 @@ tests/**/*.html   linguist-generated
 
 # Source files
 # ============
-*.Rdata     text
+*.Rdata     binary
 *.rdb       binary
+*.rds       binary
 *.rds       binary
 *.Rd        text
 *.Rdx       binary
