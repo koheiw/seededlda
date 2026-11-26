@@ -34,7 +34,12 @@
  *   http://www.arbylon.net/publications/text-est.pdf
  */
 
-#include "array.h"
+//#include "array.h"
+
+//#define ARMA_NO_DEBUG
+#include <RcppArmadillo.h>
+#include "lib.h"
+#include "dev.h"
 #include <chrono>
 
 using namespace std;
@@ -70,15 +75,15 @@ class LDA {
     arma::sp_mat data; // transposed document-feature matrix
     Texts texts; // individual words
     Texts z; // topic assignments for words, size M x doc.size()
-    Array nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
-    Array nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
-    Array nwsum; // nwsum[j]: total number of words assigned to topic j, size K
-    Array ndsum; // ndsum[i]: total number of words in document i, size M
+    arma::mat nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
+    arma::mat nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
+    arma::mat nwsum; // nwsum[j]: total number of words assigned to topic j, size K
+    arma::mat ndsum; // ndsum[i]: total number of words in document i, size M
 
     // prediction with fitted model
     bool fitted;
-    Array nw_ft;
-    Array nwsum_ft;
+    arma::mat nw_ft;
+    arma::mat nwsum_ft;
 
     // estimated parameters
     arma::mat theta; // theta: document-topic distributions, size M x K
@@ -106,7 +111,7 @@ class LDA {
 
     // estimate LDA model using Gibbs sampling
     void estimate();
-    int sample(int m, int n, int w, std::vector<double> &prob, Array &nw__, Array &nwsum__);
+    int sample(int m, int n, int w, std::vector<double> &prob, arma::mat &nw__, arma::mat &nwsum__);
     void compute_theta();
     void compute_phi();
 
@@ -187,8 +192,8 @@ void LDA::set_fitted(arma::sp_mat words) {
 	if (arma::accu(words) > 0) {
 	    if (verbose)
 	        Rprintf(" ...loading fitted model\n");
-	    nw_ft = Array(words);
-	    nwsum_ft = Array(arma::sum(words, 0));
+	    nw_ft = arma::mat(words);
+	    nwsum_ft = arma::mat(arma::sum(words, 0));
 	    fitted = true;
 	}
 }
@@ -205,10 +210,10 @@ int LDA::initialize() {
     theta = arma::mat(M, K, arma::fill::zeros);
     phi = arma::mat(K, V, arma::fill::zeros);
 
-    nw = Array(V, K);
-    nd = Array(M, K);
-    nwsum = Array(K);
-    ndsum = Array(arma::sum(data, 0));
+    nw = arma::mat(V, K);
+    nd = arma::mat(M, K);
+    nwsum = arma::rowvec(K);
+    ndsum = arma::rowvec(arma::sum(data, 0));
 
 	Kalpha = 0;
 	for (auto& a : alpha)
@@ -304,8 +309,8 @@ void LDA::estimate() {
                 }
 
 				// local topic assignment
-                Array nw__(V, K);
-                Array nwsum__(K);
+                arma::mat nw__(V, K);
+                arma::rowvec nwsum__(K);
                 int change__ = 0;
                 for (int i = 0; i < iter_inc; i++) {
                     //for (int m = r.begin(); m < r.end(); ++m) {
@@ -370,7 +375,7 @@ void LDA::estimate() {
 
 int LDA::sample(int m, int n, int w,
                 std::vector<double> &prob,
-                Array &nw__, Array &nwsum__) {
+                arma::mat &nw__, arma::mat &nwsum__) {
 
     // remove z_i from the count variables
     int topic = z[m][n];
