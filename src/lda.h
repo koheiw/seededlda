@@ -56,7 +56,7 @@ class LDA {
     double adjust; // adjust alpha by nwsum
     double Vbeta, Kalpha; // parameters for smoothing
     int max_iter; // number of Gibbs sampling iterations
-    int iter; // the iteration at which the model was saved
+    int iter; // the current iteration of the training
     double min_delta; // criteria for convergence
     int random; // seed for random number generation
     int batch; // size of subsets to distribute
@@ -73,7 +73,7 @@ class LDA {
     Array nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
     Array nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
     Array nwsum; // nwsum[j]: total number of words assigned to topic j, size K
-    Array ndsum; // nasum[i]: total number of words in document i, size M
+    Array ndsum; // ndsum[i]: total number of words in document i, size M
 
     // prediction with fitted model
     bool fitted;

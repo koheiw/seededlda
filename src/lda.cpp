@@ -23,7 +23,7 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double min_delta,
             Array nw_ss(seeds);
             Array nwsum_ss(arma::sum(seeds, 0));
             lda.nw += nw_ss; // set pseudo count
-            lda.estimate();
+            lda.estimate(); // NOTE: initialize with nw_ss
             lda.nwsum += nwsum_ss;
         } else {
             lda.estimate();
