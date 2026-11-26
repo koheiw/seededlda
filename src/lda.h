@@ -56,8 +56,9 @@ class LDA {
     int V; // vocabulary size
     int K; // number of topics
     int N; // total number of words
-    std::vector<double> alpha, beta; // parameters for smoothing, size K
-    std::vector<double> epsilon;
+    //std::vector<double> alpha, beta; // parameters for smoothing, size K
+    arma::colvec alpha, beta; // parameters for smoothing, size K;
+    arma::colvec epsilon;
     double adjust; // adjust alpha by nwsum
     double Vbeta, Kalpha; // parameters for smoothing
     int max_iter; // number of Gibbs sampling iterations
@@ -77,13 +78,13 @@ class LDA {
     Texts z; // topic assignments for words, size M x doc.size()
     arma::mat nw; // nw[k][v]: number of instances of word/term v assigned to topic k, size K x V
     arma::mat nd; // nd[k][m]: number of words in document m assigned to topic k, size K x M
-    arma::rowvec nwsum; // nwsum[k]: total number of words assigned to topic k, size K
+    arma::colvec nwsum; // nwsum[k]: total number of words assigned to topic k, size K
     arma::rowvec ndsum; // ndsum[m]: total number of words in document m, size M
 
     // prediction with fitted model
     bool fitted;
     arma::mat nw_ft;
-    arma::rowvec nwsum_ft;
+    arma::colvec nwsum_ft;
 
     // estimated parameters
     arma::mat theta; // theta: document-topic distributions, size M x K
@@ -111,7 +112,8 @@ class LDA {
 
     // estimate LDA model using Gibbs sampling
     void estimate();
-    int sample(int m, int n, int w, std::vector<double> &prob, arma::mat &nw__, arma::rowvec &nwsum__);
+    int sample(int m, int n, int w, const arma::colvec &prob,
+               arma::mat &nw__, arma::colvec &nwsum__);
     void compute_theta();
     void compute_phi();
 
@@ -126,14 +128,14 @@ LDA::LDA(int k, std::vector<double> alpha, std::vector<double> beta, double gamm
         Rprintf("Fitting LDA with %d topics\n", K);
 
     if (K == (int)alpha.size()) {
-    	this->alpha = alpha;
+    	this->alpha = arma::conv_to<arma::colvec>::from(alpha);
     } else {
     	throw std::invalid_argument("Invalid alpha");
     }
     this->adjust = adjust;
 
     if (K == (int)beta.size()) {
-    	this->beta = beta;
+    	this->beta = arma::conv_to<arma::colvec>::from(beta);
     } else {
     	throw std::invalid_argument("Invalid beta");
     }
@@ -157,9 +159,12 @@ void LDA::set_default_values(int k) {
     M = 0;
     V = 0;
     N = 0;
-    alpha = std::vector<double>(K, 0.5);
-    beta = std::vector<double>(K, 0.1);
-    epsilon = std::vector<double>(K, 0.0);
+    //alpha = std::vector<double>(K, 0.5);
+    //beta = std::vector<double>(K, 0.1);
+    alpha = arma::colvec(K, arma::fill::value(0.5));
+    beta = arma::colvec(K, arma::fill::value(0.1));
+    //epsilon = std::vector<double>(K, 0.0);
+    epsilon = arma::colvec(K, arma::fill::zeros);
     adjust = 0;
     max_iter = 2000;
     iter = 0;
@@ -210,17 +215,19 @@ int LDA::initialize() {
     theta = arma::mat(M, K, arma::fill::zeros);
     phi = arma::mat(K, V, arma::fill::zeros);
 
-    nw = arma::mat(K, V);
-    nd = arma::mat(K, M);
-    nwsum = arma::rowvec(K);
-    ndsum = arma::rowvec(arma::sum(data, 0));
+    nw = arma::mat(K, V, arma::fill::zeros);
+    nd = arma::mat(K, M, arma::fill::zeros);
+    nwsum = arma::colvec(K, arma::fill::zeros);
+    ndsum = arma::sum(data, 0);
 
-	Kalpha = 0;
-	for (auto& a : alpha)
-		Kalpha += a;
-	Vbeta = 0;
-	for (auto& b : beta)
-		Vbeta += V * b / K;
+	// Kalpha = 0;
+	// for (auto& a : alpha)
+	// 	Kalpha += a;
+	Kalpha = arma::accu(alpha);
+	// Vbeta = 0;
+	// for (auto& b : beta)
+	// 	Vbeta += V * b / K;
+	Vbeta = arma::accu(V * beta / K);
 
     // initialize z and texts
     z = Texts(M);
@@ -260,9 +267,10 @@ int LDA::initialize() {
 
     // compute epsilon by the size of topics
 	if (adjust > 0) {
-	    for (int k = 0; k < K; k++) {
-	    	epsilon[k] = (alpha[k] / nwsum(k)) * adjust;
-	    }
+	    //for (int k = 0; k < K; k++) {
+	    	//epsilon[k] = (alpha[k] / nwsum(k)) * adjust;
+	    //}
+	    epsilon = (alpha / nwsum) * adjust;
 	}
     return 0;
 }
@@ -310,21 +318,26 @@ void LDA::estimate() {
 
 				// local topic assignment
                 arma::mat nw__(K, V);
-                arma::rowvec nwsum__(K);
+                arma::colvec nwsum__(K);
+                arma::colvec prob(K, arma::fill::value(1.0 / K));
                 int change__ = 0;
                 for (int i = 0; i < iter_inc; i++) {
                     //for (int m = r.begin(); m < r.end(); ++m) {
                     for (int m = begin; m < end; ++m) {
                         // topic of the previous document
-                        std::vector<double> prob(K);
-                        for (int k = 0; k < K; k++) {
-                            if (gamma == 0 || first[m] || m == 0) {
-                                prob[k] = 1.0 / K;
-                            } else {
-                                prob[k] = pow((nd(k, m - 1) + alpha[k]) /
-                                	         (ndsum(m - 1) + K * alpha[k]), gamma);
+
+                        //for (int k = 0; k < K; k++) {
+                            //if (gamma == 0 || first[m] || m == 0) {
+                                //prob[k] = 1.0 / K;
+                            //    prob = 1.0 / K;
+                            //} else {
+                            if (gamma > 0 && !first[m] && m > 0) {
+                                // prob[k] = pow((nd(k, m - 1) + alpha[k]) /
+                                // 	         (ndsum(m - 1) + K * alpha[k]), gamma);
+                                prob = pow((nd.col(m - 1) + alpha) / (ndsum(m - 1) + K * alpha), gamma);
                             }
-                        }
+                        //}
+                        //Rcout << prob << "\n";
                         if (texts[m].empty()) continue;
                         for (std::size_t n = 0; n < texts[m].size(); n++) {
                             int w = texts[m][n];
@@ -342,9 +355,10 @@ void LDA::estimate() {
                 nwsum += nwsum__;
                 // adjust alpha by the changes in sizes
                 if (adjust > 0) {
-	                for (int k = 0; k < K; k++) {
-	                	alpha[k] = std::max(0.0, alpha[k] + (epsilon[k] * nwsum__(k)));
-                	}
+	                //for (int k = 0; k < K; k++) {
+	                //	alpha[k] = std::max(0.0, alpha[k] + (epsilon[k] * nwsum__(k)));
+                	//}
+                	alpha = arma::clamp(alpha + (epsilon % nwsum__), 0, arma::datum::inf);
                 }
                 mutex_sync.unlock();
 #if QUANTEDA_USE_TBB
@@ -374,8 +388,8 @@ void LDA::estimate() {
 }
 
 int LDA::sample(int m, int n, int w,
-                std::vector<double> &prob,
-                arma::mat &nw__, arma::rowvec &nwsum__) {
+                const arma::colvec &prob,
+                arma::mat &nw__, arma::colvec &nwsum__) {
 
     // remove z_i from the count variables
     int topic = z[m][n];
@@ -383,26 +397,41 @@ int LDA::sample(int m, int n, int w,
     nw__(topic, w) -= 1;
     nwsum__(topic) -= 1;
     nd(topic, m) -= 1;
-    std::vector<double> p(K, 0);
+    //std::vector<double> p(K, 0);
 
     // do multinomial sampling via cumulative method
-    for (int k = 0; k < K; k++) {
-    	if (fitted) {
-    		p[k] = ((nw(k, w) + nw__(k, w) + nw_ft(k, w) + beta[k]) /
-    			    (nwsum(k) + nwsum__(k) + nwsum_ft(k) + Vbeta)) *
-    			   ((nd(k, m) + alpha[k]) /
-    			    (ndsum(m) + Kalpha)) * prob[k];
-    	} else {
-    		p[k] = ((nw(k, w) + nw__(k, w) + beta[k]) /
-    			    (nwsum(k) + nwsum__(k) + Vbeta)) *
-    			   ((nd(k, m) + alpha[k]) /
-    				(ndsum(m) + Kalpha)) * prob[k];
-    	}
+    // for (int k = 0; k < K; k++) {
+    // 	if (fitted) {
+    // 		p[k] = ((nw(k, w) + nw__(k, w) + nw_ft(k, w) + beta[k]) /
+    // 			    (nwsum(k) + nwsum__(k) + nwsum_ft(k) + Vbeta)) *
+    // 			   ((nd(k, m) + alpha[k]) /
+    // 			    (ndsum(m) + Kalpha)) * prob[k];
+    // 	} else {
+    // 		p[k] = ((nw(k, w) + nw__(k, w) + beta[k]) /
+    // 			    (nwsum(k) + nwsum__(k) + Vbeta)) *
+    // 			   ((nd(k, m) + alpha[k]) /
+    // 				(ndsum(m) + Kalpha)) * prob[k];
+    // 	}
+    // }
+
+    arma::colvec p(K, arma::fill::zeros);
+    if (fitted) {
+    	p = ((nw.col(w) + nw__.col(w) + nw_ft.col(w) + beta) /
+    	     (nwsum + nwsum__ + nwsum_ft + Vbeta)) %
+    	    ((nd.col(m) + alpha) / (ndsum(m) + Kalpha)) % prob;
+    } else {
+	    p = ((nw.col(w) + nw__.col(w) + beta) /
+	         (nwsum + nwsum__ + Vbeta)) %
+	        ((nd.col(m) + alpha) / (ndsum(m) + Kalpha)) % prob;
     }
+    //Rcout << p << "\n";
     // cumulate multinomial parameters
-    for (int k = 1; k < K; k++) {
-        p[k] += p[k - 1];
-    }
+    p = arma::cumsum(p);
+    // for (int k = 1; k < K; k++) {
+    //     p[k] += p[k - 1];
+    // }
+
+
     // scaled sample because of unnormalized p[]
     double u = random_prob(generator) * p[K - 1];
 
