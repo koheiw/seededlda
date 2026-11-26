@@ -36,7 +36,7 @@
 
 //#include "array.h"
 
-//#define ARMA_NO_DEBUG
+#define ARMA_NO_DEBUG
 #include <RcppArmadillo.h>
 #include "lib.h"
 #include "dev.h"
@@ -70,20 +70,20 @@ class LDA {
 
     // topic transition
     double gamma; // parameter for topic transition
-    std::vector<bool> first; // first[i], documents i are first sentence, size M
+    std::vector<bool> first; // first[m], documents m are first sentences, size M
 
     arma::sp_mat data; // transposed document-feature matrix
     Texts texts; // individual words
     Texts z; // topic assignments for words, size M x doc.size()
-    arma::mat nw; // nw[i][j]: number of instances of word/term i assigned to topic j, size V x K
-    arma::mat nd; // nd[i][j]: number of words in document i assigned to topic j, size M x K
-    arma::mat nwsum; // nwsum[j]: total number of words assigned to topic j, size K
-    arma::mat ndsum; // ndsum[i]: total number of words in document i, size M
+    arma::mat nw; // nw[k][v]: number of instances of word/term v assigned to topic k, size K x V
+    arma::mat nd; // nd[k][m]: number of words in document m assigned to topic k, size K x M
+    arma::rowvec nwsum; // nwsum[k]: total number of words assigned to topic k, size K
+    arma::rowvec ndsum; // ndsum[m]: total number of words in document m, size M
 
     // prediction with fitted model
     bool fitted;
     arma::mat nw_ft;
-    arma::mat nwsum_ft;
+    arma::rowvec nwsum_ft;
 
     // estimated parameters
     arma::mat theta; // theta: document-topic distributions, size M x K
@@ -111,7 +111,7 @@ class LDA {
 
     // estimate LDA model using Gibbs sampling
     void estimate();
-    int sample(int m, int n, int w, std::vector<double> &prob, arma::mat &nw__, arma::mat &nwsum__);
+    int sample(int m, int n, int w, std::vector<double> &prob, arma::mat &nw__, arma::rowvec &nwsum__);
     void compute_theta();
     void compute_phi();
 
@@ -192,8 +192,8 @@ void LDA::set_fitted(arma::sp_mat words) {
 	if (arma::accu(words) > 0) {
 	    if (verbose)
 	        Rprintf(" ...loading fitted model\n");
-	    nw_ft = arma::mat(words);
-	    nwsum_ft = arma::mat(arma::sum(words, 0));
+	    nw_ft = arma::mat(words.t());
+	    nwsum_ft = arma::sum(nw_ft, 1);
 	    fitted = true;
 	}
 }
@@ -210,8 +210,8 @@ int LDA::initialize() {
     theta = arma::mat(M, K, arma::fill::zeros);
     phi = arma::mat(K, V, arma::fill::zeros);
 
-    nw = arma::mat(V, K);
-    nd = arma::mat(M, K);
+    nw = arma::mat(K, V);
+    nd = arma::mat(K, M);
     nwsum = arma::rowvec(K);
     ndsum = arma::rowvec(arma::sum(data, 0));
 
@@ -226,8 +226,8 @@ int LDA::initialize() {
     z = Texts(M);
     texts = Texts(M);
     for (int m = 0; m < M; m++) {
-        z[m] = Text(ndsum.at(m));
-        texts[m] = Text(ndsum.at(m));
+        z[m] = Text(ndsum(m));
+        texts[m] = Text(ndsum(m));
         arma::sp_mat::const_col_iterator it = data.begin_col(m);
         arma::sp_mat::const_col_iterator it_end = data.end_col(m);
         int i = 0;
@@ -249,11 +249,11 @@ int LDA::initialize() {
             int w = texts[m][i];
             z[m][i] = topic;
             // number of words in document m assigned to topic j
-            nd.at(m, topic) += 1;
+            nd(topic, m) += 1;
             // number of instances of word w assigned to topic j
-            nw.at(w, topic) += 1;
+            nw(topic, w) += 1;
             // total number of words assigned to topic j
-            nwsum.at(topic) += 1;
+            nwsum(topic) += 1;
         }
     }
     //dev::stop_timer("Set z", timer);
@@ -261,7 +261,7 @@ int LDA::initialize() {
     // compute epsilon by the size of topics
 	if (adjust > 0) {
 	    for (int k = 0; k < K; k++) {
-	    	epsilon[k] = (alpha[k] / nwsum.at(k)) * adjust;
+	    	epsilon[k] = (alpha[k] / nwsum(k)) * adjust;
 	    }
 	}
     return 0;
@@ -309,7 +309,7 @@ void LDA::estimate() {
                 }
 
 				// local topic assignment
-                arma::mat nw__(V, K);
+                arma::mat nw__(K, V);
                 arma::rowvec nwsum__(K);
                 int change__ = 0;
                 for (int i = 0; i < iter_inc; i++) {
@@ -321,8 +321,8 @@ void LDA::estimate() {
                             if (gamma == 0 || first[m] || m == 0) {
                                 prob[k] = 1.0 / K;
                             } else {
-                                prob[k] = pow((nd.at(m - 1, k) + alpha[k]) /
-                                	         (ndsum.at(m - 1) + K * alpha[k]), gamma);
+                                prob[k] = pow((nd(k, m - 1) + alpha[k]) /
+                                	         (ndsum(m - 1) + K * alpha[k]), gamma);
                             }
                         }
                         if (texts[m].empty()) continue;
@@ -343,7 +343,7 @@ void LDA::estimate() {
                 // adjust alpha by the changes in sizes
                 if (adjust > 0) {
 	                for (int k = 0; k < K; k++) {
-	                	alpha[k] = std::max(0.0, alpha[k] + (epsilon[k] * nwsum__.at(k)));
+	                	alpha[k] = std::max(0.0, alpha[k] + (epsilon[k] * nwsum__(k)));
                 	}
                 }
                 mutex_sync.unlock();
@@ -375,28 +375,28 @@ void LDA::estimate() {
 
 int LDA::sample(int m, int n, int w,
                 std::vector<double> &prob,
-                arma::mat &nw__, arma::mat &nwsum__) {
+                arma::mat &nw__, arma::rowvec &nwsum__) {
 
     // remove z_i from the count variables
     int topic = z[m][n];
     //Rcout << "topic:" << topic << "\n";
-    nw__.at(w, topic) -= 1;
-    nwsum__.at(topic) -= 1;
-    nd.at(m, topic) -= 1;
+    nw__(topic, w) -= 1;
+    nwsum__(topic) -= 1;
+    nd(topic, m) -= 1;
     std::vector<double> p(K, 0);
 
     // do multinomial sampling via cumulative method
     for (int k = 0; k < K; k++) {
     	if (fitted) {
-    		p[k] = ((nw.at(w, k) + nw__.at(w, k) + nw_ft.at(w, k) + beta[k]) /
-    			    (nwsum.at(k) + nwsum__.at(k) + nwsum_ft.at(k) + Vbeta)) *
-    			   ((nd.at(m, k) + alpha[k]) /
-    			    (ndsum.at(m) + Kalpha)) * prob[k];
+    		p[k] = ((nw(k, w) + nw__(k, w) + nw_ft(k, w) + beta[k]) /
+    			    (nwsum(k) + nwsum__(k) + nwsum_ft(k) + Vbeta)) *
+    			   ((nd(k, m) + alpha[k]) /
+    			    (ndsum(m) + Kalpha)) * prob[k];
     	} else {
-    		p[k] = ((nw.at(w, k) + nw__.at(w, k) + beta[k]) /
-    			    (nwsum.at(k) + nwsum__.at(k) + Vbeta)) *
-    			   ((nd.at(m, k) + alpha[k]) /
-    				(ndsum.at(m) + Kalpha)) * prob[k];
+    		p[k] = ((nw(k, w) + nw__(k, w) + beta[k]) /
+    			    (nwsum(k) + nwsum__(k) + Vbeta)) *
+    			   ((nd(k, m) + alpha[k]) /
+    				(ndsum(m) + Kalpha)) * prob[k];
     	}
     }
     // cumulate multinomial parameters
@@ -406,7 +406,7 @@ int LDA::sample(int m, int n, int w,
     // scaled sample because of unnormalized p[]
     double u = random_prob(generator) * p[K - 1];
 
-    // rejection sampling
+    // inverse-CDF sampling
     for (int k = 0; k < K; k++) {
         topic = k;
         if (p[k] > u) {
@@ -415,9 +415,9 @@ int LDA::sample(int m, int n, int w,
     }
 
     // add newly estimated z_i to count variables
-    nw__.at(w, topic) += 1;
-    nwsum__.at(topic) += 1;
-    nd.at(m, topic) += 1;
+    nw__(topic, w) += 1;
+    nwsum__(topic) += 1;
+    nd(topic, m) += 1;
     return topic;
 }
 
@@ -432,7 +432,7 @@ void LDA::compute_theta() {
 
     for (int m = 0; m < M; m++) {
         for (int k = 0; k < K; k++) {
-            theta.at(m, k) = (nd.at(m, k) + alpha[k]) / (ndsum.at(m) + Kalpha);
+            theta(m, k) = (nd(k, m) + alpha[k]) / (ndsum(m) + Kalpha);
         }
     }
 }
@@ -446,9 +446,9 @@ void LDA::compute_phi() {
     for (int k = 0; k < K; k++) {
         for (int w = 0; w < V; w++) {
         	if (fitted) {
-            	phi.at(k, w) = (nw.at(w, k) + nw_ft.at(w, k) + beta[k]) / (nwsum.at(k) + nwsum_ft.at(k) + Vbeta);
+            	phi(k, w) = (nw(k, w) + nw_ft(k, w) + beta[k]) / (nwsum(k) + nwsum_ft(k) + Vbeta);
         	} else {
-        		phi.at(k, w) = (nw.at(w, k) + beta[k]) / (nwsum.at(k) + Vbeta);
+        		phi(k, w) = (nw(k, w) + beta[k]) / (nwsum(k) + Vbeta);
         	}
         }
     }

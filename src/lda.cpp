@@ -14,14 +14,15 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double min_delta,
     LDA lda(k, alpha, beta, gamma, max_iter, min_delta, adjust, random, batch, verbose, threads);
     lda.set_data(mt, first);
     lda.set_fitted(words);
-
+    seeds = seeds.t(); // TODO: transpose in R
     if (lda.initialize() == 0) {
         bool seeded = arma::accu(seeds) > 0;
         if (seeded) {
+        	// TODO: check against V and K
             if (seeds.n_cols != lda.nw.n_cols ||  seeds.n_rows != lda.nw.n_rows)
                 throw std::invalid_argument("Invalid seed matrix");
             arma::mat nw_ss(seeds);
-            arma::mat nwsum_ss(arma::sum(seeds, 0));
+            arma::rowvec nwsum_ss(arma::sum(nw_ss, 1));
             lda.nw += nw_ss; // set pseudo count
             lda.estimate(); // NOTE: initialize with nw_ss
             lda.nwsum += nwsum_ss;
@@ -43,7 +44,7 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double min_delta,
                         Rcpp::Named("gamma") = lda.gamma,
                         Rcpp::Named("phi") = wrap(lda.phi),
                         Rcpp::Named("theta") = wrap(lda.theta),
-                        Rcpp::Named("words") = wrap(arma::sp_mat(lda.nw))); // TODO: change to zeta?
+                        Rcpp::Named("words") = wrap(arma::sp_mat(lda.nw.t()))); // NOTE: change to zeta?
 }
 
 
