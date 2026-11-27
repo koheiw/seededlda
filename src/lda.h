@@ -51,7 +51,8 @@ using namespace quanteda;
 class LDA {
 
     public:
-    // --- model parameters and variables ---
+    // variables
+    // TODO: change to std::size_t
     int M; // dataset size (i.e., number of docs)
     int V; // vocabulary size
     int K; // number of topics

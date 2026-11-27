@@ -4,6 +4,10 @@ using namespace arma;
 using namespace std;
 using namespace Rcpp;
 
+NumericVector to_vector(const arma::colvec& v) {
+	return Rcpp::NumericVector(v.begin(), v.end());
+}
+
 // [[Rcpp::export]]
 List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double min_delta,
              std::vector<double> alpha, std::vector<double> beta, double gamma,
@@ -14,15 +18,13 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double min_delta,
     LDA lda(k, alpha, beta, gamma, max_iter, min_delta, adjust, random, batch, verbose, threads);
     lda.set_data(mt, first);
     lda.set_fitted(words);
-    seeds = seeds.t(); // TODO: transpose in R
     if (lda.initialize() == 0) {
         bool seeded = arma::accu(seeds) > 0;
         if (seeded) {
-        	// TODO: check against V and K
-            if (seeds.n_cols != lda.nw.n_cols ||  seeds.n_rows != lda.nw.n_rows)
+            if ((int)seeds.n_rows != lda.K || (int)seeds.n_cols != lda.V)
                 throw std::invalid_argument("Invalid seed matrix");
             arma::mat nw_ss(seeds);
-            arma::rowvec nwsum_ss(arma::sum(nw_ss, 1));
+            arma::colvec nwsum_ss(arma::sum(nw_ss, 1));
             lda.nw += nw_ss; // set pseudo count
             lda.estimate(); // NOTE: initialize with nw_ss
             lda.nwsum += nwsum_ss;
@@ -38,9 +40,9 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double min_delta,
                         Rcpp::Named("last_iter") = lda.iter,
                         Rcpp::Named("auto_iter") = (lda.min_delta == 0),
                         Rcpp::Named("adjust_alpha") = lda.adjust,
-                        Rcpp::Named("alpha") = as<NumericVector>(wrap(lda.alpha)),
-                        Rcpp::Named("beta") = as<NumericVector>(wrap(lda.beta)),
-                        Rcpp::Named("epsilon") = as<NumericVector>(wrap(lda.epsilon)),
+                        Rcpp::Named("alpha") = to_vector(lda.alpha),
+                        Rcpp::Named("beta") = to_vector(lda.beta),
+                        Rcpp::Named("epsilon") = to_vector(lda.epsilon),
                         Rcpp::Named("gamma") = lda.gamma,
                         Rcpp::Named("phi") = wrap(lda.phi),
                         Rcpp::Named("theta") = wrap(lda.theta),

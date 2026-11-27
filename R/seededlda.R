@@ -82,7 +82,7 @@ textmodel_seededlda.dfm <- function(
     label <- rownames(seeds)
 
     result <- lda(x, k, label, max_iter, auto_iter, alpha, beta, gamma, adjust_alpha,
-    			  t(seeds), NULL, batch_size, verbose)
+    			  seeds, NULL, batch_size, verbose)
     result$dictionary <- dictionary
     result$valuetype <- valuetype
     result$case_insensitive <- case_insensitive
