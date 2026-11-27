@@ -118,7 +118,7 @@ LDA::LDA(int k, std::vector<double> alpha, std::vector<double> beta, double gamm
 	set_default_values(k);
 
     if (verbose)
-        Rprintf("Fitting LDA with %d topics\n", K);
+        Rprintf("Fitting LDA with %d topics (v1.4.4)\n", K);
 
     if (K == (int)alpha.size()) {
     	this->alpha = alpha;
