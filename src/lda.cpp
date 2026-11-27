@@ -26,14 +26,14 @@ List cpp_lda(arma::sp_mat &mt, int k, int max_iter, double min_delta,
             arma::mat nw_ss(seeds);
             arma::colvec nwsum_ss(arma::sum(nw_ss, 1));
             lda.nw += nw_ss; // set pseudo count
-            lda.estimate(); // NOTE: initialize with nw_ss
+            lda.estimate(); // TODO: add LDA::set_seed
             lda.nwsum += nwsum_ss;
         } else {
             lda.estimate();
         }
     }
-    lda.compute_theta();
-    lda.compute_phi();
+    lda.compute_theta(); // TODO: move to estimate()
+    lda.compute_phi(); // TODO: move to estimate()
 
     return List::create(Rcpp::Named("k") = lda.K,
                         Rcpp::Named("max_iter") = lda.max_iter,
